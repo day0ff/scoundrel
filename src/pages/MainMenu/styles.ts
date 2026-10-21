@@ -27,10 +27,9 @@ export const MainStyled = styled.main`
     gap: 12px;
   }
 
-  @media (orientation: landscape) and (max-height: 480px) {
-    padding: 180px 12px 120px;
+  @media (orientation: landscape) {
     gap: 12px;
-    padding: max(12px, env(safe-area-inset-top))
+    padding: max(32px, env(safe-area-inset-top))
       max(16px, env(safe-area-inset-right))
       max(32px, env(safe-area-inset-bottom))
       max(18px, env(safe-area-inset-left));

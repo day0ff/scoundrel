@@ -1,18 +1,47 @@
 import styled from "styled-components";
 
 export const ScoreMeterStyled = styled.div`
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    max-width: 520px;
+    align-self: center;
     justify-content: center;
     align-items: center;
     gap: 40px;
 
-    > div { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    > div { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+
+    button {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    button[hidden] {
+        display: block;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    @media ${({theme}) => theme.media.tablet} {
+        gap: 24px;
+    }
+
+    @media ${({theme}) => theme.media.mobile} {
+        gap: 16px;
+    }
 `;
 
 export const ValueStyled = styled.strong`
     font-size: 36px;
+    line-height: 1.25;
+    min-height: 1.25em;
     font-variant-numeric: tabular-nums;
     color: #f4d77f;
+
+    @media ${({theme}) => theme.media.mobile} {
+        font-size: 28px;
+    }
 `;
 
 export const TrackStyled = styled.div`
@@ -22,6 +51,19 @@ export const TrackStyled = styled.div`
     border: 1px solid #c5ba87;
     border-radius: 8px;
     background: #0d1713;
+
+    @media ${({theme}) => theme.media.tablet} {
+        height: 150px;
+    }
+
+    @media ${({theme}) => theme.media.mobile} {
+        width: 28px;
+        height: 120px;
+    }
+
+    @media ${({theme}) => theme.media.laptop} and (orientation: landscape) and (max-height: 480px) {
+        height: 90px;
+    }
 `;
 
 export const FillStyled = styled.div`

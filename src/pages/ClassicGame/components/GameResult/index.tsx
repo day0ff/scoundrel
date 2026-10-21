@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from "store/hooks.ts";
 import { heroClassicGameSelector } from "store/features/classic-game/selectors.ts";
 import { clearClassicGame, resetDungeon } from "store/features/classic-game";
 import { useSoundEffect } from "hooks/useSoundEffect.ts";
-import GameLog from "../GameLog";
 import { MODAL_BACKDROP_DURATION_MS } from "components/Modal/constants.ts";
 import { GameButtonStyled } from "../../styles.ts";
 import { GameResultBackgroundStyled, GameResultModalStyled, GameResultStyled } from "./styles.ts";
@@ -14,7 +13,7 @@ import { GAME_RESULT_BACKGROUNDS, GAME_RESULT_SOUNDS, GAME_RESULT_TRANSLATIONS }
 import { gameResultScoreSelector } from "./selectors.ts";
 import ScoreMeter from "./components/ScoreMeter";
 
-const GameResult: FC<GameResultPropsType> = ({ outcome }) => {
+const GameResult: FC<GameResultPropsType> = ({ outcome, isOpen, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -35,7 +34,7 @@ const GameResult: FC<GameResultPropsType> = ({ outcome }) => {
     [],
   );
 
-  useSoundEffect(GAME_RESULT_SOUNDS[outcome][soundVariant], 0, true);
+  useSoundEffect(GAME_RESULT_SOUNDS[outcome][soundVariant], 0);
 
   const getTranslationKey = (field: "title" | "description") =>
     GAME_RESULT_TRANSLATIONS[outcome][field];
@@ -55,8 +54,9 @@ const GameResult: FC<GameResultPropsType> = ({ outcome }) => {
 
   return (
     <GameResultModalStyled
-      isOpen
-      isClosable={false}
+      isOpen={isOpen}
+      isClosable={!leaving}
+      onClose={onClose}
       animationDuration={MODAL_BACKDROP_DURATION_MS}
     >
       <GameResultBackgroundStyled
@@ -66,14 +66,6 @@ const GameResult: FC<GameResultPropsType> = ({ outcome }) => {
         as="section"
         aria-labelledby="game-result-title"
         data-game-outcome={outcome}
-        onKeyDown={(event) => {
-          if (
-            event.key === "Escape" &&
-            (event.target as HTMLElement).closest("dialog") ===
-              event.currentTarget.closest("dialog")
-          )
-            event.preventDefault();
-        }}
       >
         <h1 id="game-result-title">{t(getTranslationKey("title"))}</h1>
         <p>{t(getTranslationKey("description"))}</p>
@@ -95,7 +87,7 @@ const GameResult: FC<GameResultPropsType> = ({ outcome }) => {
             {t("link.page.home")}
           </GameButtonStyled>
         </nav>
-        <GameLog />
+        {/* <GameLog /> */}
       </GameResultStyled>
     </GameResultModalStyled>
   );

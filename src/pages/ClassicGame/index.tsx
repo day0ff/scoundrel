@@ -1,6 +1,6 @@
-import { useCallback, useRef, useState, type FC, type KeyboardEvent } from "react";
+import { useCallback, useLayoutEffect, useRef, useState, type FC, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "styled-components";
 import { useMediaQuery } from "react-responsive";
@@ -23,6 +23,7 @@ import {
   attackCard,
   selectCard,
   surrenderGame,
+  clearClassicGame,
 } from "store/features/classic-game";
 import Toast from "components/Toast";
 import type { ToastHandleType } from "components/Toast/types.ts";
@@ -70,6 +71,7 @@ const ClassicGame: FC = () => {
   const theme = useTheme();
   const tabletLandscape = useMediaQuery({query: `${theme.media.tablet} and (orientation: landscape)`});
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const game = useAppSelector(classicGameSelector);
   const currentRoomNumber = useAppSelector(currentRoomNumberSelector);
   const gameRef = useRef<HTMLElement>(null);
@@ -79,6 +81,24 @@ const ClassicGame: FC = () => {
   const [hoveredAttackerId, setHoveredAttackerId] = useState<string | null>(null);
   const [focusedAttackerId, setFocusedAttackerId] = useState<string | null>(null);
   const toastRef = useRef<ToastHandleType>(null);
+  const [resultDismissed, setResultDismissed] = useState(false);
+  const pendingExitRef = useRef<(() => void) | null>(null);
+
+  useLayoutEffect(() => () => {
+    // Clear the finished game after the route curtains cover the outgoing page.
+    const completeExit = pendingExitRef.current;
+    pendingExitRef.current = null;
+    completeExit?.();
+  }, []);
+
+  const handleHome = () => {
+    if (game?.outcome) pendingExitRef.current = () => dispatch(clearClassicGame());
+    navigate("/main-menu");
+  };
+  const handleSurrender = () => {
+    setResultDismissed(false);
+    if (!game?.outcome) dispatch(surrenderGame());
+  };
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
@@ -193,13 +213,13 @@ const ClassicGame: FC = () => {
         onDragEnd={handleDragEnd}
       >
       <GameHeaderStyled>
-        <HeaderBurgerMenu />
-        <HeaderMenuButtonStyled to="/main-menu" value="link.page.home" showBullet={false} />
+        <HeaderBurgerMenu onHome={handleHome} onSurrender={handleSurrender} />
+        <HeaderMenuButtonStyled onClick={handleHome} value="link.page.home" showBullet={false} />
         <HeaderMenuButtonStyled
           value="ui.game.surrender"
           showBullet={false}
-          disabled={!!game.outcome || dragging}
-          onClick={() => dispatch(surrenderGame())}
+          disabled={dragging}
+          onClick={handleSurrender}
         />
         <HeaderRoomTitleStyled>{t("ui.zone.room")} {currentRoomNumber}</HeaderRoomTitleStyled>
       </GameHeaderStyled>
@@ -289,7 +309,7 @@ const ClassicGame: FC = () => {
         )}
       </DndContext>
       <Toast ref={toastRef} />
-      {game.outcome && <GameResult outcome={game.outcome} />}
+      {game.outcome && <GameResult outcome={game.outcome} isOpen={!resultDismissed} onClose={() => setResultDismissed(true)} />}
     </ClassicGameStyled>
   );
 };

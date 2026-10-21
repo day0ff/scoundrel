@@ -98,15 +98,10 @@ export const DungeonPreviewParagraphStyled = styled.p`
   }
 
   @media ${({theme}) => theme.media.tablet} {
-    font-size: 14px;
+    font-size: 16px;
   }
 
-  @media ${({theme}) => theme.media.mobile} {
-    font-size: 12px;
-  }
-
-  @media (orientation: landscape) and (max-height: 480px) {
-    font-size: 12px;
+  @media (orientation: landscape) {
     max-width: 720px;
   }
 `;

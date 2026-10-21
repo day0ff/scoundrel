@@ -3,8 +3,9 @@ import {useTheme} from "context/Theme/useTheme.ts";
 import {HeaderMenuModalStyled} from "./styles.ts";
 import HeaderMenuActions from "./components/HeaderMenuActions";
 import {HeaderMenuButtonStyled} from "../../styles.ts";
+import type {HeaderBurgerMenuPropsType} from "./types.ts";
 
-const HeaderBurgerMenu: FC = () => {
+const HeaderBurgerMenu: FC<HeaderBurgerMenuPropsType> = ({onHome, onSurrender}) => {
     const [isOpen, setIsOpen] = useState(false);
     const {theme} = useTheme();
 
@@ -23,7 +24,7 @@ const HeaderBurgerMenu: FC = () => {
             {isOpen && (
                 <HeaderMenuModalStyled
                     isOpen={isOpen}
-                    initialNode={<HeaderMenuActions onCloseMenu={() => setIsOpen(false)}/>}
+                    initialNode={<HeaderMenuActions onHome={onHome} onSurrender={onSurrender} onCloseMenu={() => setIsOpen(false)}/>}
                     onClose={() => setIsOpen(false)}
                 />
             )}

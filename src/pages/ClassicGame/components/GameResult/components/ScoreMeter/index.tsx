@@ -48,9 +48,9 @@ const ScoreMeter: FC<ScoreMeterPropsType> = ({min, max, score}) => {
                 <ValueStyled aria-live={value === score ? "polite" : "off"} aria-atomic="true">
                     {isStarted ? <Score unit={displayedScore > 0 ? "+" : ""} color="#f4d77f">{displayedScore}</Score> : "?"}
                 </ValueStyled>
-                {!isStarted && <GameButtonStyled onClick={() => setIsStarted(true)}>
+                <GameButtonStyled hidden={isStarted} onClick={() => setIsStarted(true)}>
                     {t("ui.gameResult.revealScore")}
-                </GameButtonStyled>}
+                </GameButtonStyled>
             </div>
             <div>
                 <span>{format(max)}</span>
