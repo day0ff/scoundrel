@@ -1,0 +1,2 @@
+export const TOAST_DISPLAY_DURATION_MS = 4000;
+export const TOAST_FADE_DURATION_MS = 200;

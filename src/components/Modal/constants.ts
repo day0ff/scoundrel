@@ -1,0 +1,3 @@
+export const MODAL_BACKDROP_DURATION_MS = 320;
+export const MODAL_REVEAL_DURATION_MS = 180;
+export const MODAL_EXIT_DURATION_MS = 120;

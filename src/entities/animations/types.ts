@@ -1,0 +1,38 @@
+import type {TranslationKeysType} from "localization/types.ts";
+import type {InitPasteboardDataType} from "entities/pasteboards/types.ts";
+import type {IdentifierType, RankType, StatType} from "entities/types.ts";
+
+type AnimationTranslationKeysType<Type extends string> = Extract<TranslationKeysType, `animation.${Type}.${string}`>;
+
+export type AnimationType<Identifier extends string, Type extends string> = {
+    identifier: IdentifierType<Identifier, Type>;
+    name: AnimationTranslationKeysType<Type>;
+    description: AnimationTranslationKeysType<Type>;
+    durationMs: number;
+    color: string;
+};
+
+export type AnimationDataType<Type extends string> = AnimationType<"animation", Type>;
+
+type HealthAnimationEventType = {
+    id: number;
+    healthBefore: StatType;
+    healthAfter: StatType;
+};
+
+export type AttackAnimationEventType = HealthAnimationEventType & {
+    animation: AnimationDataType<"attack">["identifier"];
+    attackerId: string;
+    attacker?: InitPasteboardDataType<string, RankType>;
+    attackerZoneIndex?: number;
+    enemyId: string;
+    enemyRoomIndex?: number;
+    enemy: InitPasteboardDataType<string, RankType>;
+    healthDamage: number;
+    weaponBroken: boolean;
+};
+
+export type EffectAnimationEventType = (HealthAnimationEventType & {
+    animation: AnimationDataType<"heal">["identifier"];
+    potion?: InitPasteboardDataType<string, RankType>;
+}) | AttackAnimationEventType;

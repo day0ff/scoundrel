@@ -1,0 +1,1 @@
+export {MODAL_BACKDROP_DURATION_MS, MODAL_REVEAL_DURATION_MS, MODAL_EXIT_DURATION_MS} from "components/Modal/constants.ts";

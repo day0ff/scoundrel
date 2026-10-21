@@ -1,0 +1,1 @@
+export const SCORE_ANIMATION_DURATION = 3000;

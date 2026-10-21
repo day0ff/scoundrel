@@ -1,0 +1,10 @@
+import {turnStartPhase} from "entities/phases/turnStart.ts";
+import {playerActionPhase} from "entities/phases/playerAction.ts";
+import {turnEndPhase} from "entities/phases/turnEnd.ts";
+import type {PhaseLifecycleType} from "entities/phases/types.ts";
+
+export const classicGamePhaseLifecycle = {
+    identifier: "day0ff:phaseLifecycle-classicGame",
+    phases: [turnStartPhase.identifier, playerActionPhase.identifier, turnEndPhase.identifier],
+    waitingPhase: playerActionPhase.identifier,
+} as const satisfies PhaseLifecycleType;

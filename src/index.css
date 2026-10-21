@@ -1,0 +1,74 @@
+@font-face {
+    font-family: 'PressStart2P';
+    src: url('/fonts/PressStart2P-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ShareTechMono';
+    src: url('/fonts/ShareTechMono-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Tiny5Regular';
+    src: url('/fonts/Tiny5-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'RobotoMono';
+    font-style: normal;
+    font-weight: 100;
+    src: url('/fonts/RobotoMono/RobotoMono-Thin.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'RobotoMono';
+    font-style: italic;
+    font-weight: 100;
+    src: url('/fonts/RobotoMono/RobotoMono-ThinItalic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'RobotoMono';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/fonts/RobotoMono/RobotoMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'RobotoMono';
+    font-style: italic;
+    font-weight: 400;
+    src: url('/fonts/RobotoMono/RobotoMono-Italic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'RobotoMono';
+    font-style: normal;
+    font-weight: 700;
+    src: url('/fonts/RobotoMono/RobotoMono-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'RobotoMono';
+    font-style: italic;
+    font-weight: 700;
+    src: url('/fonts/RobotoMono/RobotoMono-BoldItalic.ttf') format('truetype');
+}
+
+:root {
+    font-family: 'PressStart2P', 'ShareTechMono', 'RobotoMono', monospace, system-ui;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    --sat: env(safe-area-inset-top);
+    --sar: env(safe-area-inset-right);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
+}

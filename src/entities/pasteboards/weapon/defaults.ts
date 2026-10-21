@@ -1,0 +1,1 @@
+export const DEFAULT_WEAPON_DURABILITY = 4;

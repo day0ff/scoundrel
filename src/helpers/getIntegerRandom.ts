@@ -1,0 +1,1 @@
+export const getIntegerRandom = (min = 1, max = 6, randomFunction?: () => number): number => Math.floor((randomFunction ?? Math.random)() * (max - min + 1)) + min;

@@ -1,0 +1,62 @@
+{
+  "colorScheme": "dark",
+  "fontFamily": {
+    "logo": "'ShareTechMono', monospace, system-ui",
+    "text": "'PressStart2P', 'RobotoMono', monospace, system-ui",
+    "number": "'Tiny5Regular', monospace, system-ui"
+  },
+  "fontSize": {
+    "huge": "38px",
+    "large": "28px",
+    "medium": "19px",
+    "small": "16px",
+    "tiny": "12px"
+  },
+  "borderRadius": {
+    "huge": "26px",
+    "large": "29px"
+  },
+  "lineHeight": {
+    "huge": "45px",
+    "large": "35px",
+    "medium": "26px",
+    "small": "22px",
+    "tiny": "18px"
+  },
+  "color": {
+    "title": "#FFFFFF",
+    "text": "#999999",
+    "label": "#111111",
+    "link": "FF3333",
+    "background": "#000000",
+    "accent": "#FF3333",
+    "primary": "#FF0000",
+    "secondary": "#FF6666",
+    "sky": "#272827",
+    "sun": "#f0ee67",
+    "sun-glow": "#FFFF00",
+    "sky-sun": "#FFFFFF",
+    "sky-light": "#c3fcf2",
+    "sky-middle": "#346a62",
+    "sky-dark": "#245b53",
+    "number": "#dddddd",
+    "heart": "#FF0000",
+    "shield": "#2f4858",
+    "coin": "#eec468",
+    "flask": "#3f5d5c",
+    "poison": "#a7f78b",
+    "value": "#282a00",
+    "blast": "yellow",
+    "attack": "red",
+    "block": "gray",
+    "heal": "red",
+    "skull": "green",
+    "positive": "green",
+    "negative": "red",
+    "neutral": "black",
+    "stroke": "#282a00"
+  },
+  "screen": {
+    "maxWidth": "1920px"
+  }
+}
