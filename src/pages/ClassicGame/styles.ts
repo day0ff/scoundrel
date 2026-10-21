@@ -59,7 +59,7 @@ export const GameHeaderStyled = styled.header`
 export const HeaderRoomTitleStyled = styled.p`
   display: none;
   margin: 0 0 0 auto;
-  padding: 0 16px 0 0;
+  padding: 0 8px 0 0;
   color: #d2a052;
   font-weight: normal;
   text-transform: capitalize;
@@ -115,7 +115,7 @@ export const HeroFrameStyled = styled(MainFrame)`
   gap: 20px;
   min-width: 0;
 
-  @media (orientation: portrait) {
+  @media ${({theme}) => theme.media.tablet} {
     ${FrameStyled} {
       padding: 0;
     }
@@ -128,7 +128,7 @@ export const HealthFrameStyled = styled(MainFrame)`
     width: 100%;
   }
 
-  @media (orientation: portrait) {
+  @media ${({theme}) => theme.media.tablet} {
     ${FrameStyled} {
       padding: 12px 12px 0;
     }
@@ -193,7 +193,6 @@ export const GameTableStyled = styled.div`
     grid-row: 3;
     min-width: 0;
     align-self: center;
-    // justify-self: center;
   }
   > [data-turn-controls] {
     grid-column: 3;
@@ -224,6 +223,68 @@ export const GameTableStyled = styled.div`
   > [data-zone] {
     align-self: start;
     min-width: 0;
+  }
+
+  @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+    > [data-dungeon-rooms] {
+      grid-column: 2;
+      grid-row: 2;
+      width: 120%;
+      transform: scale(0.8) translate(-12%,-45%); 
+    }
+
+    > [data-health-frame] {
+      grid-column: 1;
+      grid-row: 2 / 4;
+      align-self: stretch;
+      justify-self: center;
+      min-height: 0;
+      display: flex;
+      position: relative;
+      width: 48px;
+    }
+
+    > [data-room-frame] {
+      grid-row: 1;
+    }
+
+    > [data-zone="dungeon"]{
+      grid-row: 1;
+      justify-self: end;
+      align-self: end;
+      padding: 0 0 0 22px;
+    }
+
+    > [data-zone="discard"] {
+      grid-row: 1;
+      justify-self: start;
+      align-self: end;
+      padding: 0 22px 0 0;
+    }
+
+    > [data-zone="crypt"] {
+      grid-row: 1;
+      justify-self: start;
+      align-self: start;
+      padding: 0 22px 0 0;
+    }
+
+    > [data-turn-controls] {
+      grid-row: 2;
+    }
+
+    > [data-hero-frame] {
+      grid-row: 3;
+      transform: translateY(-18px); 
+    }
+
+    > [data-zone="crypt"] {
+      grid-row: 3;
+    }
+
+    > [data-hero-portrait] {
+      display: none;
+    }
   }
 
   @media (orientation: portrait) {

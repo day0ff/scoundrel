@@ -11,6 +11,22 @@ export const HeroHealthBarStyled = styled.div`
         display: block;
         width: 100%;
     }
+
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+        --health-bar-height: 36px;
+        position: absolute;
+        inset: 0 0 auto;
+        height: min(100%, clamp(168px, 50dvh, 260px));
+        width: 48px;
+        min-height: 0;
+        display: flex;
+
+        > ${TooltipStyled} {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+        }
+    }
 `;
 
 export const HealthContentStyled = styled.div`
@@ -18,6 +34,13 @@ export const HealthContentStyled = styled.div`
     align-items: center;
     gap: 12px;
     min-width: 0;
+
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        min-height: 0;
+    }
 `;
 
 export const HeartIconStyled = styled.img`
@@ -26,6 +49,11 @@ export const HeartIconStyled = styled.img`
     height: var(--health-bar-height);
     object-fit: contain;
     image-rendering: pixelated;
+
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+        width: 36px;
+        height: 36px;
+    }
 `;
 
 export const HealthLabelStyled = styled.span<{$title?: boolean; $overlay?: boolean; $outside?: boolean}>`
@@ -48,6 +76,23 @@ export const HealthLabelStyled = styled.span<{$title?: boolean; $overlay?: boole
     @media ${({theme}) => theme.media.tablet} {
         display: ${({$title, $outside, $overlay}) => $title || $outside ? "none" : $overlay ? "flex" : "inline"};
     }
+
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+        ${({$overlay}) => $overlay && `
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            font-size: 18px;
+            line-height: 1;
+            color: #fff;
+            z-index: 2;
+            > [data-single-digit="true"]::before {
+                content: "0";
+            }
+        `}
+    }
 `;
 
 export const HealthTrackStyled = styled(PixelCardStyled).attrs({$size: 2, $width: 2, $color: "#9e5555"})`
@@ -57,11 +102,29 @@ export const HealthTrackStyled = styled(PixelCardStyled).attrs({$size: 2, $width
     height: var(--health-bar-height);
     overflow: hidden;
     background: #261010;
+
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+        flex: 1;
+        width: var(--health-bar-height);
+        height: auto;
+        min-height: 0;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
 `;
 
-export const HealthFillStyled = styled.div`
+export const HealthFillStyled = styled.div<{$fill?: number}>`
+    width: ${({$fill}) => $fill ?? 100}%;
     height: 100%;
     background: #c83232;
+
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+        width: 100%;
+        height: ${({$fill}) => $fill ?? 100}%;
+        flex-shrink: 0;
+    }
 `;
 
 export const HealingHealthFillStyled = styled(HealthFillStyled)<{$from: number; $to: number; $duration: number}>`
@@ -73,6 +136,15 @@ export const HealingHealthFillStyled = styled(HealthFillStyled)<{$from: number; 
     animation-duration: ${({$duration}) => $duration}ms;
     animation-timing-function: ease-out;
     animation-fill-mode: both;
+
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+        width: 100%;
+        height: ${({$to}) => $to}%;
+        animation-name: ${({$from, $to}) => keyframes`
+            from { height: ${$from}%; }
+            to { height: ${$to}%; }
+        `};
+    }
 
     @media (prefers-reduced-motion: reduce) { animation: none; }
 `;

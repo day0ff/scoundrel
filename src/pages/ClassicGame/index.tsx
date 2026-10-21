@@ -2,6 +2,8 @@ import { useCallback, useRef, useState, type FC, type KeyboardEvent } from "reac
 import { createPortal } from "react-dom";
 import { Navigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "styled-components";
+import { useMediaQuery } from "react-responsive";
 import {
   DndContext,
   DragOverlay,
@@ -65,6 +67,8 @@ const getPreviewAttackerId = (target: EventTarget | null) =>
 
 const ClassicGame: FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const tabletLandscape = useMediaQuery({query: `${theme.media.tablet} and (orientation: landscape)`});
   const dispatch = useAppDispatch();
   const game = useAppSelector(classicGameSelector);
   const currentRoomNumber = useAppSelector(currentRoomNumberSelector);
@@ -224,9 +228,11 @@ const ClassicGame: FC = () => {
             previewEnemyId={previewEnemyId}
           />
           <div data-health-frame>
-            <HealthFrameStyled variant="inner" tileVariant="tile" cornerRadius={8}>
-              <HeroHealthBar />
-            </HealthFrameStyled>
+            {tabletLandscape ? <HeroHealthBar /> : (
+              <HealthFrameStyled variant="inner" tileVariant="tile" cornerRadius={8}>
+                <HeroHealthBar />
+              </HealthFrameStyled>
+            )}
           </div>
           <DeckZone
             zone={game.zones.discard}

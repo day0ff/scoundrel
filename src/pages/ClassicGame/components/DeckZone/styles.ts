@@ -24,4 +24,5 @@ export const DeckZoneStyled = styled.section<{$over: boolean}>`
     @media (orientation: portrait) {
         padding: 0;
     }
+    
 `;

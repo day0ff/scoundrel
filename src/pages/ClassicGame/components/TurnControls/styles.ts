@@ -8,7 +8,7 @@ export const TurnButtonStyled = styled(ButtonStyled)<{ $canSkip: boolean }>`
   line-height: 1.4;
   white-space: nowrap;
 
-  @media (orientation: portrait) {
+  @media ${({ theme }) => theme.media.tablet} {
     font-size: 16px;
     padding: 8px;
   }

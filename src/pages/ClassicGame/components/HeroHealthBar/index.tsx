@@ -38,9 +38,13 @@ const HeroHealthBar: FC = () => {
                         {event && animation ? (
                             <HealingHealthFillStyled key={event.id} $from={previousFill} $to={fill} $duration={animation.durationMs} />
                         ) : (
-                            <HealthFillStyled style={{width: `${fill}%`}} />
+                            <HealthFillStyled $fill={fill} />
                         )}
-                        <HealthLabelStyled $overlay>{current}/{health.max}</HealthLabelStyled>
+                        <HealthLabelStyled $overlay>
+                            <span data-single-digit={current >= 0 && current < 10}>{current}</span>
+                            <span>/</span>
+                            <span data-single-digit={health.max >= 0 && health.max < 10}>{health.max}</span>
+                        </HealthLabelStyled>
                     </HealthTrackStyled>
                     <HealthLabelStyled $outside>{current}/{health.max}</HealthLabelStyled>
                 </HealthContentStyled>
