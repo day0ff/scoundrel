@@ -47,6 +47,7 @@ const MainMenu = () => {
           />
           <ProfilesButton />
           <DecksButton />
+          <MenuButton value="page.records.title" to="/records" />
           <SettingsButton />
           <InstallPWAButton />
         </MenuStyled>

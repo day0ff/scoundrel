@@ -6,6 +6,8 @@ import collections from "store/features/collections";
 import dialog from "store/features/dialog";
 import profiles from "store/features/profiles";
 import settings from "store/features/settings";
+import records from "store/features/records";
+import {recordsListenerMiddleware} from "store/features/records/middleware.ts";
 import {classicGameListenerMiddleware} from "./features/classic-game/middleware.ts";
 import classicGame from "store/features/classic-game";
 import {profilesListenerMiddleware} from "store/features/profiles/middleware.ts";
@@ -18,7 +20,7 @@ import {serializeTransform} from "./serializer.ts";
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['profiles', 'settings', 'classicGame'], // "animation", "collections", "dialog", "game" and "roll" slices are ignored
+    whitelist: ['profiles', 'settings', 'classicGame', 'records'], // "animation", "collections", "dialog", "game" and "roll" slices are ignored
     transforms: [profilesTransform, serializeTransform],
 };
 
@@ -28,6 +30,7 @@ export const rootReducer = combineReducers({
     profiles,
     settings,
     classicGame,
+    records,
 });
 
 // @ts-ignore
@@ -52,7 +55,8 @@ export const store = configureStore({
         })
             .concat(rehydrateListenerMiddleware.middleware)
             .concat(profilesListenerMiddleware.middleware)
-            .concat(classicGameListenerMiddleware.middleware),
+            .concat(classicGameListenerMiddleware.middleware)
+            .concat(recordsListenerMiddleware.middleware),
 });
 
 export const persistor = NOT_PERSIST ? null : persistStore(store);

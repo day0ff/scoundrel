@@ -6,6 +6,7 @@
   "scripts": {
     "translations:clean": "node scripts/clean-translations.mjs",
     "test:game": "node scripts/test-game.mjs",
+    "test:records": "node scripts/test-records.mjs",
     "test:transitions": "node scripts/test-page-transitions.mjs",
     "start": "vite --open --host",
     "build": "vite build",

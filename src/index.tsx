@@ -12,6 +12,7 @@ import Home from "pages/Home";
 import MainMenu from "pages/MainMenu";
 import DungeonPreview from "pages/DungeonPreview";
 import ClassicGame from "pages/ClassicGame";
+import Records from "pages/Records";
 import NotFoundPage from "./pages/NotFound";
 
 import ModalDialog from "./components/ModalDialog";
@@ -31,6 +32,7 @@ function Index() {
                         <Route path={"/main-menu"} element={<MainMenu/>}/>
                         <Route path={"/dungeon-preview"} element={<DungeonPreview/>}/>
                         <Route path={"/classic-game"} element={<ClassicGame/>}/>
+                        <Route path={"/records"} element={<Records/>}/>
                         <Route path={"*"} element={<NotFoundPage/>}/>
                     </PageTransitionRoutes>
                 </BrowserRouter>

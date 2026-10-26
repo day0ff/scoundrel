@@ -3,21 +3,25 @@ import {CollectionsTitleStyled} from "componentsShared/Collections/styles.ts";
 
 export const SettingsStyled = styled.section`
     box-sizing: border-box;
-    width: min(400px, 100%);
+    width: min(760px, 100%);
     color: #f1edda;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px;
     margin-bottom: 24px;
     min-width: 0;
     line-height: 1.5;
 
     ${CollectionsTitleStyled} {
+        grid-column: 1 / -1;
         margin: 0;
         line-height: 1.4;
     }
 
     @media ${({theme}) => theme.media.tablet} {
+        display: flex;
+        flex-direction: column;
+        width: min(400px, 100%);
         font-size: 14px;
         gap: 16px;
         ${CollectionsTitleStyled} { font-size: 28px; }
@@ -45,11 +49,11 @@ export const SettingsStyled = styled.section`
 
 export const ControlsStyled = styled.fieldset`
     margin: 0;
-    padding: 20px 16px;
+    padding: 16px;
     border: 1px solid #c5ba87;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     min-width: 0;
     overflow-wrap: anywhere;
 
