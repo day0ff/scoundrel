@@ -115,7 +115,7 @@ export function PaginatedGrid<T extends { id: string }>(
     }, [animationPhase, currentItemCount]);
 
     const chunks = chunkArray(currentItems, columnSize);
-    const reservedItemSize = itemSize ?? emptyItemSize;
+    const reservedItemSize = currentItemCount > 0 ? itemSize ?? emptyItemSize : emptyItemSize;
     const reservedSize = reserveEmptySpace && reservedItemSize ? {
         minWidth: `min(100%, ${reservedItemSize.width * columnSize + gap * Math.max(0, columnSize - 1)}px)`,
         minHeight: reservedItemSize.height * rowSize + gap * Math.max(0, rowSize - 1),

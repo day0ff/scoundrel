@@ -369,6 +369,7 @@
   "ui.gameResult.defeat.description": "Your hero has fallen. Your journey ends here.",
   "ui.gameResult.actions": "Game result actions",
   "ui.gameResult.newGame": "New game",
+  "ui.menu.title": "Menu",
   "ui.weaponDurability.label": "Durability: {{count}}",
   "ui.weaponLastKill.label": "Last defeated enemy rank: {{rank}}",
   "ui.weaponLastKill.description": "Rank of the last enemy defeated by this weapon. The next enemy must have an equal or lower rank.",

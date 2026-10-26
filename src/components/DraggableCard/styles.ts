@@ -25,13 +25,20 @@ export const DraggableCardWrapper = styled(animated.div).attrs<WithAnimated & Dr
     transition: ${transitionStyle};
 
     &:hover, &:focus, &:focus-within {
-        z-index: 10;
+        z-index: 11;
         margin-top: ${({$isSelected}) => $isSelected ? "0px" : "8px"};
         margin-bottom: ${({$isSelected}) => $isSelected ? "16px" : "8px"};
         filter: drop-shadow(8px 12px 0 #00000099);
     }
 
-    &:hover {
-        z-index: 11;
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+        margin-top: ${({$isSelected}) => $isSelected ? "0px" : "8px"};
+        margin-bottom: ${({$isSelected}) => $isSelected ? "8px" : "0px"};
+
+        &:hover, &:focus, &:focus-within {
+            margin-top: ${({$isSelected}) => $isSelected ? "0px" : "4px"};
+            margin-bottom: ${({$isSelected}) => $isSelected ? "8px" : "4px"};
+            filter: drop-shadow(4px 8px 0 #00000099);
+        }
     }
 `;

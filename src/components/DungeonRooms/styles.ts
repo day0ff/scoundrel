@@ -2,7 +2,10 @@ import styled from "styled-components";
 import { DUNGEON_ROOM_GLOW_COLORS } from "./constants.ts";
 import type { DungeonRoomType } from "entities/dungeon-rooms/types.ts";
 
-export const DungeonRoomsStyled = styled.ol<{$fadeLeft: boolean; $fadeRight: boolean}>`
+export const DungeonRoomsStyled = styled.ol<{
+  $fadeLeft: boolean;
+  $fadeRight: boolean;
+}>`
   --room-width: 76px;
   --room-icon-size: 56px;
   --room-connector-top: 22px;
@@ -29,18 +32,23 @@ export const DungeonRoomsStyled = styled.ol<{$fadeLeft: boolean; $fadeRight: boo
   justify-content: flex-start;
   mask-image: linear-gradient(
     to right,
-    ${({$fadeLeft}) => $fadeLeft ? "transparent" : "black"},
-    ${({$fadeLeft}) => $fadeLeft ? "rgba(0, 0, 0, 0.15)" : "black"} 16px,
+    ${({ $fadeLeft }) => ($fadeLeft ? "transparent" : "black")},
+    ${({ $fadeLeft }) => ($fadeLeft ? "rgba(0, 0, 0, 0.15)" : "black")} 16px,
     black min(64px, 40%),
     black calc(100% - min(64px, 40%)),
-    ${({$fadeRight}) => $fadeRight ? "rgba(0, 0, 0, 0.15)" : "black"} calc(100% - 16px),
-    ${({$fadeRight}) => $fadeRight ? "transparent" : "black"}
+    ${({ $fadeRight }) => ($fadeRight ? "rgba(0, 0, 0, 0.15)" : "black")}
+      calc(100% - 16px),
+    ${({ $fadeRight }) => ($fadeRight ? "transparent" : "black")}
   );
 
-  > :first-child { margin-left: auto; }
-  > :last-child { margin-right: auto; }
+  > :first-child {
+    margin-left: auto;
+  }
+  > :last-child {
+    margin-right: auto;
+  }
 
-  @media ${({theme}) => theme.media.mobile}, ${({theme}) => theme.media.laptop} and (orientation: landscape) and (max-height: 480px) {
+  @media ${({ theme }) => theme.media.laptop} {
     --room-width: 60px;
     --room-icon-size: 44px;
     --room-connector-top: 18px;

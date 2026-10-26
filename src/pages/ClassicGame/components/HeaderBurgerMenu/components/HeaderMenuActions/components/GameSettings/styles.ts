@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const GameSettingsStyled = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
     max-width: 100%;
     color: #f1edda;

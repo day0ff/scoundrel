@@ -68,7 +68,6 @@ export const CardFacetStyled = styled.div<{ $size?: CornerSizeType }>`
     inset: 0;
     width: 100%;
     height: 100%;
-    //backface-visibility: hidden;
     background-color: transparent;
     user-select: none;
     transform: translateZ(2px);

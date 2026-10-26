@@ -30,7 +30,6 @@ export const GameHeaderStyled = styled.header`
   justify-content: space-between;
   position: fixed;
   inset: 0 0 auto;
-  z-index: 100;
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -230,7 +229,7 @@ export const GameTableStyled = styled.div`
       grid-column: 2;
       grid-row: 2;
       width: 120%;
-      transform: scale(0.8) translate(-12%,-45%); 
+      transform: scale(0.8) translate(-12%,-60%); 
     }
 
     > [data-health-frame] {
@@ -275,7 +274,7 @@ export const GameTableStyled = styled.div`
 
     > [data-hero-frame] {
       grid-row: 3;
-      transform: translateY(-18px); 
+      transform: translateY(-24px); 
     }
 
     > [data-zone="crypt"] {
