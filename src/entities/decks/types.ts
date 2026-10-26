@@ -10,6 +10,11 @@ type DeckType<Identifier extends string, Type extends string> = {
     name: DeckTranslationKeysType<Type>;
     description: DeckTranslationKeysType<Type>;
     card: DeckCardType<string>;
+    styles?: {
+        text?: {
+            stroke?: string;
+        };
+    };
     pasteboards: Array<PasteboardDataType<string, RankType>>;
 }
 

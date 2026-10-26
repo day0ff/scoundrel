@@ -9,7 +9,7 @@ import {PasteboardsPropsType} from "./types.ts";
 import type {PasteboardCardPropsType} from "./components/PasteboardCard/types.ts";
 
 
-const Pasteboards: FC<PasteboardsPropsType> = ({pasteboards, appendTo}) => {
+const Pasteboards: FC<PasteboardsPropsType> = ({name, color, pasteboards, appendTo}) => {
     const {t} = useTranslation();
     const theme = useTheme();
     const compactLandscape = useMediaQuery({query: `${theme.media.laptop} and (orientation: landscape) and (max-height: 480px)`});
@@ -21,8 +21,8 @@ const Pasteboards: FC<PasteboardsPropsType> = ({pasteboards, appendTo}) => {
 
     return (
         <>
-            <PasteboardsTitleStyled>
-                {t`modal.collection.pasteboards.title`}
+            <PasteboardsTitleStyled $color={color}>
+                {t(name)}
             </PasteboardsTitleStyled>
             <CardsWrapperStyled>
                 <PaginatedGrid key={`${rows}-${columns}`} rowSize={rows} columnSize={columns} gap={12} items={pasteboards.map(card => ({...card, id: card.identifier, isSelected: false}))} ItemComponent={CardItem}/>

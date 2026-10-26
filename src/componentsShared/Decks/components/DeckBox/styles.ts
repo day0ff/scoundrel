@@ -22,13 +22,11 @@ export const RoomCardWrapperStyled = styled.div`
     margin-top: -16px;
 `;
 
-const TextStrokeStyle = getColoredTextStrokeStyle("black");
-
 export const DeckBoxDraggableDeckStyled = styled(DraggableDeck).attrs({
     size: 6,
     wobbleIntensity: 3,
     wobbleSpeed: 0.001,
-})<{$color: string}>`
+})<{$color: string; $textStroke: string}>`
     margin-left: 0;
     margin-right: 0;
     padding: 0;
@@ -43,11 +41,11 @@ export const DeckBoxDraggableDeckStyled = styled(DraggableDeck).attrs({
         font-size: 10.5cqw;
         letter-spacing: -1px;
         color: ${({$color}) => $color};
-        ${TextStrokeStyle};
+        ${({$textStroke}) => getColoredTextStrokeStyle($textStroke)};
 
         &::first-letter {
             font-size: 14cqw;
-            ${TextStrokeStyle};
+            ${({$textStroke}) => getColoredTextStrokeStyle($textStroke)};
         }
     }
 

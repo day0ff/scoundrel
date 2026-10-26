@@ -5,11 +5,11 @@ import {
     PasteboardCardMarkStyled, PasteboardCardMarkRankStyled, PasteboardCardSuitStyled,
 } from "components/PasteboardCard/components/PasteboardCardMark/styles.ts";
 
-export const PasteboardsTitleStyled = styled.h2`
+export const PasteboardsTitleStyled = styled.h2<{$color: string}>`
     font-size: ${({theme}) => theme.fontSize.huge};
     text-align: center;
     ${TextStrokeWithShadowStyle};
-    color: #db1e38;
+    color: ${({$color}) => $color};
     margin: 0;
     line-height: 1.4;
     @media ${({theme}) => theme.media.tablet} {

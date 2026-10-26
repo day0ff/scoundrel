@@ -9,6 +9,11 @@ export const darkLordDeck = {
     name: 'deck.darkLord.name',
     description: 'deck.darkLord.description',
     card: DECKS_CARDS_MAP["day0ff:card-deck.darkLord"],
+    styles: {
+        text: {
+            stroke: "silver",
+        },
+    },
     pasteboards: allDarkPasteBoards,
     isLocked: false,
     isNotFound: false,

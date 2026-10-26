@@ -25,6 +25,7 @@ const DeckBox: FC<DeckBoxPropsType> = (
         name: nameProp,
         description: descriptionProp,
         card: cardProp,
+        styles,
         pasteboards,
         appendTo,
         onPush,
@@ -76,12 +77,13 @@ const DeckBox: FC<DeckBoxPropsType> = (
     ), [appendTo, placement, trigger, name, description, color]);
 
     return (
-        <DeckBoxStyled {...hoverSounds} className={className} onClick={() => onPush?.(<Pasteboards pasteboards={pasteboards} appendTo={appendTo}/>)}>
+        <DeckBoxStyled {...hoverSounds} className={className} onClick={() => onPush?.(<Pasteboards name={nameProp} color={color} pasteboards={pasteboards} appendTo={appendTo}/>)}>
             <RoomCardWrapperStyled>
                 <DeckBoxDraggableDeckStyled
                     isLocked={isLocked}
                     isNotFound={isNotFound}
                     $color={color}
+                    $textStroke={styles?.text?.stroke ?? "black"}
                     {...restProps}
                     card={card}
                     tooltip={tooltip}
