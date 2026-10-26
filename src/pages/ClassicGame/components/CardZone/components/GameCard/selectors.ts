@@ -1,13 +1,13 @@
 import {createSelector} from "@reduxjs/toolkit";
-import {classicGameSelector} from "store/features/classic-game/selectors.ts";
+import {gameSelector} from "store/features/game/selectors.ts";
 
 export const pendingAttacksSelector = createSelector(
-    classicGameSelector,
+    gameSelector,
     game => game?.animationEvents.filter(event => event.animation === "day0ff:animation-attack") ?? [],
 );
 
 export const firstAttackerIdSelector = createSelector(
-    classicGameSelector,
+    gameSelector,
     game => {
         const cards = game?.zones.weapons.cards;
         return (cards?.find(card => card.role === "weapon")

@@ -1,7 +1,7 @@
 import {createListenerMiddleware, isAnyOf} from "@reduxjs/toolkit";
 import type {RootState} from "../../types.ts";
-import {updateProfileClassicGame} from "../profiles";
-import {advancePhase, moveCard, playCard, setClassicGame} from "./index.ts";
+import {updateProfileGame} from "../profiles";
+import {advancePhase, moveCard, playCard, setGame} from "./index.ts";
 import {audioManager} from "utils/AudioManager";
 
 const CARD_SLIDE_SOUNDS = [
@@ -11,14 +11,14 @@ const CARD_SLIDE_SOUNDS = [
     "/sounds/card-slide-4.mp3",
 ];
 
-export const classicGameListenerMiddleware = createListenerMiddleware();
-classicGameListenerMiddleware.startListening({
+export const gameListenerMiddleware = createListenerMiddleware();
+gameListenerMiddleware.startListening({
     matcher: isAnyOf(playCard, moveCard),
     effect: async (action, api) => {
         if (!playCard.match(action) && !moveCard.match(action)) return;
         const {payload} = action;
-        const before = (api.getOriginalState() as RootState).classicGame;
-        const after = (api.getState() as RootState).classicGame;
+        const before = (api.getOriginalState() as RootState).game;
+        const after = (api.getState() as RootState).game;
         const card = before?.zones[payload.from].cards.find(item => item.id === payload.cardId);
         if (!before || !after || !card || before === after) return;
         if (after.zones[payload.from].cards.some(item => item.id === card.id)) return;
@@ -51,17 +51,18 @@ classicGameListenerMiddleware.startListening({
         }
     },
 });
-classicGameListenerMiddleware.startListening({
-    matcher: isAnyOf(advancePhase, setClassicGame),
+gameListenerMiddleware.startListening({
+    matcher: isAnyOf(advancePhase, setGame),
     effect: (_action, api) => {
-        const {classicGame} = api.getState() as RootState;
-        if (classicGame && !classicGame.outcome && classicGame.currentPhase !== classicGame.phaseLifecycle.waitingPhase) api.dispatch(advancePhase());
+        const {game} = api.getState() as RootState;
+        if (game && !game.outcome && game.currentPhase !== game.phaseLifecycle.waitingPhase) api.dispatch(advancePhase());
     },
 });
-classicGameListenerMiddleware.startListening({
-    predicate: (action) => action.type.startsWith("classicGame/"),
+gameListenerMiddleware.startListening({
+    predicate: (action) => action.type.startsWith("game/"),
     effect: (_action, api) => {
         const state = api.getState() as RootState;
-        api.dispatch(updateProfileClassicGame(state.classicGame));
+        const previous = (api.getOriginalState() as RootState).game;
+        api.dispatch(updateProfileGame({mode: state.game?.mode ?? previous?.mode ?? "classic", game: state.game}));
     },
 });

@@ -1,7 +1,7 @@
-import {canEndRoom, canSkipRoom} from "store/features/classic-game/helpers.ts";
+import {canEndRoom, canSkipRoom} from "store/features/game/helpers.ts";
 import type {RootState} from "store/types.ts";
 
-export const canEndRoomSelector = (state: RootState) => !!state.classicGame && canEndRoom(state.classicGame);
-export const canSkipRoomSelector = (state: RootState) => !!state.classicGame && canSkipRoom(state.classicGame);
+export const canEndRoomSelector = (state: RootState) => !!state.game && canEndRoom(state.game);
+export const canSkipRoomSelector = (state: RootState) => !!state.game && canSkipRoom(state.game);
 export const showEndTurnSelector = (state: RootState) =>
-    !!state.classicGame && (!!state.classicGame.roomProgress?.fightStarted || state.classicGame.zones.room.cards.length === 0);
+    !!state.game && (!!state.game.roomProgress?.fightStarted || state.game.zones.room.cards.length === 0);

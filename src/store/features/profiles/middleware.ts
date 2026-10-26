@@ -1,7 +1,7 @@
 import {isAnyOf, createListenerMiddleware} from "@reduxjs/toolkit";
 import {RootState} from "../../types.ts";
 import {setCollections} from "../collections";
-import {clearClassicGame, setClassicGame} from "../classic-game";
+import {clearGame, setGame} from "../game";
 import {setCurrentProfileId} from "./index.ts";
 
 export const profilesListenerMiddleware = createListenerMiddleware();
@@ -21,12 +21,12 @@ profilesListenerMiddleware.startListening({
                 const profile = state.profiles.profiles?.find(({profileId}: {profileId: string}) => profileId === state.profiles.currentProfileId);
 
                 if (!profile) {
-                    dispatch(clearClassicGame());
+                    dispatch(clearGame());
                     return;
                 }
 
                 dispatch(setCollections(profile.collections))
-                dispatch(setClassicGame(profile.classicGame));
+                dispatch(setGame(profile.games[state.game?.mode ?? "classic"] ?? null));
 
                 break;
             }

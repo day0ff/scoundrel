@@ -1,6 +1,6 @@
 import {createSelector} from "@reduxjs/toolkit";
 import type {RootState} from "store/types.ts";
-import {parseRaceTime} from "store/features/classic-game/time.ts";
+import {parseRaceTime} from "store/features/game/time.ts";
 
 export const recordsSelector = (state: RootState) => state.records;
 

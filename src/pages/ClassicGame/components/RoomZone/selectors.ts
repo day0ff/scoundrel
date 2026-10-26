@@ -1,13 +1,13 @@
 import {createSelector} from "@reduxjs/toolkit";
-import {classicGameSelector} from "store/features/classic-game/selectors.ts";
+import {gameSelector} from "store/features/game/selectors.ts";
 
 export const currentRoomNumberSelector = createSelector(
-    classicGameSelector,
+    gameSelector,
     game => (game?.completedRooms?.length ?? 0) + 1,
 );
 
 export const roomWithAttackFeedbackSelector = createSelector(
-    classicGameSelector,
+    gameSelector,
     (game) => {
         if (!game) return undefined;
         const cards = [...game.zones.room.cards];

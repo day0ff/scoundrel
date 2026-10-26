@@ -1,9 +1,11 @@
+import type {GameModeType} from "entities/game-modes/types.ts";
 import {createGameLog} from "./log.ts";
 import {getAttackRejection} from "./attack.ts";
 import {SeededRandom} from "helpers/SeededRandom.ts";
 import {initHero} from "entities/heroes/constants.ts";
 import {getPasteboardEffects, initPasteboard, restorePasteboard} from "entities/pasteboards/constants.ts";
-import {classicGamePhaseLifecycle} from "./phases.ts";
+import {GAME_MODES} from "entities/game-modes/constants.ts";
+import {classicPhaseLifecycle} from "entities/game-modes/phases.ts";
 import {calculateScoreRange} from "./score.ts";
 import {afterCardPlayedPhase} from "entities/phases/afterCardPlayed.ts";
 import {PHASES_MAP} from "entities/phases/constants.ts";
@@ -11,7 +13,7 @@ import {getNextLifecyclePhase} from "entities/phases/helpers.ts";
 import {healEffect, resolveHealthEffects} from "entities/effects/heal.ts";
 import type {EffectBindingType} from "entities/effects/types.ts";
 import type {PhaseDataType} from "entities/phases/types.ts";
-import type {CardMoveRejectionType, ClassicGameStateType, PreAnimationClassicGameStateType, PreLifecycleClassicGameStateType, HeroLessClassicGameStateType, HandClassicGameStateType, LegacyClassicGameStateType, OldZoneClassicGameStateType, MoveCardPayloadType, PlayingCardType, ZoneKindType} from "./types.ts";
+import type {CardMoveRejectionType, GameStateType, PreAnimationGameStateType, PreLifecycleGameStateType, HeroLessGameStateType, HandGameStateType, LegacyGameStateType, OldZoneGameStateType, MoveCardPayloadType, PlayingCardType, ZoneKindType} from "entities/game/types.ts";
 import type {SeedType} from "../types.ts";
 
 export const canPlaceCardInZone = (card: PlayingCardType, zone: ZoneKindType): boolean => {
@@ -21,7 +23,7 @@ export const canPlaceCardInZone = (card: PlayingCardType, zone: ZoneKindType): b
     return true;
 };
 
-export const shuffleDungeonCards = (state: ClassicGameStateType) => {
+export const shuffleDungeonCards = (state: GameStateType) => {
     const cards = state.zones.dungeon.cards;
     const random = new SeededRandom(state.seed);
     random.setSeed(state.seed);
@@ -32,29 +34,31 @@ export const shuffleDungeonCards = (state: ClassicGameStateType) => {
     state.seed = random.getSeed();
 };
 
-export const createClassicGame = (
+export const createGame = (
     cards: PlayingCardType[],
     seed: SeedType,
     heroIdentifier: Parameters<typeof initHero>[0] = "day0ff:hero-wanderer",
-): ClassicGameStateType => {
+    mode: GameModeType = "classic",
+): GameStateType => {
     const hero = initHero(heroIdentifier);
     const zones = Object.fromEntries(Object.entries(hero.zones).map(([kind, config]) => [
         kind, {type: kind, capacity: config.capacity, cards: config.defaultCards.map(initPasteboard)},
-    ])) as Record<ZoneKindType, ClassicGameStateType["zones"]["dungeon"]>;
+    ])) as Record<ZoneKindType, GameStateType["zones"]["dungeon"]>;
     const configuredZones = {
         ...zones,
         room: {...zones.room, minimumCardsToPlay: hero.zones.room.minimumCardsToPlay},
         potions: {...zones.potions, maximumPotionsPerRoom: hero.zones.potions.maximumPotionsPerRoom},
     };
     zones.dungeon.cards.push(...cards.map(restorePasteboard));
-    const state: ClassicGameStateType = {
+    const state: GameStateType = {
+        mode,
         seed,
         started: false,
         time: "00:00:00",
         completedRooms: [],
         hero,
-        phaseLifecycle: {...classicGamePhaseLifecycle, phases: [...classicGamePhaseLifecycle.phases]},
-        currentPhase: classicGamePhaseLifecycle.phases[0],
+        phaseLifecycle: {...GAME_MODES[mode].phaseLifecycle, phases: [...GAME_MODES[mode].phaseLifecycle.phases]},
+        currentPhase: classicPhaseLifecycle.phases[0],
         turnNumber: 1,
         animationEvents: [],
         animationSequence: 0,
@@ -64,33 +68,33 @@ export const createClassicGame = (
     shuffleDungeonCards(state);
     resolveCurrentPhaseEffects(state);
     for (let index = 0; state.currentPhase !== state.phaseLifecycle.waitingPhase && index < state.phaseLifecycle.phases.length; index++) {
-        advanceClassicGamePhase(state);
+        advanceGamePhase(state);
     }
     state.animationEvents = [];
     state.log = createGameLog(state, "newGame");
     return state;
 };
 
-const restoreClassicGameState = (state: ClassicGameStateType | PreAnimationClassicGameStateType | PreLifecycleClassicGameStateType | HeroLessClassicGameStateType | HandClassicGameStateType | LegacyClassicGameStateType | OldZoneClassicGameStateType): ClassicGameStateType => {
-    if (!("zones" in state)) return createClassicGame(state.decks.flatMap(deck => deck.pasteboards), state.seed);
+const restoreGameState = (state: GameStateType | PreAnimationGameStateType | PreLifecycleGameStateType | HeroLessGameStateType | HandGameStateType | LegacyGameStateType | OldZoneGameStateType): GameStateType => {
+    if (!("zones" in state)) return createGame(state.decks.flatMap(deck => deck.pasteboards), state.seed);
     if ("draw" in state.zones) {
         const {draw, board, ...zones} = state.zones;
-        return restoreClassicGameState({
+        return restoreGameState({
             ...state,
             zones: {...zones, dungeon: {...draw, type: "dungeon"}, room: {...board, type: "room"}},
-        } as ClassicGameStateType | HandClassicGameStateType);
+        } as GameStateType | HandGameStateType);
     }
     const hero = "hero" in state
         ? {...state.hero, zones: Object.fromEntries(Object.entries(initHero(state.hero.identifier).zones).map(([kind, config]) => [
             kind, {...config, ...state.hero.zones?.[kind as ZoneKindType]},
-        ])) as ClassicGameStateType["hero"]["zones"]}
+        ])) as GameStateType["hero"]["zones"]}
         : initHero("day0ff:hero-wanderer");
     const savedLifecycle = "phaseLifecycle" in state ? state.phaseLifecycle : undefined;
     const validLifecycle = savedLifecycle && savedLifecycle.phases.length > 0
         && new Set(savedLifecycle.phases).size === savedLifecycle.phases.length
         && savedLifecycle.phases.every(identifier => PHASES_MAP[identifier] && identifier !== afterCardPlayedPhase.identifier)
         && savedLifecycle.phases.includes(savedLifecycle.waitingPhase);
-    const phaseLifecycle = validLifecycle ? savedLifecycle : {...classicGamePhaseLifecycle, phases: [...classicGamePhaseLifecycle.phases]};
+    const phaseLifecycle = validLifecycle ? savedLifecycle : {...classicPhaseLifecycle, phases: [...classicPhaseLifecycle.phases]};
     const currentPhase = validLifecycle && "currentPhase" in state && phaseLifecycle.phases.includes(state.currentPhase)
         ? state.currentPhase : phaseLifecycle.waitingPhase;
     const turnNumber = "turnNumber" in state && Number.isSafeInteger(state.turnNumber) && state.turnNumber > 0 ? state.turnNumber : 1;
@@ -108,13 +112,14 @@ const restoreClassicGameState = (state: ClassicGameStateType | PreAnimationClass
                     capacity: weapons.capacity + 1,
                 },
             },
-        } as ClassicGameStateType;
+        } as GameStateType;
     }
     const {hand, dungeon, discard, room} = state.zones;
     const weapons = hand.cards.filter(card => card.suit === "weapon");
     const potions = hand.cards.filter(card => card.suit === "heal");
     const rejectedCards = hand.cards.filter(card => card.suit !== "weapon" && card.suit !== "heal");
     return {
+        mode: "classic",
         seed: state.seed,
         time: "00:00:00",
         hero,
@@ -134,8 +139,9 @@ const restoreClassicGameState = (state: ClassicGameStateType | PreAnimationClass
     };
 };
 
-export const restoreClassicGame = (state: Parameters<typeof restoreClassicGameState>[0]): ClassicGameStateType => {
-    const restored = restoreClassicGameState(state);
+export const restoreGame = (state: Parameters<typeof restoreGameState>[0]): GameStateType => {
+    const restored = restoreGameState(state);
+    restored.mode ??= "classic";
     restored.zones = {...restored.zones};
     for (const kind of Object.keys(restored.zones) as ZoneKindType[]) {
         if (kind === "room") {
@@ -173,7 +179,7 @@ export const restoreClassicGame = (state: Parameters<typeof restoreClassicGameSt
 };
 
 // Shared by the reducer and UI so rejection feedback matches the enforced rule.
-export const getCardMoveRejection = (state: ClassicGameStateType, move: MoveCardPayloadType): CardMoveRejectionType | undefined => {
+export const getCardMoveRejection = (state: GameStateType, move: MoveCardPayloadType): CardMoveRejectionType | undefined => {
     if (state.outcome || state.currentPhase !== state.phaseLifecycle.waitingPhase) return "invalidMove";
     const source = state.zones[move.from];
     const destination = state.zones[move.to];
@@ -226,14 +232,14 @@ export const getCardMoveRejection = (state: ClassicGameStateType, move: MoveCard
     }
 };
 
-export const canMoveCard = (state: ClassicGameStateType, move: MoveCardPayloadType): boolean =>
+export const canMoveCard = (state: GameStateType, move: MoveCardPayloadType): boolean =>
     getCardMoveRejection(state, move) === undefined;
 
 export const canPlayPotion = (card: PlayingCardType, zone: ZoneKindType): boolean =>
     (zone === "room" || zone === "potions") && card.role === "potion"
     && !card.isLocked && !card.isNotFound && getPasteboardEffects(card).length > 0;
 
-export const applyPotion = (state: ClassicGameStateType, card: PlayingCardType, from: ZoneKindType) => {
+export const applyPotion = (state: GameStateType, card: PlayingCardType, from: ZoneKindType) => {
     if (state.outcome) return;
     state.lastPlayedCard = {role: card.role, rank: card.rank};
     recordRoomPlay(state, from === "room" ? 1 : 0);
@@ -251,7 +257,7 @@ export const applyPotion = (state: ClassicGameStateType, card: PlayingCardType, 
     checkGameVictory(state);
 };
 
-export const resolveCurrentPhaseEffects = (state: ClassicGameStateType) => {
+export const resolveCurrentPhaseEffects = (state: GameStateType) => {
     const phase = PHASES_MAP[state.currentPhase];
     if (!phase) return;
     const bindings = [
@@ -262,7 +268,7 @@ export const resolveCurrentPhaseEffects = (state: ClassicGameStateType) => {
     applyHealthEffects(state, bindings, phase.trigger);
 };
 
-export const applyHealthEffects = (state: ClassicGameStateType, bindings: readonly EffectBindingType[], trigger: PhaseDataType<string>["trigger"], potion?: PlayingCardType) => {
+export const applyHealthEffects = (state: GameStateType, bindings: readonly EffectBindingType[], trigger: PhaseDataType<string>["trigger"], potion?: PlayingCardType) => {
     if (state.outcome) return;
     state.hero.health = resolveHealthEffects(state.hero.health, bindings, trigger, (healthBefore, healthAfter) => {
         state.animationEvents.push({
@@ -276,7 +282,7 @@ export const applyHealthEffects = (state: ClassicGameStateType, bindings: readon
     checkGameDefeat(state);
 };
 
-export const advanceClassicGamePhase = (state: ClassicGameStateType) => {
+export const advanceGamePhase = (state: GameStateType) => {
     if (state.outcome) return;
     const next = getNextLifecyclePhase(state.phaseLifecycle, state.currentPhase);
     if (!next) return;
@@ -286,24 +292,24 @@ export const advanceClassicGamePhase = (state: ClassicGameStateType) => {
     resolveCurrentPhaseEffects(state);
 };
 
-export const recordRoomPlay = (state: ClassicGameStateType, cardsPlayed: number) => {
+export const recordRoomPlay = (state: GameStateType, cardsPlayed: number) => {
     state.roomProgress ??= {fightStarted: false, cardsPlayed: 0, skipAllowed: true};
     state.roomProgress.fightStarted = true;
     state.roomProgress.cardsPlayed += cardsPlayed;
 };
 
-export const canEndRoom = (state: ClassicGameStateType) =>
+export const canEndRoom = (state: GameStateType) =>
     !state.outcome && state.started !== false && state.currentPhase === state.phaseLifecycle.waitingPhase
     && (state.zones.room.cards.length === 0
         || !state.zones.room.cards.some(card => card.role === "enemy")
         || (state.roomProgress?.cardsPlayed ?? 0) >= state.zones.room.minimumCardsToPlay);
 
-export const canSkipRoom = (state: ClassicGameStateType) =>
+export const canSkipRoom = (state: GameStateType) =>
     !state.outcome && state.started !== false && state.currentPhase === state.phaseLifecycle.waitingPhase
     && state.zones.room.cards.length > 0 && !state.roomProgress?.fightStarted
     && state.roomProgress?.skipAllowed !== false;
 
-export const dealNextRoom = (state: ClassicGameStateType, skipAllowed: boolean) => {
+export const dealNextRoom = (state: GameStateType, skipAllowed: boolean) => {
     if (state.outcome) return;
     const {dungeon, discard, room} = state.zones;
     if (!dungeon.cards.length && discard.cards.length) {
@@ -317,7 +323,7 @@ export const dealNextRoom = (state: ClassicGameStateType, skipAllowed: boolean) 
     checkGameVictory(state);
 };
 
-export const completeRoom = (state: ClassicGameStateType, skipped: boolean) => {
+export const completeRoom = (state: GameStateType, skipped: boolean) => {
     const previous = state.activeRoomCards ?? state.zones.room.cards;
     if (previous.length) (state.completedRooms ??= []).push(previous.map(card => ({...card})));
     for (const card of state.zones.room.cards) {
@@ -328,14 +334,14 @@ export const completeRoom = (state: ClassicGameStateType, skipped: boolean) => {
     dealNextRoom(state, !skipped);
 };
 
-export const checkGameDefeat = (state: ClassicGameStateType) => {
+export const checkGameDefeat = (state: GameStateType) => {
     if (state.hero.health.current <= 0) {
         state.outcome = "defeat";
         state.selectedCardId = undefined;
     }
 };
 
-export const checkGameVictory = (state: ClassicGameStateType) => {
+export const checkGameVictory = (state: GameStateType) => {
     checkGameDefeat(state);
     if (!state.outcome && state.started !== false
         && !state.zones.dungeon.cards.length && !state.zones.discard.cards.length && !state.zones.room.cards.length) {

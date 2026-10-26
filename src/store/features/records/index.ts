@@ -2,7 +2,7 @@ import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 import type {RecordGameType, RecordsStateType, WinningRecordType} from "./types.ts";
 
 const initialState: RecordsStateType = [{
-    gameType: "classic-game",
+    gameType: "classic",
     records: [{playerName: "Scoundrel", score: 1, time: "01:07:00"}],
 }];
 

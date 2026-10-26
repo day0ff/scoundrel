@@ -2,8 +2,8 @@ import { useLayoutEffect, useRef, useState, type FC } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "store/hooks.ts";
-import { heroClassicGameSelector } from "store/features/classic-game/selectors.ts";
-import { clearClassicGame, resetDungeon } from "store/features/classic-game";
+import { heroGameSelector } from "store/features/game/selectors.ts";
+import { clearGame, resetDungeon } from "store/features/game";
 import { useSoundEffect } from "hooks/useSoundEffect.ts";
 import { MODAL_BACKDROP_DURATION_MS } from "components/Modal/constants.ts";
 import { GameButtonStyled } from "../../styles.ts";
@@ -17,7 +17,7 @@ const GameResult: FC<GameResultPropsType> = ({ outcome, isOpen, onClose }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const hero = useAppSelector(heroClassicGameSelector);
+  const hero = useAppSelector(heroGameSelector);
   const scoring = useAppSelector(gameResultScoreSelector);
   const [soundVariant] = useState(() => Math.floor(Math.random() * 2));
   const [backgroundVariant] = useState(() => Math.floor(Math.random() * 2));
@@ -47,7 +47,7 @@ const GameResult: FC<GameResultPropsType> = ({ outcome, isOpen, onClose }) => {
   };
   const handleMainMenu = () => {
     if (pendingExitRef.current) return;
-    pendingExitRef.current = () => dispatch(clearClassicGame());
+    pendingExitRef.current = () => dispatch(clearGame());
     setLeaving(true);
     navigate("/main-menu");
   };

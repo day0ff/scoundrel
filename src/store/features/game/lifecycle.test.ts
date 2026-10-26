@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import {configureStore} from "@reduxjs/toolkit";
 import {initPasteboard} from "entities/pasteboards/constants.ts";
 import {getSeededRandom} from "helpers/getSeededRandom.ts";
-import {getInitialClassicGame} from "./constants.ts";
-import nullableReducer, {setTime, surrenderGame, startGame, skipRoom, endTurn, moveCard, attackCard, playCard, selectCard, clearEffectAnimations, setClassicGame, setRoomMinimumCardsToPlay, resetDungeon, shuffleDungeon, clearClassicGame} from "./index.ts";
-import {canEndRoom, canSkipRoom, checkGameVictory, createClassicGame, getCardMoveRejection} from "./helpers.ts";
+import {getInitialGame} from "./constants.ts";
+import nullableReducer, {setTime, surrenderGame, startGame, skipRoom, endTurn, moveCard, attackCard, playCard, selectCard, clearEffectAnimations, setGame, setRoomMinimumCardsToPlay, resetDungeon, shuffleDungeon, clearGame} from "./index.ts";
+import {canEndRoom, canSkipRoom, checkGameVictory, createGame, getCardMoveRejection} from "./helpers.ts";
 import {getGameSnapshot, parseGameLog, stringifyGameLog} from "./log.ts";
 import {doesReplayMatchGame, replayGameLog} from "./replay.ts";
 import profilesReducer, {createProfile, setCurrentProfileId} from "../profiles";
@@ -14,15 +14,15 @@ import {serializeTransform} from "../../serializer.ts";
 import {REHYDRATE} from "redux-persist";
 import collectionsReducer from "../collections";
 import {initialCollectionsState} from "../collections/constants.ts";
-import {classicGameListenerMiddleware} from "./middleware.ts";
-import type {ClassicGameStateType, PlayingCardType} from "./types.ts";
+import {gameListenerMiddleware} from "./middleware.ts";
+import type {GameStateType, PlayingCardType} from "entities/game/types.ts";
 import type {RankType} from "entities/types.ts";
 import {getAttackRejection, resolveAttack} from "./attack.ts";
 import {formatRaceTime, parseRaceTime} from "./time.ts";
 import {calculateGameScore} from "./score.ts";
 import {canDropCardOnTarget, getCardMove} from "pages/ClassicGame/helpers.ts";
 
-const reducer = (state: ClassicGameStateType | undefined, action: Parameters<typeof nullableReducer>[1]) => {
+const reducer = (state: GameStateType | undefined, action: Parameters<typeof nullableReducer>[1]) => {
     const next = nullableReducer(state, action);
     assert.ok(next);
     return next;
@@ -31,7 +31,7 @@ const reducer = (state: ClassicGameStateType | undefined, action: Parameters<typ
 const card = (kind: "weapon" | "heal" | "skeleton", rank: RankType = "2") => initPasteboard(`day0ff:pasteboard-${kind}.${rank}`);
 
 const fixture = (room: PlayingCardType[], dungeon: PlayingCardType[] = [], discard: PlayingCardType[] = []) => {
-    const state = createClassicGame([], getSeededRandom("LIFECYCLE"));
+    const state = createGame([], getSeededRandom("LIFECYCLE"));
     state.started = true;
     state.zones.room.cards = room;
     state.zones.dungeon.cards = dungeon;
@@ -39,15 +39,15 @@ const fixture = (room: PlayingCardType[], dungeon: PlayingCardType[] = [], disca
     state.activeRoomCards = structuredClone(room);
     state.roomProgress = {fightStarted: false, cardsPlayed: 0, skipAllowed: true};
     delete state.log;
-    return reducer(undefined, setClassicGame(state));
+    return reducer(undefined, setGame(state));
 };
 
-const getLog = (state: ClassicGameStateType) => {
+const getLog = (state: GameStateType) => {
     assert.ok(state.log);
     return state.log;
 };
 
-const resolveFirst = (state: ClassicGameStateType) => {
+const resolveFirst = (state: GameStateType) => {
     const first = state.zones.room.cards[0];
     assert.ok(first);
     return first.role === "enemy"
@@ -57,7 +57,7 @@ const resolveFirst = (state: ClassicGameStateType) => {
             : reducer(state, moveCard({cardId: first.id, from: "room", to: "crypt"}));
 };
 
-export const runClassicGameTests = (include: (name: string) => boolean = () => true) => {
+export const runGameTests = (include: (name: string) => boolean = () => true) => {
     const passed: string[] = [];
     const check = (name: string, run: () => void) => { if (include(name)) { run(); passed.push(name); } };
 
@@ -66,24 +66,24 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         assert.equal(state.time, "00:00:00");
         state = reducer(state, setTime("01:02:03"));
         assert.equal(state.time, "01:02:03");
-        assert.equal(reducer(state, setClassicGame(state)).time, "01:02:03");
+        assert.equal(reducer(state, setGame(state)).time, "01:02:03");
         assert.ok(doesReplayMatchGame(getLog(state), state));
         assert.equal(reducer(state, setTime("00:60:00")).time, "01:02:03");
-        const legacy: Partial<ClassicGameStateType> = {...state};
+        const legacy: Partial<GameStateType> = {...state};
         delete legacy.time;
-        assert.equal(reducer(state, setClassicGame(legacy as ClassicGameStateType)).time, "00:00:00");
+        assert.equal(reducer(state, setGame(legacy as GameStateType)).time, "00:00:00");
         assert.equal(reducer(state, resetDungeon()).time, "00:00:00");
         assert.equal(formatRaceTime(parseRaceTime("01:02:03") + 1999), "01:02:04");
         assert.equal(formatRaceTime(360000000), "100:00:00");
     });
 
     check("score bounds are calculated at initialization and survive play and restoration", () => {
-        const initial = createClassicGame([card("skeleton", "K"), card("skeleton", "3"), card("heal", "T")], getSeededRandom("SCORE"));
+        const initial = createGame([card("skeleton", "K"), card("skeleton", "3"), card("heal", "T")], getSeededRandom("SCORE"));
         assert.deepEqual(initial.scoreRange, {min: -16, max: initial.hero.health.max + 10});
         const started = reducer(initial, startGame());
         const played = resolveFirst(started);
         assert.deepEqual(played.scoreRange, initial.scoreRange);
-        assert.deepEqual(reducer(undefined, setClassicGame(played)).scoreRange, initial.scoreRange);
+        assert.deepEqual(reducer(undefined, setGame(played)).scoreRange, initial.scoreRange);
     });
 
     check("defeat score counts every unfinished monster and excludes killed monsters and potions", () => {
@@ -112,12 +112,12 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         const base = structuredClone(fixture([card("weapon")]));
         base.hero.health.current = base.hero.health.max;
         base.zones.potions.cards = [card("heal", "3"), card("heal", "T")];
-        let state = reducer(undefined, setClassicGame(base));
+        let state = reducer(undefined, setGame(base));
         state = reducer(state, moveCard({cardId: state.zones.room.cards[0].id, from: "room", to: "weapons"}));
         assert.equal(state.outcome, "victory");
         assert.equal(state.lastPlayedCard?.role, "weapon");
         assert.equal(calculateGameScore(state), state.hero.health.max + 10);
-        assert.equal(calculateGameScore(reducer(undefined, setClassicGame(state))), state.hero.health.max + 10);
+        assert.equal(calculateGameScore(reducer(undefined, setGame(state))), state.hero.health.max + 10);
 
         const changed = structuredClone(state);
         changed.lastPlayedCard = {role: "potion", rank: "4"};
@@ -137,50 +137,50 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         const preview = nullableReducer(null, resetDungeon());
         assert.ok(preview);
         assert.equal(preview.started, false);
-        assert.equal(nullableReducer(preview, clearClassicGame()), null);
-        assert.equal(nullableReducer(preview, setClassicGame(null)), null);
-        assert.equal(createProfile("New player").payload.classicGame, null);
+        assert.equal(nullableReducer(preview, clearGame()), null);
+        assert.equal(nullableReducer(preview, setGame(null)), null);
+        assert.deepEqual(createProfile("New player").payload.games, {});
     });
 
     check("persisted games restore exactly and clearing survives reload and profile switches", () => {
-        const initial = getInitialClassicGame();
+        const initial = getInitialGame();
         const rootStore = configureStore({
-            reducer: {classicGame: nullableReducer, profiles: profilesReducer, collections: collectionsReducer},
+            reducer: {game: nullableReducer, profiles: profilesReducer, collections: collectionsReducer},
             preloadedState: {
-                classicGame: initial,
+                game: initial,
                 profiles: {currentProfileId: "saved", profiles: [
-                    {profileId: "saved", name: "Saved", collections: initialCollectionsState, classicGame: initial},
-                    {profileId: "empty", name: "Empty", collections: initialCollectionsState, classicGame: null},
+                    {profileId: "saved", name: "Saved", collections: initialCollectionsState, games: {classic: initial}},
+                    {profileId: "empty", name: "Empty", collections: initialCollectionsState, games: {classic: null}},
                 ]},
             },
             middleware: getDefault => getDefault({serializableCheck: false}).concat(
-                classicGameListenerMiddleware.middleware, profilesListenerMiddleware.middleware, rehydrateListenerMiddleware.middleware),
+                gameListenerMiddleware.middleware, profilesListenerMiddleware.middleware, rehydrateListenerMiddleware.middleware),
         });
         rootStore.dispatch(startGame());
         rootStore.dispatch(skipRoom());
         rootStore.dispatch(clearEffectAnimations());
-        const saved = rootStore.getState().classicGame;
+        const saved = rootStore.getState().game;
         assert.ok(saved);
-        const serialized = serializeTransform.in(saved, "classicGame", {});
-        const restored = serializeTransform.out(JSON.parse(JSON.stringify(serialized)), "classicGame", {});
+        const serialized = serializeTransform.in(saved, "game", {});
+        const restored = serializeTransform.out(JSON.parse(JSON.stringify(serialized)), "game", {});
         rootStore.dispatch(setCurrentProfileId("empty"));
-        assert.equal(rootStore.getState().classicGame, null);
+        assert.equal(rootStore.getState().game, null);
         rootStore.dispatch(setCurrentProfileId("saved"));
-        assert.equal(stringifyGameLog(rootStore.getState().classicGame), stringifyGameLog(saved));
-        rootStore.dispatch(setClassicGame(restored));
+        assert.equal(stringifyGameLog(rootStore.getState().game), stringifyGameLog(saved));
+        rootStore.dispatch(setGame(restored));
         rootStore.dispatch({type: REHYDRATE, key: "root"});
-        assert.equal(stringifyGameLog(rootStore.getState().classicGame), stringifyGameLog(saved));
+        assert.equal(stringifyGameLog(rootStore.getState().game), stringifyGameLog(saved));
         assert.ok(doesReplayMatchGame(getLog(saved), saved));
-        rootStore.dispatch(clearClassicGame());
-        assert.equal(rootStore.getState().profiles.profiles[0].classicGame, null);
+        rootStore.dispatch(clearGame());
+        assert.equal(rootStore.getState().profiles.profiles[0].games.classic, null);
         rootStore.dispatch({type: REHYDRATE, key: "root"});
         rootStore.dispatch(setCurrentProfileId("empty"));
         rootStore.dispatch(setCurrentProfileId("saved"));
-        assert.equal(rootStore.getState().classicGame, null);
+        assert.equal(rootStore.getState().game, null);
     });
 
     check("start deals four cards and logs a complete initial snapshot", () => {
-        const before = getInitialClassicGame();
+        const before = getInitialGame();
         const state = reducer(before, startGame());
         assert.equal(state.zones.room.cards.length, 4);
         assert.equal(state.zones.dungeon.cards.length, before.zones.dungeon.cards.length - 4);
@@ -220,7 +220,7 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         const base = structuredClone(fixture([card("skeleton"), card("weapon"), card("heal"), card("skeleton")]));
         base.zones.potions.cards = [card("heal")];
         delete base.log;
-        let state = reducer(undefined, setClassicGame(base));
+        let state = reducer(undefined, setGame(base));
         state = reducer(state, playCard({cardId: state.zones.potions.cards[0].id, from: "potions"}));
         assert.equal(state.roomProgress?.fightStarted, true);
         assert.equal(state.roomProgress?.cardsPlayed, 0);
@@ -237,12 +237,12 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
             base.hero.health.current = 5;
             base.zones.potions.cards = storedPotions;
             delete base.log;
-            let state = reducer(undefined, setClassicGame(base));
+            let state = reducer(undefined, setGame(base));
             const first = firstFrom === "room" ? roomPotions[0] : storedPotions[0];
             state = reducer(state, playCard({cardId: first.id, from: firstFrom}));
             assert.equal(state.hero.health.current, 7);
             assert.equal(state.roomProgress?.potionsPlayed, 1);
-            state = reducer(state, setClassicGame(state));
+            state = reducer(state, setGame(state));
             const animations = state.animationSequence;
             for (const potion of storedPotions.filter(item => item.id !== first.id)) {
                 state = reducer(state, moveCard({cardId: potion.id, from: "potions", to: "room"}));
@@ -271,7 +271,7 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
             base.hero.health.current = 5;
             base.zones.potions.maximumPotionsPerRoom = limit;
             delete base.log;
-            let state = reducer(undefined, setClassicGame(base));
+            let state = reducer(undefined, setGame(base));
             for (let count = 0; count < 3; count++) state = resolveFirst(state);
             assert.equal(state.hero.health.current, 5 + 2 * limit);
             assert.equal(state.roomProgress?.potionsPlayed, 3);
@@ -286,7 +286,7 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         delete (base.zones.potions as Partial<typeof base.zones.potions>).maximumPotionsPerRoom;
         base.roomProgress = {fightStarted: true, cardsPlayed: 0, skipAllowed: true, potionPlayed: true};
         delete base.log;
-        let state = reducer(undefined, setClassicGame(base));
+        let state = reducer(undefined, setGame(base));
         assert.equal(state.zones.potions.maximumPotionsPerRoom, 1);
         assert.equal(state.roomProgress?.potionsPlayed, 1);
         assert.equal(state.roomProgress?.potionPlayed, undefined);
@@ -299,7 +299,7 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         const maximum = base.hero.health.max;
         base.hero.health.current = maximum;
         delete base.log;
-        let state = reducer(undefined, setClassicGame(base));
+        let state = reducer(undefined, setGame(base));
         state = resolveFirst(state);
         assert.equal(state.hero.health.current, maximum);
         state = resolveFirst(state);
@@ -377,7 +377,7 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         const base = structuredClone(fixture(enemies));
         base.zones.weapons.cards.push(weapon);
         delete base.log;
-        let state = reducer(undefined, setClassicGame(base));
+        let state = reducer(undefined, setGame(base));
         for (const enemy of enemies.slice(0, 2)) state = reducer(state, attackCard({cardId: weapon.id, enemyId: enemy.id}));
         assert.equal(resolveAttack(state, weapon.id, enemies[2].id), undefined);
         assert.equal(getAttackRejection(state, weapon.id, enemies[2].id), "enemyRankTooHigh");
@@ -412,10 +412,10 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         const base = structuredClone(fixture([card("skeleton")], [card("skeleton", "K"), card("skeleton", "K")]));
         base.zones.weapons.cards.push(weapon, fresh);
         delete base.log;
-        let state = reducer(undefined, setClassicGame(base));
+        let state = reducer(undefined, setGame(base));
         state = reducer(state, attackCard({cardId: weapon.id}));
         state = reducer(state, endTurn());
-        state = reducer(state, setClassicGame(state));
+        state = reducer(state, setGame(state));
         assert.equal(state.zones.weapons.cards.find(item => item.id === weapon.id)?.killedEnemies?.[0].rank, "2");
         assert.equal(reducer(state, attackCard({cardId: weapon.id})), state);
         state = reducer(state, attackCard({cardId: fresh.id}));
@@ -485,12 +485,12 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         base.hero.health.current = 1;
         base.zones.potions.cards = [card("heal")];
         delete base.log;
-        let state = reducer(undefined, setClassicGame(base));
+        let state = reducer(undefined, setGame(base));
         state = resolveFirst(state);
         assert.equal(state.outcome, "defeat");
         assert.equal(state.hero.health.current, 0);
         for (const action of [endTurn(), skipRoom(), shuffleDungeon(), playCard({cardId: state.zones.potions.cards[0].id, from: "potions"})]) assert.equal(reducer(state, action), state);
-        state = reducer(state, setClassicGame(state));
+        state = reducer(state, setGame(state));
         assert.equal(state.outcome, "defeat");
         assert.ok(doesReplayMatchGame(getLog(state), state));
         const reset = reducer(state, resetDungeon());
@@ -499,7 +499,7 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         for (const health of [0, -1]) {
             const saved = structuredClone(base);
             saved.hero.health.current = health;
-            assert.equal(reducer(undefined, setClassicGame(saved)).outcome, "defeat");
+            assert.equal(reducer(undefined, setGame(saved)).outcome, "defeat");
         }
     });
 
@@ -518,7 +518,7 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
 
     check("victory requires all three encounter zones empty and positive health", () => {
         for (const zone of ["dungeon", "discard", "room"] as const) {
-            const state = createClassicGame([], getSeededRandom("VICTORY"));
+            const state = createGame([], getSeededRandom("VICTORY"));
             state.started = true;
             state.zones[zone].cards = [card("skeleton")];
             checkGameVictory(state);
@@ -530,13 +530,13 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
             assert.equal(state.selectedCardId, undefined);
         }
         for (const health of [0, -1]) {
-            const state = createClassicGame([], getSeededRandom("DEFEAT"));
+            const state = createGame([], getSeededRandom("DEFEAT"));
             state.started = true;
             state.hero.health.current = health;
             checkGameVictory(state);
             assert.equal(state.outcome, "defeat");
         }
-        const preview = createClassicGame([], getSeededRandom("PREVIEW"));
+        const preview = createGame([], getSeededRandom("PREVIEW"));
         checkGameVictory(preview);
         assert.equal(preview.outcome, undefined);
         assert.equal(reducer(preview, startGame()).outcome, "victory");
@@ -551,12 +551,12 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
                 : reducer(initial, moveCard({cardId: finalCard.id, from: "room", to: "weapons"}));
             assert.equal(state.outcome, "victory");
             assert.ok(doesReplayMatchGame(getLog(state), state));
-            assert.equal(reducer(undefined, setClassicGame(state)).outcome, "victory");
+            assert.equal(reducer(undefined, setGame(state)).outcome, "victory");
         }
     });
 
     check("full, partial, JSON-exported and resumed replays reproduce gameplay", () => {
-        let state = createClassicGame(Array.from({length: 12}, (_,index) => card((["skeleton", "weapon", "heal"] as const)[index % 3])), getSeededRandom("REPLAY"));
+        let state = createGame(Array.from({length: 12}, (_,index) => card((["skeleton", "weapon", "heal"] as const)[index % 3])), getSeededRandom("REPLAY"));
         state = reducer(state, startGame());
         state = reducer(state, skipRoom());
         state = reducer(state, setRoomMinimumCardsToPlay(1));
@@ -564,7 +564,7 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         for (let count = 0; count < 50 && !state.outcome; count++) {
             state = canEndRoom(state) && state.roomProgress?.fightStarted ? reducer(state, endTurn()) : resolveFirst(state);
             assert.ok(doesReplayMatchGame(getLog(state), state));
-            if (count === 3) state = reducer(state, setClassicGame(state));
+            if (count === 3) state = reducer(state, setGame(state));
         }
         assert.equal(state.outcome, "victory");
         const log = getLog(state);
@@ -582,14 +582,14 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
     });
 
     check("save migration fills defaults and begins logging at the restored state", () => {
-        const old = structuredClone(fixture([card("skeleton"), card("heal")])) as Partial<ClassicGameStateType>;
+        const old = structuredClone(fixture([card("skeleton"), card("heal")])) as Partial<GameStateType>;
         delete old.log;
         delete old.roomProgress;
         const zones = old.zones;
         assert.ok(zones);
         const room = zones.room as Partial<typeof zones.room>;
         delete room.minimumCardsToPlay;
-        let state = reducer(undefined, setClassicGame(old as ClassicGameStateType));
+        let state = reducer(undefined, setGame(old as GameStateType));
         assert.equal(state.zones.room.minimumCardsToPlay, 3);
         assert.equal(getLog(state).origin, "restoredGame");
         assert.equal(getLog(state).entries.length, 0);
@@ -602,20 +602,20 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
     });
 
     check("store listeners save the logged state to the active profile", () => {
-        const initial = getInitialClassicGame();
+        const initial = getInitialGame();
         const rootStore = configureStore({
-            reducer: {classicGame: reducer, profiles: profilesReducer},
+            reducer: {game: reducer, profiles: profilesReducer},
             preloadedState: {
-                classicGame: initial,
+                game: initial,
                 profiles: {
                     currentProfileId: "test-profile",
-                    profiles: [{profileId: "test-profile", name: "Test", collections: initialCollectionsState, classicGame: initial}],
+                    profiles: [{profileId: "test-profile", name: "Test", collections: initialCollectionsState, games: {classic: initial}}],
                 },
             },
-            middleware: getDefault => getDefault({serializableCheck: false}).concat(classicGameListenerMiddleware.middleware),
+            middleware: getDefault => getDefault({serializableCheck: false}).concat(gameListenerMiddleware.middleware),
         });
         rootStore.dispatch(startGame());
-        const saved = rootStore.getState().profiles.profiles[0].classicGame;
+        const saved = rootStore.getState().profiles.profiles[0].games.classic;
         assert.ok(saved);
         assert.equal(getLog(saved).entries.length, 1);
         assert.ok(doesReplayMatchGame(getLog(saved), saved));
@@ -648,11 +648,11 @@ export const runClassicGameTests = (include: (name: string) => boolean = () => t
         assert.equal(surrendered.selectedCardId, undefined);
         assert.deepEqual(surrendered.animationEvents, []);
         assert.ok(doesReplayMatchGame(getLog(surrendered), surrendered));
-        assert.equal(reducer(undefined, setClassicGame(surrendered)).outcome, "defeat");
+        assert.equal(reducer(undefined, setGame(surrendered)).outcome, "defeat");
         assert.equal(reducer(surrendered, surrenderGame()), surrendered);
         assert.equal(reducer(surrendered, endTurn()), surrendered);
         assert.equal(nullableReducer(null, surrenderGame()), null);
-        const preview = getInitialClassicGame();
+        const preview = getInitialGame();
         assert.equal(reducer(preview, surrenderGame()), preview);
     });
 

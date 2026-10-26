@@ -2,7 +2,7 @@ import {createListenerMiddleware} from "@reduxjs/toolkit";
 import { REHYDRATE } from "redux-persist";
 import {RootState} from "./types.ts";
 import {setCollections} from "./features/collections";
-import {setClassicGame} from "./features/classic-game";
+import {setGame} from "./features/game";
 
 export const rehydrateListenerMiddleware = createListenerMiddleware();
 
@@ -15,11 +15,11 @@ rehydrateListenerMiddleware.startListening({
         const profile = state.profiles.profiles?.find(({profileId}) => profileId === state.profiles.currentProfileId);
 
         if (!profile) {
-            dispatch(setClassicGame(state.classicGame));
+            dispatch(setGame(state.game));
             return;
         }
 
         dispatch(setCollections(profile.collections));
-        dispatch(setClassicGame(profile.classicGame));
+        dispatch(setGame(profile.games[state.game?.mode ?? "classic"] ?? null));
     },
 });

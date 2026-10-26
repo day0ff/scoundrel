@@ -1,8 +1,6 @@
-import { getSeededRandom } from "helpers/getSeededRandom.ts";
-import { RankType } from "entities/types.ts";
-import { initDeck } from "entities/decks/constants.ts";
-import { PasteboardDataType } from "entities/pasteboards/types.ts";
-import {createClassicGame} from "./helpers.ts";
+import {classicPhaseLifecycle} from "./phases.ts";
+import type {RankType} from "entities/types.ts";
+import type {PasteboardDataType} from "entities/pasteboards/types.ts";
 
 const darkLordCardsIdentifiers = [
   "day0ff:pasteboard-dark.A",
@@ -68,13 +66,14 @@ const weaponCardsIdentifiers = [
   "day0ff:pasteboard-weapon.K",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
-export const getInitialClassicGame = (heroIdentifier?: Parameters<typeof createClassicGame>[2]) => createClassicGame(
-    [
-        initDeck("day0ff:deck-darkLord", darkLordCardsIdentifiers),
-        initDeck("day0ff:deck-skeleton", skeletonCardsIdentifiers),
-        initDeck("day0ff:deck-healPotions", healPotionsCardsIdentifiers),
-        initDeck("day0ff:deck-weapon", weaponCardsIdentifiers),
-    ].flatMap(deck => deck.pasteboards),
-    getSeededRandom(),
-    heroIdentifier,
-);
+export const classicMode = {
+    identifier: "classic",
+    phaseLifecycle: classicPhaseLifecycle,
+    recordGameType: "classic",
+    decks: [
+        {identifier: "day0ff:deck-darkLord", cards: darkLordCardsIdentifiers},
+        {identifier: "day0ff:deck-skeleton", cards: skeletonCardsIdentifiers},
+        {identifier: "day0ff:deck-healPotions", cards: healPotionsCardsIdentifiers},
+        {identifier: "day0ff:deck-weapon", cards: weaponCardsIdentifiers},
+    ],
+} as const;

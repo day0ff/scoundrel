@@ -1,8 +1,11 @@
+import type {GameModeType} from "entities/game-modes/types.ts";
 import {InitDeckDataType} from "entities/decks/types.ts";
 import {InitHeroDataType} from "entities/heroes/types.ts";
 import {InitPasteboardDataType} from "entities/pasteboards/types.ts";
 import {RankType} from "entities/types.ts";
-import {SeedType} from "../types.ts";
+import type {PseudoRandomResult} from "helpers";
+
+export type SeedType = PseudoRandomResult;
 import type {PhaseDataType, PhaseLifecycleType} from "entities/phases/types.ts";
 import type {EffectAnimationEventType} from "entities/animations/types.ts";
 
@@ -25,7 +28,8 @@ export type PotionsZoneType = ZoneType & {
 
 export type GameOutcomeType = "victory" | "defeat";
 
-export type ClassicGameStateType = {
+export type GameStateType = {
+    mode: GameModeType;
     time: string;
     scoreRange?: {min: number; max: number};
     lastPlayedCard?: Pick<PlayingCardType, "role" | "rank">;
@@ -46,11 +50,11 @@ export type ClassicGameStateType = {
     roomProgress?: {fightStarted: boolean; cardsPlayed: number; skipAllowed: boolean; potionsPlayed?: number; potionPlayed?: boolean};
 };
 
-export type PreAnimationClassicGameStateType = Omit<ClassicGameStateType, "animationEvents" | "animationSequence">;
-export type PreLifecycleClassicGameStateType = Omit<PreAnimationClassicGameStateType, "phaseLifecycle" | "currentPhase" | "turnNumber">;
-export type HeroLessClassicGameStateType = Omit<PreLifecycleClassicGameStateType, "hero">;
+export type PreAnimationGameStateType = Omit<GameStateType, "animationEvents" | "animationSequence">;
+export type PreLifecycleGameStateType = Omit<PreAnimationGameStateType, "phaseLifecycle" | "currentPhase" | "turnNumber">;
+export type HeroLessGameStateType = Omit<PreLifecycleGameStateType, "hero">;
 
-export type HandClassicGameStateType = {
+export type HandGameStateType = {
     seed: SeedType;
     zones: Record<"dungeon" | "discard" | "room" | "hand", Omit<ZoneType, "type"> & {type: "dungeon" | "discard" | "room" | "hand"}>;
 };
@@ -64,9 +68,9 @@ type WithOldZoneNames<State extends {zones: object}> = State extends unknown
     }
     : never;
 
-export type OldZoneClassicGameStateType = WithOldZoneNames<ClassicGameStateType | PreAnimationClassicGameStateType | PreLifecycleClassicGameStateType | HeroLessClassicGameStateType | HandClassicGameStateType>;
+export type OldZoneGameStateType = WithOldZoneNames<GameStateType | PreAnimationGameStateType | PreLifecycleGameStateType | HeroLessGameStateType | HandGameStateType>;
 
-export type LegacyClassicGameStateType = {
+export type LegacyGameStateType = {
     seed: SeedType;
     decks: Array<InitDeckDataType<string>>;
 };
@@ -90,7 +94,7 @@ export type AttackCardPayloadType = {
     enemyId?: string;
 };
 
-export type GameSnapshotType = Omit<ClassicGameStateType, "log">;
+export type GameSnapshotType = Omit<GameStateType, "log">;
 
 type GameLogPayloadsType = {
     surrenderGame: undefined;
@@ -109,7 +113,7 @@ type GameLogPayloadsType = {
 };
 
 export type GameLogActionType = {
-    [Name in keyof GameLogPayloadsType]: {type: `classicGame/${Name}`; payload: GameLogPayloadsType[Name]};
+    [Name in keyof GameLogPayloadsType]: {type: `game/${Name}` | `classicGame/${Name}`; payload: GameLogPayloadsType[Name]};
 }[keyof GameLogPayloadsType];
 
 export type GameLogEntryType = {

@@ -1,12 +1,13 @@
+import type {GameModeType} from "entities/game-modes/types.ts";
 import {CollectionsStateType} from "../collections/types.ts";
-import {ClassicGameStateType} from "../classic-game/types.ts";
+import {GameStateType} from "entities/game/types.ts";
 
 
 export type ProfileType = {
     profileId: string;
     name: string;
     collections: CollectionsStateType;
-    classicGame: ClassicGameStateType | null;
+    games: Partial<Record<GameModeType, GameStateType | null>>;
 }
 
 export type ProfilesStateType = {

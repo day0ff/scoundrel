@@ -1,4 +1,4 @@
-import type {GameOutcomeType} from "store/features/classic-game/types.ts";
+import type {GameOutcomeType} from "entities/game/types.ts";
 
 export type GameResultPropsType = {
     outcome: GameOutcomeType;

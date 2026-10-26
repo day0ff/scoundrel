@@ -8,11 +8,11 @@ import GameCard from "./components/GameCard";
 import EmptyCardSlot from "./components/EmptyCardSlot";
 import type { CardZonePropsType } from "./types.ts";
 import { useAppSelector } from "store/hooks.ts";
-import { classicGameSelector } from "store/features/classic-game/selectors.ts";
+import { gameSelector } from "store/features/game/selectors.ts";
 import { canDropCardOnTarget, getCardMove } from "../../helpers.ts";
-import { canMoveCard } from "store/features/classic-game/helpers.ts";
+import { canMoveCard } from "store/features/game/helpers.ts";
 import { CARD_INTERACTION_COLORS } from "../../constants.ts";
-import { resolveAttack } from "store/features/classic-game/attack.ts";
+import { resolveAttack } from "store/features/game/attack.ts";
 import {
   CardZoneStyled,
   CardZoneFrameStyled,
@@ -35,7 +35,7 @@ const CardZone: FC<CardZonePropsType> = ({
   onAttack,
 }) => {
   const { active, over, collisions } = useDndContext();
-  const game = useAppSelector(classicGameSelector);
+  const game = useAppSelector(gameSelector);
   const feedbackWeapons = useAppSelector(weaponsWithAttackFeedbackSelector);
   const zone = sourceZone.type === "weapons" ? feedbackWeapons ?? sourceZone : sourceZone;
   const [cardsRef, cardsNode] = useAssignedNode<HTMLDivElement>();

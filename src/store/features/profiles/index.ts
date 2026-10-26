@@ -1,9 +1,10 @@
+import type {GameModeType} from "entities/game-modes/types.ts";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {v4 as getUuid} from "uuid";
 import {initialCollectionsState} from "../collections/constants.ts";
 import {setCurrentProfileIdAction} from "./actions.ts";
 import {initialProfilesState} from "./constants.ts";
-import {ClassicGameStateType} from "../classic-game/types.ts";
+import {GameStateType} from "entities/game/types.ts";
 import {ProfileType} from "./types.ts";
 import {CollectionsStateType} from "../collections/types.ts";
 
@@ -33,7 +34,7 @@ export const profilesSlice = createSlice({
                         profileId,
                         name,
                         collections: initialCollectionsState,
-                        classicGame: null,
+                        games: {},
                     },
                 };
             },
@@ -51,9 +52,9 @@ export const profilesSlice = createSlice({
 
             state.profiles[index] = action.payload;
         },
-        updateProfileClassicGame: (state, action: PayloadAction<ClassicGameStateType | null>) => {
+        updateProfileGame: (state, action: PayloadAction<{mode: GameModeType; game: GameStateType | null}>) => {
             const profile = state.profiles.find(item => item.profileId === state.currentProfileId);
-            if (profile) profile.classicGame = action.payload;
+            if (profile) profile.games[action.payload.mode] = action.payload.game;
         },
         updateProfileCollectionsData: (state, action: PayloadAction<CollectionsStateType>) => {
             if (state === null) return;
@@ -76,7 +77,7 @@ export const {
     createProfile,
     updateProfile,
     updateProfileCollectionsData,
-    updateProfileClassicGame,
+    updateProfileGame,
 } = profilesSlice.actions;
 
 export default profilesSlice.reducer;

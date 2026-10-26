@@ -1,8 +1,8 @@
 import {createSelector} from "@reduxjs/toolkit";
-import {classicGameSelector} from "store/features/classic-game/selectors.ts";
+import {gameSelector} from "store/features/game/selectors.ts";
 
 export const weaponsWithAttackFeedbackSelector = createSelector(
-    classicGameSelector,
+    gameSelector,
     game => {
         if (!game) return undefined;
         const zone = game.zones.weapons;

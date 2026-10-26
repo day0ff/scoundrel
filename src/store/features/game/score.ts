@@ -1,5 +1,5 @@
 import {RANK_STRENGTH_MAP} from "entities/constants.ts";
-import type {ClassicGameStateType, PlayingCardType} from "./types.ts";
+import type {GameStateType, PlayingCardType} from "entities/game/types.ts";
 
 const cardValue = (card: Pick<PlayingCardType, "rank">) => RANK_STRENGTH_MAP[card.rank] ?? 0;
 
@@ -8,7 +8,7 @@ export const calculateScoreRange = (cards: PlayingCardType[], maxLife: number) =
     max: maxLife + Math.max(0, ...cards.filter(card => card.role === "potion").map(cardValue)),
 });
 
-export const calculateGameScore = (state: ClassicGameStateType): number => {
+export const calculateGameScore = (state: GameStateType): number => {
     const life = state.hero.health.current;
     if (state.outcome === "defeat") {
         const remaining = [state.zones.dungeon, state.zones.room, state.zones.discard];

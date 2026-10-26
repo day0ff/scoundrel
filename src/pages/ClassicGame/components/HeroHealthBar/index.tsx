@@ -1,7 +1,7 @@
 import type {FC} from "react";
 import {useTranslation} from "react-i18next";
 import {useAppSelector} from "store/hooks.ts";
-import {activeEffectAnimationClassicGameSelector, heroClassicGameSelector} from "store/features/classic-game/selectors.ts";
+import {activeEffectAnimationGameSelector, heroGameSelector} from "store/features/game/selectors.ts";
 import {ANIMATIONS_MAP} from "entities/animations/constants.ts";
 import {BASE_URL} from "constants.ts";
 import Tooltip from "components/Tooltip";
@@ -9,8 +9,8 @@ import {HeroHealthBarStyled, HealthContentStyled, HeartIconStyled, HealthTrackSt
 
 const HeroHealthBar: FC = () => {
     const {t} = useTranslation();
-    const hero = useAppSelector(heroClassicGameSelector);
-    const event = useAppSelector(activeEffectAnimationClassicGameSelector);
+    const hero = useAppSelector(heroGameSelector);
+    const event = useAppSelector(activeEffectAnimationGameSelector);
     const animation = event && ANIMATIONS_MAP[event.animation];
     if (!hero) return null;
     const {name} = hero;

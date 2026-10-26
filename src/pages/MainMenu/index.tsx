@@ -1,5 +1,5 @@
 import { useAppSelector } from "store/hooks.ts";
-import { classicGameSelector } from "store/features/classic-game/selectors.ts";
+import { gameSelector } from "store/features/game/selectors.ts";
 import { useEffect, useRef } from "react";
 import { useAudioManager } from "hooks/useAudioManager.ts";
 import { SOUND_PATHS } from "assets/sounds";
@@ -23,7 +23,7 @@ import InstallPWAButton from "./components/InstallPWAButton";
 const src = `${BASE_URL}/images/backgrounds/castle.png`;
 
 const MainMenu = () => {
-  const game = useAppSelector(classicGameSelector);
+  const game = useAppSelector(gameSelector);
   const refView = useRef<HTMLDivElement>(null);
   const audio = useAudioManager();
 

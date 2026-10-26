@@ -1,6 +1,4 @@
-import {PseudoRandomResult} from "helpers";
-
-export type SeedType = PseudoRandomResult;
+export type {SeedType} from "entities/game/types.ts";
 
 export type ScoreType = {
     chips: number;

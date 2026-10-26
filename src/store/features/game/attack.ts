@@ -2,7 +2,7 @@ import {recordRoomPlay, checkGameVictory} from "./helpers.ts";
 import {attackAnimation} from "entities/animations/attack.ts";
 import {RANK_STRENGTH_MAP} from "entities/constants.ts";
 import {calculateAttack} from "entities/effects/attack.ts";
-import type {ClassicGameStateType, PlayingCardType, ZoneKindType} from "./types.ts";
+import type {GameStateType, PlayingCardType, ZoneKindType} from "entities/game/types.ts";
 
 export const canAttackCard = (card: PlayingCardType, zone: ZoneKindType): boolean => {
     if (card.isLocked || card.isNotFound) return false;
@@ -12,10 +12,10 @@ export const canAttackCard = (card: PlayingCardType, zone: ZoneKindType): boolea
         && Number.isSafeInteger(card.durability) && (card.durability ?? 0) > 0;
 };
 
-export const getAttackTarget = (state: ClassicGameStateType) =>
+export const getAttackTarget = (state: GameStateType) =>
     state.zones.room.cards.find(card => card.role === "enemy");
 
-export const getAttackRejection = (state: ClassicGameStateType, attackerId: string, enemyId?: string): "enemyRankTooHigh" | undefined => {
+export const getAttackRejection = (state: GameStateType, attackerId: string, enemyId?: string): "enemyRankTooHigh" | undefined => {
     if (state.outcome || state.currentPhase !== state.phaseLifecycle.waitingPhase) return;
     const attacker = state.zones.weapons.cards.find(card => card.id === attackerId);
     const enemy = enemyId === undefined ? getAttackTarget(state) : state.zones.room.cards.find(card => card.id === enemyId && card.role === "enemy");
@@ -26,7 +26,7 @@ export const getAttackRejection = (state: ClassicGameStateType, attackerId: stri
     if (previousStrength !== undefined && enemyStrength !== undefined && enemyStrength > previousStrength) return "enemyRankTooHigh";
 };
 
-export const resolveAttack = (state: ClassicGameStateType, attackerId: string, enemyId?: string) => {
+export const resolveAttack = (state: GameStateType, attackerId: string, enemyId?: string) => {
     if (state.outcome || state.currentPhase !== state.phaseLifecycle.waitingPhase || state.hero.health.current <= state.hero.health.min) return;
     const source = [state.zones.room, state.zones.weapons].find(zone => zone.cards.some(card => card.id === attackerId));
     const attacker = source?.cards.find(card => card.id === attackerId);
@@ -47,7 +47,7 @@ export const resolveAttack = (state: ClassicGameStateType, attackerId: string, e
     };
 };
 
-export const applyAttack = (state: ClassicGameStateType, attackerId: string, enemyId?: string) => {
+export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: string) => {
     const attack = resolveAttack(state, attackerId, enemyId);
     if (!attack) return;
     const {source, attacker, enemy, healthDamage, durability} = attack;

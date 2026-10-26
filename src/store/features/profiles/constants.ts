@@ -2,9 +2,6 @@ import {NOT_PERSIST} from "constants.ts";
 import {initialCollectionsState} from "../collections/constants.ts";
 import {ProfilesStateType} from "./types.ts";
 
-
-
-
 export const initialProfilesState = NOT_PERSIST ? ({
     currentProfileId: "DEV_UUID",
     profiles: [
@@ -12,7 +9,7 @@ export const initialProfilesState = NOT_PERSIST ? ({
             profileId: "DEV_UUID",
             name: "DEV",
             collections: initialCollectionsState,
-            classicGame: null,
+            games: {},
         }
     ],
 }) : ({

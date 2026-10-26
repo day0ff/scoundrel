@@ -1,6 +1,6 @@
 import {SOUND_PATHS} from "assets/sounds";
 import {BASE_URL} from "constants.ts";
-import type {GameOutcomeType} from "store/features/classic-game/types.ts";
+import type {GameOutcomeType} from "entities/game/types.ts";
 import type {TranslationKeysType} from "localization/types.ts";
 
 export const GAME_RESULT_TRANSLATIONS = {

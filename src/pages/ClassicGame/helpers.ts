@@ -1,7 +1,7 @@
 import {pointerWithin, rectIntersection, type CollisionDetection} from "@dnd-kit/core";
-import type {ClassicGameStateType, MoveCardPayloadType, ZoneKindType} from "store/features/classic-game/types.ts";
-import {canMoveCard} from "store/features/classic-game/helpers.ts";
-import {resolveAttack} from "store/features/classic-game/attack.ts";
+import type {GameStateType, MoveCardPayloadType, ZoneKindType} from "entities/game/types.ts";
+import {canMoveCard} from "store/features/game/helpers.ts";
+import {resolveAttack} from "store/features/game/attack.ts";
 
 // Pointer drops must actually hit a target; never snap an outside drop to the nearest zone.
 export const cardCollisionDetection: CollisionDetection = (args) => {
@@ -10,7 +10,7 @@ export const cardCollisionDetection: CollisionDetection = (args) => {
     return cards.length ? cards : collisions;
 };
 
-export const getCardMove = (state: ClassicGameStateType, cardId: string, targetId: string): MoveCardPayloadType | undefined => {
+export const getCardMove = (state: GameStateType, cardId: string, targetId: string): MoveCardPayloadType | undefined => {
     const zones = Object.values(state.zones);
     const emptyZone = zones.find(zone =>
         (zone.type === "weapons" || zone.type === "potions") &&
@@ -32,7 +32,7 @@ export const getCardMove = (state: ClassicGameStateType, cardId: string, targetI
     return {cardId, from, to, targetCardId: to === targetId ? undefined : targetId};
 };
 
-export const canDropCardOnTarget = (state: ClassicGameStateType, cardId: string, targetId: string): boolean => {
+export const canDropCardOnTarget = (state: GameStateType, cardId: string, targetId: string): boolean => {
     if (cardId === targetId) return false;
     const move = getCardMove(state, cardId, targetId);
     if (!move || !move.targetCardId || !canMoveCard(state, move)) return false;

@@ -1,7 +1,7 @@
 import type {FC} from "react";
 import {useTranslation} from "react-i18next";
 import {useAppDispatch, useAppSelector} from "store/hooks.ts";
-import {endTurn, skipRoom} from "store/features/classic-game";
+import {endTurn, skipRoom} from "store/features/game";
 import Tooltip from "components/Tooltip";
 import {canEndRoomSelector, canSkipRoomSelector, showEndTurnSelector} from "./selectors.ts";
 import {TurnButtonStyled} from "./styles.ts";

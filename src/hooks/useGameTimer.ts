@@ -1,12 +1,12 @@
 import {useLayoutEffect} from "react";
 import {useAppDispatch, useAppSelector} from "store/hooks.ts";
-import {classicGameSelector} from "store/features/classic-game/selectors.ts";
-import {setTime} from "store/features/classic-game";
-import {formatRaceTime, parseRaceTime} from "store/features/classic-game/time.ts";
+import {gameSelector} from "store/features/game/selectors.ts";
+import {setTime} from "store/features/game";
+import {formatRaceTime, parseRaceTime} from "store/features/game/time.ts";
 
-export const useClassicGameTimer = () => {
+export const useGameTimer = () => {
     const dispatch = useAppDispatch();
-    const game = useAppSelector(classicGameSelector);
+    const game = useAppSelector(gameSelector);
     const running = !!game && game.started !== false && !game.outcome;
     const time = game?.time ?? "00:00:00";
 

@@ -4,7 +4,7 @@ import {royalDungeonRoom} from "./royal.ts";
 import {monsterDungeonRoom} from "./monster.ts";
 import {DUNGEON_ROOM_DANGER_THRESHOLDS} from "./constants.ts";
 import {RANK_STRENGTH_MAP} from "entities/constants.ts";
-import type {ClassicGameStateType, PlayingCardType} from "store/features/classic-game/types.ts";
+import type {GameStateType, PlayingCardType} from "entities/game/types.ts";
 import type {DungeonRoomDangerType, DungeonRoomType} from "./types.ts";
 
 export const classifyDungeonRoom = (cards: PlayingCardType[], status: DungeonRoomType["status"] = "upcoming"): DungeonRoomType => {
@@ -20,7 +20,7 @@ export const classifyDungeonRoom = (cards: PlayingCardType[], status: DungeonRoo
     };
 };
 
-export const getDungeonRooms = (game: ClassicGameStateType): DungeonRoomType[] => {
+export const getDungeonRooms = (game: GameStateType): DungeonRoomType[] => {
     const rooms = (game.completedRooms ?? []).map(cards => classifyDungeonRoom(cards, "completed"));
     const active = game.activeRoomCards ?? game.zones.room.cards;
     if (active.length && game.started !== false) rooms.push(classifyDungeonRoom(active, !game.zones.room.cards.length && !game.zones.dungeon.cards.length ? "completed" : "current"));

@@ -1,4 +1,4 @@
-import type {ZoneKindType} from "store/features/classic-game/types.ts";
+import type {ZoneKindType} from "entities/game/types.ts";
 
 export type EmptyCardSlotPropsType = {
     zoneType: ZoneKindType;

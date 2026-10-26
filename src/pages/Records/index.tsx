@@ -10,7 +10,7 @@ import {RecordsStyled, RecordsScrollStyled, RecordsTitleStyled, RecordsPanelStyl
 const Records: FC = () => {
     const {t} = useTranslation();
     const groups = useAppSelector(rankedRecordsSelector);
-    const [gameType, setGameType] = useState<RecordGameType>("classic-game");
+    const [gameType, setGameType] = useState<RecordGameType>("classic");
     const records = groups.find(group => group.gameType === gameType)?.records ?? [];
 
     const handleTabKeyDown = (event: KeyboardEvent<HTMLInputElement>, index: number) => {

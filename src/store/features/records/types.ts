@@ -1,4 +1,7 @@
-export type RecordGameType = "classic-game";
+import type {GAME_MODES} from "entities/game-modes/constants.ts";
+import type {GameModeType} from "entities/game-modes/types.ts";
+
+export type RecordGameType = typeof GAME_MODES[GameModeType]["recordGameType"];
 
 export type WinningRecordType = {
     playerName: string;

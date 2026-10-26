@@ -1,4 +1,4 @@
-import type {GameLogActionType, ZoneKindType} from "store/features/classic-game/types.ts";
+import type {GameLogActionType, ZoneKindType} from "entities/game/types.ts";
 import type {TranslationKeysType} from "localization/types.ts";
 
 export const ZONE_LABELS: Record<ZoneKindType, TranslationKeysType> = {
@@ -11,6 +11,19 @@ export const ZONE_LABELS: Record<ZoneKindType, TranslationKeysType> = {
 };
 
 export const ACTION_LABELS: Record<GameLogActionType["type"], TranslationKeysType> = {
+    "game/surrenderGame": "ui.game.surrender",
+    "game/startGame": "ui.gameLog.action.startGame",
+    "game/advancePhase": "ui.gameLog.action.advancePhase",
+    "game/skipRoom": "ui.gameLog.action.skipRoom",
+    "game/endTurn": "ui.gameLog.action.endTurn",
+    "game/playCard": "ui.gameLog.action.playCard",
+    "game/attackCard": "ui.gameLog.action.attackCard",
+    "game/moveCard": "ui.gameLog.action.moveCard",
+    "game/addCardsToZone": "ui.gameLog.action.addCardsToZone",
+    "game/removeCardsFromZone": "ui.gameLog.action.removeCardsFromZone",
+    "game/setZoneCapacity": "ui.gameLog.action.setZoneCapacity",
+    "game/setRoomMinimumCardsToPlay": "ui.gameLog.action.setRoomMinimumCardsToPlay",
+    "game/shuffleDungeon": "ui.gameLog.action.shuffleDungeon",
     "classicGame/surrenderGame": "ui.game.surrender",
     "classicGame/startGame": "ui.gameLog.action.startGame",
     "classicGame/advancePhase": "ui.gameLog.action.advancePhase",

@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useDndContext } from "@dnd-kit/core";
 import { useAppSelector } from "store/hooks.ts";
-import { classicGameSelector } from "store/features/classic-game/selectors.ts";
+import { gameSelector } from "store/features/game/selectors.ts";
 import GameSettings from "./components/GameSettings";
 import {
   ActionButtonStyled,
@@ -16,7 +16,7 @@ const HeaderMenuActions: FC<HeaderMenuActionsPropsType> = ({
   onHome,
   onSurrender,
 }) => {
-  const game = useAppSelector(classicGameSelector);
+  const game = useAppSelector(gameSelector);
   const { active } = useDndContext();
   const { t } = useTranslation();
 

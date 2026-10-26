@@ -1,19 +1,19 @@
 import type {UnknownAction} from "@reduxjs/toolkit";
-import type {ClassicGameStateType, GameLogActionType, GameLogType, GameSnapshotType} from "./types.ts";
+import type {GameStateType, GameLogActionType, GameLogType, GameSnapshotType} from "entities/game/types.ts";
 
 const loggedActions = new Set([
     "surrenderGame", "startGame", "advancePhase", "skipRoom", "endTurn", "playCard", "attackCard", "moveCard",
     "addCardsToZone", "removeCardsFromZone", "setZoneCapacity", "setRoomMinimumCardsToPlay", "shuffleDungeon",
-].map(name => `classicGame/${name}`));
+].map(name => `game/${name}`));
 
 // Selection and animation queues are presentation state, not replay inputs.
-export const getGameSnapshot = (state: ClassicGameStateType): GameSnapshotType => {
-    const snapshot = {...state, selectedCardId: undefined, animationEvents: []};
+export const getGameSnapshot = (state: GameStateType): GameSnapshotType => {
+    const snapshot = {...state, mode: state.mode ?? "classic", selectedCardId: undefined, animationEvents: []};
     delete snapshot.log;
     return structuredClone(snapshot);
 };
 
-export const createGameLog = (state: ClassicGameStateType, origin: GameLogType["origin"]): GameLogType => ({
+export const createGameLog = (state: GameStateType, origin: GameLogType["origin"]): GameLogType => ({
     version: 1,
     origin,
     initialState: getGameSnapshot(state),

@@ -2,7 +2,7 @@ import {useEffect, useState, type FC} from "react";
 import {useTranslation} from "react-i18next";
 import {GameButtonStyled} from "pages/ClassicGame/styles.ts";
 import {useAppSelector} from "store/hooks.ts";
-import {classicGameTimeSelector} from "store/features/classic-game/selectors.ts";
+import {gameTimeSelector} from "store/features/game/selectors.ts";
 import Score from "components/TooltipContent/components/Formatters/components/Score";
 import type {ScoreMeterPropsType} from "./types.ts";
 import {SCORE_ANIMATION_DURATION} from "./constants.ts";
@@ -10,7 +10,7 @@ import {ScoreMeterStyled, TrackStyled, FillStyled, ZeroStyled, ValueStyled, Indi
 
 const ScoreMeter: FC<ScoreMeterPropsType> = ({min, max, score}) => {
     const {t} = useTranslation();
-    const time = useAppSelector(classicGameTimeSelector);
+    const time = useAppSelector(gameTimeSelector);
     const [value, setValue] = useState(min);
     const [isStarted, setIsStarted] = useState(false);
 

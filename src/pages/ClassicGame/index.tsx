@@ -16,23 +16,23 @@ import {
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { BASE_URL } from "constants.ts";
 import { useAppDispatch, useAppSelector } from "store/hooks.ts";
-import { classicGameSelector } from "store/features/classic-game/selectors.ts";
+import { gameSelector } from "store/features/game/selectors.ts";
 import {
   moveCard,
   playCard,
   attackCard,
   selectCard,
   surrenderGame,
-  clearClassicGame,
-} from "store/features/classic-game";
-import {useClassicGameTimer} from "hooks/useClassicGameTimer.ts";
+  clearGame,
+} from "store/features/game";
+import {useGameTimer} from "hooks/useGameTimer.ts";
 import Toast from "components/Toast";
 import type { ToastHandleType } from "components/Toast/types.ts";
 import {
   canPlayPotion,
   getCardMoveRejection,
-} from "store/features/classic-game/helpers.ts";
-import { getAttackRejection, resolveAttack } from "store/features/classic-game/attack.ts";
+} from "store/features/game/helpers.ts";
+import { getAttackRejection, resolveAttack } from "store/features/game/attack.ts";
 import DungeonRooms from "components/DungeonRooms";
 import CardZone from "./components/CardZone";
 import RoomZone from "./components/RoomZone";
@@ -73,8 +73,8 @@ const ClassicGame: FC = () => {
   const tabletLandscape = useMediaQuery({query: `${theme.media.tablet} and (orientation: landscape)`});
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const game = useAppSelector(classicGameSelector);
-  useClassicGameTimer();
+  const game = useAppSelector(gameSelector);
+  useGameTimer();
   const currentRoomNumber = useAppSelector(currentRoomNumberSelector);
   const gameRef = useRef<HTMLElement>(null);
   const appendTooltipTo = useCallback(() => gameRef.current ?? document.body, []);
@@ -94,7 +94,7 @@ const ClassicGame: FC = () => {
   }, []);
 
   const handleHome = () => {
-    if (game?.outcome) pendingExitRef.current = () => dispatch(clearClassicGame());
+    if (game?.outcome) pendingExitRef.current = () => dispatch(clearGame());
     navigate("/main-menu");
   };
   const handleSurrender = () => {

@@ -1,8 +1,8 @@
 import {useEffect, type FC} from "react";
 import {createPortal} from "react-dom";
 import {useAppDispatch, useAppSelector} from "store/hooks.ts";
-import {clearEffectAnimations, completeEffectAnimation} from "store/features/classic-game";
-import {activeEffectAnimationClassicGameSelector} from "store/features/classic-game/selectors.ts";
+import {clearEffectAnimations, completeEffectAnimation} from "store/features/game";
+import {activeEffectAnimationGameSelector} from "store/features/game/selectors.ts";
 import {ANIMATIONS_MAP} from "entities/animations/constants.ts";
 import AttackFeedback from "./components/AttackFeedback";
 import HealFeedback from "./components/HealFeedback";
@@ -12,7 +12,7 @@ import {ATTACK_SOUNDS} from "./components/AttackFeedback/constants.ts";
 const EffectAnimations: FC = () => {
     const dispatch = useAppDispatch();
     const audio = useAudioManager();
-    const event = useAppSelector(activeEffectAnimationClassicGameSelector);
+    const event = useAppSelector(activeEffectAnimationGameSelector);
     const animation = event && ANIMATIONS_MAP[event.animation];
 
     useEffect(() => {

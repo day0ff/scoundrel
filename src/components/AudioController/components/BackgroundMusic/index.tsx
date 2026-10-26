@@ -3,14 +3,14 @@ import {useMatch} from "react-router";
 import {SOUND_PATHS} from "assets/sounds";
 import {useAppSelector} from "store/hooks.ts";
 import {musicSettingsSelector} from "store/features/settings/selectors.ts";
-import {classicGameOutcomeSelector} from "store/features/classic-game/selectors.ts";
+import {gameOutcomeSelector} from "store/features/game/selectors.ts";
 import {usePageTransitionMediaVolume} from "hooks/usePageTransitionMediaVolume.ts";
 
 const BackgroundMusic: FC = () => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const {enabled, volume} = useAppSelector(musicSettingsSelector);
     const isClassicGame = useMatch("/classic-game") !== null;
-    const outcome = useAppSelector(classicGameOutcomeSelector);
+    const outcome = useAppSelector(gameOutcomeSelector);
     const shouldPlay = enabled && !(isClassicGame && outcome);
     usePageTransitionMediaVolume(audioRef, volume);
 

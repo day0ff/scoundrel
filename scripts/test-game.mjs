@@ -9,8 +9,10 @@ const server = await createServer({
     appType: "custom",
 });
 try {
-    const {runClassicGameTests} = await server.ssrLoadModule("/src/store/features/classic-game/lifecycle.test.ts");
-    for (const name of runClassicGameTests()) process.stdout.write(`PASS ${name}\n`);
+    const {runGameMigrationTests} = await server.ssrLoadModule("/src/store/migrations.test.ts");
+    for (const name of await runGameMigrationTests()) process.stdout.write(`PASS ${name}\n`);
+    const {runGameTests} = await server.ssrLoadModule("/src/store/features/game/lifecycle.test.ts");
+    for (const name of runGameTests()) process.stdout.write(`PASS ${name}\n`);
 } finally {
     await server.close();
 }

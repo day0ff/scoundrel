@@ -3,8 +3,8 @@ import {useNavigate} from "react-router";
 import {useTranslation} from "react-i18next";
 import {BASE_URL} from "constants.ts";
 import {useAppDispatch, useAppSelector} from "store/hooks.ts";
-import {classicGameSelector} from "store/features/classic-game/selectors.ts";
-import {clearClassicGame, resetDungeon, startGame} from "store/features/classic-game";
+import {gameSelector} from "store/features/game/selectors.ts";
+import {clearGame, resetDungeon, startGame} from "store/features/game";
 import MenuButton from "pages/MainMenu/components/MenuButton";
 import DungeonRooms from "components/DungeonRooms";
 import {DungeonPreviewStyled, ActionsStyled, DungeonPreviewTitleStyled, DungeonPreviewParagraphStyled} from "./styles.ts";
@@ -13,7 +13,7 @@ const DungeonPreview: FC = () => {
     const {t} = useTranslation();
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const game = useAppSelector(classicGameSelector);
+    const game = useAppSelector(gameSelector);
     const previewRef = useRef<HTMLElement>(null);
     const initialized = useRef(false);
     useEffect(() => {
@@ -33,7 +33,7 @@ const DungeonPreview: FC = () => {
             <ActionsStyled>
                 <MenuButton value="ui.dungeonRooms.enter" autoFocus data-page-autofocus onClick={enterDungeon}/>
                 <MenuButton value="ui.dungeonRooms.reroll" onClick={() => dispatch(resetDungeon(game?.hero.identifier))}/>
-                <MenuButton value="ui.dungeonRooms.back" onClick={() => { dispatch(clearClassicGame()); navigate("/main-menu"); }}/>
+                <MenuButton value="ui.dungeonRooms.back" onClick={() => { dispatch(clearGame()); navigate("/main-menu"); }}/>
             </ActionsStyled>
         </DungeonPreviewStyled>
     );

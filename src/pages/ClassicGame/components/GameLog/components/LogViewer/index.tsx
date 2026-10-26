@@ -1,9 +1,9 @@
 import {useMemo, useState, type FC} from "react";
 import {useTranslation} from "react-i18next";
 import {useAppSelector} from "store/hooks.ts";
-import {classicGameSelector} from "store/features/classic-game/selectors.ts";
-import {doesReplayMatchGame, replayGameLog} from "store/features/classic-game/replay.ts";
-import {stringifyGameLog} from "store/features/classic-game/log.ts";
+import {gameSelector} from "store/features/game/selectors.ts";
+import {doesReplayMatchGame, replayGameLog} from "store/features/game/replay.ts";
+import {stringifyGameLog} from "store/features/game/log.ts";
 import {GameButtonStyled} from "../../../../styles.ts";
 import {ACTION_LABELS, ZONE_LABELS} from "./constants.ts";
 import {LogViewerStyled} from "./styles.ts";
@@ -11,7 +11,7 @@ import type {LogViewerPropsType} from "./types.ts";
 
 const LogViewer: FC<LogViewerPropsType> = () => {
     const {t} = useTranslation();
-    const game = useAppSelector(classicGameSelector);
+    const game = useAppSelector(gameSelector);
     const log = game?.log;
     const [position, setPosition] = useState(log?.entries.length ?? 0);
     const replay = useMemo(() => {

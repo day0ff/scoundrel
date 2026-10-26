@@ -1,21 +1,21 @@
 import {createSlice, type PayloadAction, type UnknownAction} from "@reduxjs/toolkit";
 import {createGameLog, isLoggedGameAction} from "./log.ts";
-import {getInitialClassicGame} from "./constants.ts";
-import {advanceClassicGamePhase, canPlaceCardInZone, canMoveCard, canPlayPotion, restoreClassicGame, shuffleDungeonCards, applyPotion, recordRoomPlay, canEndRoom, canSkipRoom, dealNextRoom, completeRoom} from "./helpers.ts";
+import {getInitialGame} from "./constants.ts";
+import {advanceGamePhase, canPlaceCardInZone, canMoveCard, canPlayPotion, restoreGame, shuffleDungeonCards, applyPotion, recordRoomPlay, canEndRoom, canSkipRoom, dealNextRoom, completeRoom} from "./helpers.ts";
 import {applyAttack} from "./attack.ts";
 import {checkGameVictory} from "./helpers.ts";
-import type {AttackCardPayloadType} from "./types.ts";
-import type {ClassicGameStateType, PreAnimationClassicGameStateType, PreLifecycleClassicGameStateType, HeroLessClassicGameStateType, HandClassicGameStateType, LegacyClassicGameStateType, OldZoneClassicGameStateType, MoveCardPayloadType, PlayCardPayloadType, PlayingCardType, ZoneKindType} from "./types.ts";
+import type {AttackCardPayloadType} from "entities/game/types.ts";
+import type {GameStateType, PreAnimationGameStateType, PreLifecycleGameStateType, HeroLessGameStateType, HandGameStateType, LegacyGameStateType, OldZoneGameStateType, MoveCardPayloadType, PlayCardPayloadType, PlayingCardType, ZoneKindType} from "entities/game/types.ts";
 
-export const classicGameSlice = createSlice({
-    name: "classicGame",
-    initialState: null as ClassicGameStateType | null,
+export const gameSlice = createSlice({
+    name: "game",
+    initialState: null as GameStateType | null,
     reducers: {
         resetDungeon: {
-            reducer: (_state, action: PayloadAction<ClassicGameStateType>) => action.payload,
-            prepare: (heroIdentifier?: Parameters<typeof getInitialClassicGame>[0]) => ({payload: getInitialClassicGame(heroIdentifier)}),
+            reducer: (_state, action: PayloadAction<GameStateType>) => action.payload,
+            prepare: (heroIdentifier?: Parameters<typeof getInitialGame>[0], mode?: Parameters<typeof getInitialGame>[1]) => ({payload: getInitialGame(heroIdentifier, mode)}),
         },
-        clearClassicGame: () => null,
+        clearGame: () => null,
         setTime: (state, {payload}: PayloadAction<string>) => {
             if (state && /^\d{2,}:[0-5]\d:[0-5]\d$/.test(payload)) state.time = payload;
         },
@@ -31,7 +31,7 @@ export const classicGameSlice = createSlice({
             state.started = true;
             dealNextRoom(state, true);
         },
-        setClassicGame: (_state, action: PayloadAction<ClassicGameStateType | PreAnimationClassicGameStateType | PreLifecycleClassicGameStateType | HeroLessClassicGameStateType | HandClassicGameStateType | LegacyClassicGameStateType | OldZoneClassicGameStateType | null>) => action.payload ? restoreClassicGame(action.payload) : null,
+        setGame: (_state, action: PayloadAction<GameStateType | PreAnimationGameStateType | PreLifecycleGameStateType | HeroLessGameStateType | HandGameStateType | LegacyGameStateType | OldZoneGameStateType | null>) => action.payload ? restoreGame(action.payload) : null,
         completeEffectAnimation: (state, {payload}: PayloadAction<number>) => {
             if (!state) return;
             if (state.animationEvents[0]?.id === payload) state.animationEvents.shift();
@@ -40,7 +40,7 @@ export const classicGameSlice = createSlice({
         advancePhase: (state) => {
             if (!state) return;
             // Player-controlled transitions must use endTurn and its room guard.
-            if (state.currentPhase !== state.phaseLifecycle.waitingPhase) advanceClassicGamePhase(state);
+            if (state.currentPhase !== state.phaseLifecycle.waitingPhase) advanceGamePhase(state);
         },
         skipRoom: (state) => {
             if (!state) return;
@@ -51,11 +51,11 @@ export const classicGameSlice = createSlice({
         endTurn: (state) => {
             if (!state) return;
             if (!canEndRoom(state)) return;
-            advanceClassicGamePhase(state);
+            advanceGamePhase(state);
             if (state.outcome) return;
             completeRoom(state, false);
             for (let index = 0; !state.outcome && state.currentPhase !== state.phaseLifecycle.waitingPhase && index < state.phaseLifecycle.phases.length; index++) {
-                advanceClassicGamePhase(state);
+                advanceGamePhase(state);
             }
         },
         selectCard: (state, {payload}: PayloadAction<string | null>) => {
@@ -168,10 +168,10 @@ export const classicGameSlice = createSlice({
     },
 });
 
-export const {setTime, surrenderGame, clearClassicGame, resetDungeon, startGame, setClassicGame, completeEffectAnimation, clearEffectAnimations, advancePhase, selectCard, playCard, attackCard, moveCard, addCardsToZone, removeCardsFromZone, setZoneCapacity, setRoomMinimumCardsToPlay, shuffleDungeon, skipRoom, endTurn} = classicGameSlice.actions;
+export const {setTime, surrenderGame, clearGame, resetDungeon, startGame, setGame, completeEffectAnimation, clearEffectAnimations, advancePhase, selectCard, playCard, attackCard, moveCard, addCardsToZone, removeCardsFromZone, setZoneCapacity, setRoomMinimumCardsToPlay, shuffleDungeon, skipRoom, endTurn} = gameSlice.actions;
 // Log only accepted actions, alongside the resulting game state, before persistence listeners run.
-const classicGameReducer = (state: ClassicGameStateType | null | undefined, action: UnknownAction): ClassicGameStateType | null => {
-    const next = classicGameSlice.reducer(state, action);
+const gameReducer = (state: GameStateType | null | undefined, action: UnknownAction): GameStateType | null => {
+    const next = gameSlice.reducer(state, action);
     if (!state || !next || next === state || !isLoggedGameAction(action)) return next;
     const log = state.log ?? createGameLog(state, "restoredGame");
     return {...next, log: {...log, entries: [...log.entries, {
@@ -184,4 +184,4 @@ const classicGameReducer = (state: ClassicGameStateType | null | undefined, acti
     }]}};
 };
 
-export default classicGameReducer;
+export default gameReducer;

@@ -1,4 +1,4 @@
-import type {PlayingCardType} from "store/features/classic-game/types.ts";
+import type {PlayingCardType} from "entities/game/types.ts";
 
 export type CardDeckPropsType = {
     card?: PlayingCardType;
