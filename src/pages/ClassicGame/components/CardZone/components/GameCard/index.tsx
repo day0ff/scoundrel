@@ -56,6 +56,11 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
             data-attack-preview-id={zone === "weapons" && (card.role === "weapon" || card.role === "fist") ? card.id : undefined}
             aria-label={t(card.name)}
             onClick={() => { if (!dragging) dispatch(selectCard(card.id)); }}
+            onDoubleClick={() => {
+                // Touch double taps already invoke the action on pointer up.
+                if (pointerType.current === "touch") return;
+                handleQuickAction();
+            }}
             onFocus={() => { if (!dragging) dispatch(selectCard(card.id)); }}
             onContextMenuCapture={event => {
                 event.preventDefault();
