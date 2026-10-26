@@ -7,7 +7,7 @@ import {
   PixelCardStyled,
 } from "styles";
 import Modal from "components/Modal";
-import {ModalAnimationStyle} from "components/Modal/styles.ts";
+import {ModalAnimationStyle, ModalCloseButton} from "components/Modal/styles.ts";
 
 export const ModalStyled = styled(Modal)<{ $size?: CornerSizeType }>`
   box-sizing: border-box;
@@ -15,12 +15,19 @@ export const ModalStyled = styled(Modal)<{ $size?: CornerSizeType }>`
   max-height: calc(100dvh - 32px);
   ${ModalAnimationStyle};
 
+  ${ModalCloseButton} {
+    width: 44px;
+    height: 44px;
+    top: 4px;
+    right: 4px;
+  }
+
   &::after {
     ${getPixelCardPathBySizeStyle}
   }
 `;
 
-export const ModalContentStyled = styled.div<{ $size?: CornerSizeType }>`
+export const ModalContentStyled = styled.div<{ $size?: CornerSizeType; $hasCloseButton?: boolean }>`
   position: relative;
   padding: 32px;
   box-sizing: border-box;
@@ -36,6 +43,8 @@ export const ModalContentStyled = styled.div<{ $size?: CornerSizeType }>`
   @media ${({theme}) => theme.media.mobile}, ${({theme}) => theme.media.laptop} and (orientation: landscape) and (max-height: 480px) {
     padding: 16px;
   }
+
+  ${({$hasCloseButton}) => $hasCloseButton && "padding-top: 52px;"}
 `;
 
 export const ModalPixelCardStyled = styled(PixelCardStyled)`

@@ -112,7 +112,7 @@ const Modal: FC<ModalPropsType> = ({isOpen, isClosable = true, showCloseButton= 
             data-modal-visible={visible}
         >
             {isClosable && showCloseButton && (
-                <ModalCloseButton onClick={handleCloseClick}>
+                <ModalCloseButton type="button" aria-label="Close" onClick={handleCloseClick}>
                     <ModalCloseButtonIcon/>
                 </ModalCloseButton>
             )}

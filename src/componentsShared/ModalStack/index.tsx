@@ -1,5 +1,6 @@
 import {cloneElement, FC, SyntheticEvent, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
+import {useTheme} from "styled-components";
 import {useButtonSounds} from "hooks/useButtonSounds.ts";
 import {
     ModalBackButtonStyled,
@@ -10,8 +11,10 @@ import {
 import {ModalStackItemProps, ModalStackPropsType} from "./types.ts";
 import {MODAL_BACKDROP_DURATION_MS} from "./constants.ts";
 
-const ModalStack: FC<ModalStackPropsType> = ({$color, $size, initialNode, isOpen, isClosable = true, onClose, ...restProps}) => {
+const ModalStack: FC<ModalStackPropsType> = ({$color, $size, initialNode, isOpen, isClosable = true, showCloseButton, onClose, ...restProps}) => {
     const {t} = useTranslation();
+    const theme = useTheme();
+    const hasCloseButton = isClosable && (showCloseButton ?? theme.device?.isTabletCascade ?? false);
     const backButtonSounds = useButtonSounds<HTMLButtonElement>();
     const [history, setHistory] = useState<Array<ModalStackItemProps>>([initialNode]);
     const [closing, setClosing] = useState(false);
@@ -52,9 +55,10 @@ const ModalStack: FC<ModalStackPropsType> = ({$color, $size, initialNode, isOpen
 
     return (
         <ModalStyled $size={$size} {...restProps} isOpen={isOpen && !closing} isClosable={isClosable && !closing}
+                     showCloseButton={hasCloseButton}
                      animationDuration={MODAL_BACKDROP_DURATION_MS} onClose={handleClose}>
             <ModalPixelCardStyled $color={$color} $size={$size}/>
-            <ModalContentStyled $size={$size} inert={closing}>
+            <ModalContentStyled $size={$size} $hasCloseButton={hasCloseButton} inert={closing}>
                 {cloneElement(currentNode, {
                     onPush: handlePush,
                     onBack: handleBack
