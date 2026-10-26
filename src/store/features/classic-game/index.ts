@@ -16,6 +16,9 @@ export const classicGameSlice = createSlice({
             prepare: (heroIdentifier?: Parameters<typeof getInitialClassicGame>[0]) => ({payload: getInitialClassicGame(heroIdentifier)}),
         },
         clearClassicGame: () => null,
+        setTime: (state, {payload}: PayloadAction<string>) => {
+            if (state && /^\d{2,}:[0-5]\d:[0-5]\d$/.test(payload)) state.time = payload;
+        },
         surrenderGame: (state) => {
             if (!state || state.outcome || state.started === false) return;
             state.outcome = "defeat";
@@ -165,7 +168,7 @@ export const classicGameSlice = createSlice({
     },
 });
 
-export const {surrenderGame, clearClassicGame, resetDungeon, startGame, setClassicGame, completeEffectAnimation, clearEffectAnimations, advancePhase, selectCard, playCard, attackCard, moveCard, addCardsToZone, removeCardsFromZone, setZoneCapacity, setRoomMinimumCardsToPlay, shuffleDungeon, skipRoom, endTurn} = classicGameSlice.actions;
+export const {setTime, surrenderGame, clearClassicGame, resetDungeon, startGame, setClassicGame, completeEffectAnimation, clearEffectAnimations, advancePhase, selectCard, playCard, attackCard, moveCard, addCardsToZone, removeCardsFromZone, setZoneCapacity, setRoomMinimumCardsToPlay, shuffleDungeon, skipRoom, endTurn} = classicGameSlice.actions;
 // Log only accepted actions, alongside the resulting game state, before persistence listeners run.
 const classicGameReducer = (state: ClassicGameStateType | null | undefined, action: UnknownAction): ClassicGameStateType | null => {
     const next = classicGameSlice.reducer(state, action);

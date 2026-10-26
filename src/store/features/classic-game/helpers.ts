@@ -50,6 +50,7 @@ export const createClassicGame = (
     const state: ClassicGameStateType = {
         seed,
         started: false,
+        time: "00:00:00",
         completedRooms: [],
         hero,
         phaseLifecycle: {...classicGamePhaseLifecycle, phases: [...classicGamePhaseLifecycle.phases]},
@@ -98,7 +99,7 @@ const restoreClassicGameState = (state: ClassicGameStateType | PreAnimationClass
         const weapons = state.zones.weapons;
         const hasFist = weapons.cards.some(card => card.identifier === "day0ff:pasteboard-fist.0");
         return {
-            ...state, hero, phaseLifecycle, currentPhase, turnNumber, animationEvents: [], animationSequence, selectedCardId: undefined,
+            ...state, time: "time" in state ? state.time ?? "00:00:00" : "00:00:00", hero, phaseLifecycle, currentPhase, turnNumber, animationEvents: [], animationSequence, selectedCardId: undefined,
             zones: {
                 ...state.zones,
                 weapons: hasFist ? weapons : {
@@ -115,6 +116,7 @@ const restoreClassicGameState = (state: ClassicGameStateType | PreAnimationClass
     const rejectedCards = hand.cards.filter(card => card.suit !== "weapon" && card.suit !== "heal");
     return {
         seed: state.seed,
+        time: "00:00:00",
         hero,
         phaseLifecycle,
         currentPhase,

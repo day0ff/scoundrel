@@ -1,6 +1,8 @@
 import {useEffect, useState, type FC} from "react";
 import {useTranslation} from "react-i18next";
 import {GameButtonStyled} from "pages/ClassicGame/styles.ts";
+import {useAppSelector} from "store/hooks.ts";
+import {classicGameTimeSelector} from "store/features/classic-game/selectors.ts";
 import Score from "components/TooltipContent/components/Formatters/components/Score";
 import type {ScoreMeterPropsType} from "./types.ts";
 import {SCORE_ANIMATION_DURATION} from "./constants.ts";
@@ -8,6 +10,7 @@ import {ScoreMeterStyled, TrackStyled, FillStyled, ZeroStyled, ValueStyled, Indi
 
 const ScoreMeter: FC<ScoreMeterPropsType> = ({min, max, score}) => {
     const {t} = useTranslation();
+    const time = useAppSelector(classicGameTimeSelector);
     const [value, setValue] = useState(min);
     const [isStarted, setIsStarted] = useState(false);
 
@@ -48,9 +51,9 @@ const ScoreMeter: FC<ScoreMeterPropsType> = ({min, max, score}) => {
                 <ValueStyled aria-live={value === score ? "polite" : "off"} aria-atomic="true">
                     {isStarted ? <Score unit={displayedScore > 0 ? "+" : ""} color="#f4d77f">{displayedScore}</Score> : "?"}
                 </ValueStyled>
-                <GameButtonStyled hidden={isStarted} onClick={() => setIsStarted(true)}>
+                {isStarted ? <span>{t("ui.gameResult.time")} <time>{time}</time></span> : <GameButtonStyled onClick={() => setIsStarted(true)}>
                     {t("ui.gameResult.revealScore")}
-                </GameButtonStyled>
+                </GameButtonStyled>}
             </div>
             <div>
                 <span>{format(max)}</span>

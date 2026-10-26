@@ -3,7 +3,7 @@ import {configureStore} from "@reduxjs/toolkit";
 import {initPasteboard} from "entities/pasteboards/constants.ts";
 import {getSeededRandom} from "helpers/getSeededRandom.ts";
 import {getInitialClassicGame} from "./constants.ts";
-import nullableReducer, {surrenderGame, startGame, skipRoom, endTurn, moveCard, attackCard, playCard, selectCard, clearEffectAnimations, setClassicGame, setRoomMinimumCardsToPlay, resetDungeon, shuffleDungeon, clearClassicGame} from "./index.ts";
+import nullableReducer, {setTime, surrenderGame, startGame, skipRoom, endTurn, moveCard, attackCard, playCard, selectCard, clearEffectAnimations, setClassicGame, setRoomMinimumCardsToPlay, resetDungeon, shuffleDungeon, clearClassicGame} from "./index.ts";
 import {canEndRoom, canSkipRoom, checkGameVictory, createClassicGame, getCardMoveRejection} from "./helpers.ts";
 import {getGameSnapshot, parseGameLog, stringifyGameLog} from "./log.ts";
 import {doesReplayMatchGame, replayGameLog} from "./replay.ts";
@@ -18,6 +18,7 @@ import {classicGameListenerMiddleware} from "./middleware.ts";
 import type {ClassicGameStateType, PlayingCardType} from "./types.ts";
 import type {RankType} from "entities/types.ts";
 import {getAttackRejection, resolveAttack} from "./attack.ts";
+import {formatRaceTime, parseRaceTime} from "./time.ts";
 import {calculateGameScore} from "./score.ts";
 import {canDropCardOnTarget, getCardMove} from "pages/ClassicGame/helpers.ts";
 
@@ -59,6 +60,22 @@ const resolveFirst = (state: ClassicGameStateType) => {
 export const runClassicGameTests = (include: (name: string) => boolean = () => true) => {
     const passed: string[] = [];
     const check = (name: string, run: () => void) => { if (include(name)) { run(); passed.push(name); } };
+
+    check("race time defaults, restores, resets and does not change replay results", () => {
+        let state = fixture([card("skeleton")]);
+        assert.equal(state.time, "00:00:00");
+        state = reducer(state, setTime("01:02:03"));
+        assert.equal(state.time, "01:02:03");
+        assert.equal(reducer(state, setClassicGame(state)).time, "01:02:03");
+        assert.ok(doesReplayMatchGame(getLog(state), state));
+        assert.equal(reducer(state, setTime("00:60:00")).time, "01:02:03");
+        const legacy: Partial<ClassicGameStateType> = {...state};
+        delete legacy.time;
+        assert.equal(reducer(state, setClassicGame(legacy as ClassicGameStateType)).time, "00:00:00");
+        assert.equal(reducer(state, resetDungeon()).time, "00:00:00");
+        assert.equal(formatRaceTime(parseRaceTime("01:02:03") + 1999), "01:02:04");
+        assert.equal(formatRaceTime(360000000), "100:00:00");
+    });
 
     check("score bounds are calculated at initialization and survive play and restoration", () => {
         const initial = createClassicGame([card("skeleton", "K"), card("skeleton", "3"), card("heal", "T")], getSeededRandom("SCORE"));

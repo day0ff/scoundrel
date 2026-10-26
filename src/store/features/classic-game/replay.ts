@@ -15,5 +15,6 @@ export const replayGameLog = (log: GameLogType, moveCount = log.entries.length):
     return state;
 };
 
+// Race time is measured by the page and is not reproduced by gameplay actions.
 export const doesReplayMatchGame = (log: GameLogType, state: ClassicGameStateType) =>
-    stringifyGameLog(getGameSnapshot(replayGameLog(log))) === stringifyGameLog(getGameSnapshot(state));
+    stringifyGameLog(getGameSnapshot(replayGameLog(log))) === stringifyGameLog(getGameSnapshot({...state, time: log.initialState.time}));

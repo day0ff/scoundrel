@@ -14,6 +14,7 @@
   "ui.menu.title": "Меню",
   "link.page.home": "Главная",
   "page.home.press-any-key": "нажмите любую клавишу",
+  "ui.gameResult.time": "Время:",
   "ui.gameResult.score": "Счёт",
   "ui.gameResult.revealScore": "Показать",
   "page.settings.language.title": "Язык",

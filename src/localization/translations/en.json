@@ -6,6 +6,7 @@
   "ui.pwa.install": "Install",
   "ui.heroPortrait.title": "Hero",
   "ui.attackTarget.description": "This enemy will be attacked",
+  "ui.gameResult.time": "Time:",
   "ui.gameResult.score": "Score",
   "ui.gameResult.revealScore": "Reveal",
   "page.settings.language.title": "Language",

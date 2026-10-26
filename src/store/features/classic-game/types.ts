@@ -26,6 +26,7 @@ export type PotionsZoneType = ZoneType & {
 export type GameOutcomeType = "victory" | "defeat";
 
 export type ClassicGameStateType = {
+    time: string;
     scoreRange?: {min: number; max: number};
     lastPlayedCard?: Pick<PlayingCardType, "role" | "rank">;
     log?: GameLogType;

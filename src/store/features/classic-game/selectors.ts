@@ -12,3 +12,5 @@ export const turnNumberClassicGameSelector = (state: RootState) => state.classic
 export const isPlayerActionClassicGameSelector = (state: RootState) => !!state.classicGame && !state.classicGame.outcome && state.classicGame.currentPhase === state.classicGame.phaseLifecycle.waitingPhase;
 export const seedClassicGameSelector = (state: RootState) => state.classicGame?.seed;
 export const zonesClassicGameSelector = (state: RootState) => state.classicGame?.zones;
+
+export const classicGameTimeSelector = (state: RootState) => state.classicGame?.time ?? "00:00:00";

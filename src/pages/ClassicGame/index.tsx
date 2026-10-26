@@ -25,6 +25,7 @@ import {
   surrenderGame,
   clearClassicGame,
 } from "store/features/classic-game";
+import {useClassicGameTimer} from "hooks/useClassicGameTimer.ts";
 import Toast from "components/Toast";
 import type { ToastHandleType } from "components/Toast/types.ts";
 import {
@@ -73,6 +74,7 @@ const ClassicGame: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const game = useAppSelector(classicGameSelector);
+  useClassicGameTimer();
   const currentRoomNumber = useAppSelector(currentRoomNumberSelector);
   const gameRef = useRef<HTMLElement>(null);
   const appendTooltipTo = useCallback(() => gameRef.current ?? document.body, []);
