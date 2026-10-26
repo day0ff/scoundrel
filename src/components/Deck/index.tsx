@@ -56,7 +56,7 @@ const Deck: FC<DeckPropsType> = ({
           }
         } : undefined}
       >
-        <DeckStackStyled>
+        <DeckStackStyled data-deck-stack>
           {Array.from({ length: layerCount }, (_, index) => {
             // A seeded value keeps each layer's angle stable across renders.
             const random =

@@ -1,4 +1,5 @@
 import { Fragment, useLayoutEffect, useMemo, type FC } from "react";
+import {useCardToCryptSlide} from "hooks/useCardToCryptSlide.ts";
 import {useAssignedNode} from "hooks";
 import { useDroppable, useDndContext } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
@@ -38,6 +39,7 @@ const CardZone: FC<CardZonePropsType> = ({
   const feedbackWeapons = useAppSelector(weaponsWithAttackFeedbackSelector);
   const zone = sourceZone.type === "weapons" ? feedbackWeapons ?? sourceZone : sourceZone;
   const [cardsRef, cardsNode] = useAssignedNode<HTMLDivElement>();
+  useCardToCryptSlide(cardsNode, zone.cards, game?.zones.crypt.cards ?? []);
 
   useLayoutEffect(() => {
     if (!cardsNode) return;
