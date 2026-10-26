@@ -118,13 +118,13 @@ const ClassicGame: FC = () => {
     : undefined;
   const waitingForPlayer =
     !game.outcome && game.currentPhase === game.phaseLifecycle.waitingPhase;
-  const handleAttack = (cardId: string) => {
-    const reason = getAttackRejection(game, cardId);
+  const handleAttack = (cardId: string, enemyId?: string) => {
+    const reason = getAttackRejection(game, cardId, enemyId);
     if (reason) {
       toastRef.current?.enqueue(t(`ui.${reason}.rejection`));
       return;
     }
-    if (resolveAttack(game, cardId)) dispatch(attackCard({cardId}));
+    if (resolveAttack(game, cardId, enemyId)) dispatch(attackCard({cardId, enemyId}));
   };
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     setActiveCardId(null);

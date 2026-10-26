@@ -11,7 +11,7 @@ import WeaponDurability from "../../../WeaponDurability";
 import WeaponLastKill from "../../../WeaponLastKill";
 import type {GameCardPropsType} from "./types.ts";
 import {GameCardStyled, StrikeStyled} from "./styles.ts";
-import {pendingAttacksSelector} from "./selectors.ts";
+import {firstAttackerIdSelector, pendingAttacksSelector} from "./selectors.ts";
 import {activeEffectAnimationClassicGameSelector} from "store/features/classic-game/selectors.ts";
 import {ANIMATIONS_MAP} from "entities/animations/constants.ts";
 import {useTouchDoubleTap} from "hooks/useTouchDoubleTap.ts";
@@ -20,6 +20,7 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
     const dispatch = useAppDispatch();
     const selectedCardId = useAppSelector(selectedCardIdClassicGameSelector);
     const isPlayerAction = useAppSelector(isPlayerActionClassicGameSelector);
+    const firstAttackerId = useAppSelector(firstAttackerIdSelector);
     const {t} = useTranslation();
     const lastKilledRank = card.killedEnemies?.at(-1)?.rank;
     const pendingAttacks = useAppSelector(pendingAttacksSelector);
@@ -28,12 +29,15 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
     const hit = defeated && activeEffect?.animation === "day0ff:animation-attack" && activeEffect.enemyId === card.id;
     const broken = zone === "weapons" && pendingAttacks.some(event => event.attackerId === card.id && event.weaponBroken);
     const handleQuickAction = () => {
-        if (!isPlayerAction || dragging) return;
+        if (!isPlayerAction || dragging || defeated || broken) return;
         if (canPlayPotion(card, zone)) dispatch(playCard({cardId: card.id, from: zone}));
         else if (zone === "room" && card.role === "weapon") {
             dispatch(moveCard({cardId: card.id, from: zone, to: "crypt"}));
         }
         else if (canAttackCard(card, zone)) onAttack(card.id);
+        else if (zone === "room" && card.role === "enemy" && firstAttackerId) {
+            onAttack(firstAttackerId, card.id);
+        }
     };
     const doubleTapHandlers = useTouchDoubleTap(handleQuickAction);
     const pointerType = useRef<string | null>(null);

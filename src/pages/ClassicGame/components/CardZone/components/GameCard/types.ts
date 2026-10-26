@@ -8,5 +8,5 @@ export type GameCardPropsType = Pick<TippyProps, "appendTo"> & {
     showTarget: boolean;
     card: PlayingCardType;
     zone: ZoneKindType;
-    onAttack: (cardId: string) => void;
+    onAttack: (cardId: string, enemyId?: string) => void;
 };
