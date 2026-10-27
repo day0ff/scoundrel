@@ -1,4 +1,4 @@
-import {migrateGameState} from "./migrations.ts";
+import {migrateGameState, migrateRecordsByPack} from "./migrations.ts";
 import {configureStore, combineReducers} from "@reduxjs/toolkit";
 import {createMigrate, persistReducer, persistStore} from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -20,9 +20,10 @@ import {serializeTransform} from "./serializer.ts";
 // ---- PERSIST CONFIG ----
 const persistConfig = {
     key: 'root',
-    version: 0,
+    version: 1,
     migrate: createMigrate({
         0: migrateGameState,
+        1: migrateRecordsByPack,
     }),
     storage,
     whitelist: ['profiles', 'settings', 'game', 'records'], // "animation", "collections", "dialog", "game" and "roll" slices are ignored

@@ -46,13 +46,13 @@ export const DungeonPreviewStyled = styled(PageContainerStyled).attrs({
 
 export const DungeonPreviewTitleStyled = styled(CollectionsTitleStyled).attrs({
   as: "h1",
-})`
+})<{$color: string}>`
   font-size: 64px;
   margin: 0;
   max-width: 100%;
   line-height: 1.3;
   overflow-wrap: anywhere;
-  color: red;
+  color: ${({$color}) => $color};
   text-shadow:
     -1px -1px 0 black,
     -1px 2px 0 black,
@@ -96,17 +96,9 @@ export const DungeonPreviewParagraphStyled = styled.p`
     0 2px 4px whitesmoke;
   white-space: pre-line;
 
-  @media ${({ theme }) => theme.media.laptop} {
-    font-size: 18px;
-  }
-
-  @media ${({ theme }) => theme.media.tablet} {
-    font-size: 16px;
-  }
-
-  @media (orientation: landscape) {
-    max-width: 720px;
-  }
+  @media ${({ theme }) => theme.media.laptop} { font-size: 18px; }
+  @media ${({ theme }) => theme.media.tablet} { font-size: 16px; }
+  @media (orientation: landscape) { max-width: 720px; }
 `;
 
 export const ActionsStyled = styled.div`

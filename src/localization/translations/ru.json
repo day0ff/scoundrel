@@ -1,4 +1,6 @@
 {
+  "page.pack-selection.enter": "Войти в замок",
+  "page.pack-selection.home": "На главную",
   "button.packs.text": "Наборы",
   "modal.packs.title": "Наборы",
   "pack.classic.name": "Классический",
@@ -59,7 +61,7 @@
   "ui.dungeonRooms.completed": "Пройдено",
   "ui.dungeonRooms.enemies": "Враги",
   "ui.dungeonRooms.strength": "Сила врагов",
-  "ui.dungeonRooms.back": "На главную",
+  "ui.dungeonRooms.back": "Выбрать другой замок",
   "ui.dungeonRooms.reroll": "Пересоздать подземелье",
   "ui.dungeonRooms.enter": "Войти в подземелье",
   "page.dungeon-preview.title": "Ваше подземелье",

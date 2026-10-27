@@ -1,3 +1,4 @@
+import {activePackSelector} from "store/features/game/selectors.ts";
 import { useCallback, useLayoutEffect, useRef, useState, type FC, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import { Navigate, useNavigate } from "react-router";
@@ -14,7 +15,6 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { BASE_URL } from "constants.ts";
 import { useAppDispatch, useAppSelector } from "store/hooks.ts";
 import { gameSelector } from "store/features/game/selectors.ts";
 import {
@@ -57,10 +57,6 @@ import {
   GameTableStyled,
 } from "./styles.ts";
 
-const src = `${BASE_URL}/images/backgrounds/classic-dangen.png`;
-const graveyardBack = `${BASE_URL}/images/cards/backs/graveyard.png`;
-const dungenDoorBack = `${BASE_URL}/images/cards/backs/dungen-door.png`;
-const dungenGridBack = `${BASE_URL}/images/cards/backs/dungen-grid.png`;
 
 const getPreviewAttackerId = (target: EventTarget | null) =>
   target instanceof Element
@@ -74,6 +70,7 @@ const ClassicGame: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const game = useAppSelector(gameSelector);
+  const pack = useAppSelector(activePackSelector);
   useGameTimer();
   const currentRoomNumber = useAppSelector(currentRoomNumberSelector);
   const gameRef = useRef<HTMLElement>(null);
@@ -202,7 +199,7 @@ const ClassicGame: FC = () => {
   if (game.started === false && !game.outcome)
     return <Navigate to="/dungeon-preview" replace />;
   return (
-    <ClassicGameStyled ref={gameRef} $url={src} onKeyDown={handleKeyDown}>
+    <ClassicGameStyled ref={gameRef} $url={pack.room} onKeyDown={handleKeyDown}>
       <EffectAnimations />
       <DndContext
         autoScroll={false}
@@ -240,7 +237,7 @@ const ClassicGame: FC = () => {
             label={t("ui.deck.dungeon.label")}
             name={t("ui.deck.dungeon.name")}
             description={t("ui.deck.dungeon.description")}
-            image={dungenDoorBack}
+            image={pack.dungeon}
           />
           <RoomZone
             onTransitionChange={setRoomTransition}
@@ -262,7 +259,7 @@ const ClassicGame: FC = () => {
             name={t("ui.deck.discard.name")}
             description={t("ui.deck.discard.description")}
             direction="right"
-            image={dungenGridBack}
+            image={pack.discard}
           />
           <div data-turn-controls>
             <TurnControls disabled={dragging} />
@@ -273,7 +270,7 @@ const ClassicGame: FC = () => {
             name={t("ui.deck.crypt.name")}
             description={t("ui.deck.crypt.description")}
             direction="right"
-            image={graveyardBack}
+            image={pack.crypt}
           />
           <div data-hero-frame>
             <HeroFrameStyled variant="inner" tileVariant="stone" cornerRadius={32}>

@@ -44,3 +44,20 @@ export const migrateGameState = (persisted: PersistedState): PersistedState => {
     };
     return migrated;
 };
+
+// Version 1: historical records all belonged to the Classic pack.
+export const migrateRecordsByPack = (persisted: PersistedState): PersistedState => {
+    if (!persisted) return persisted;
+    const state = persisted as PersistedState & {
+        records?: Array<{gameType: string; packIdentifier?: string; records: WinningRecordType[]}>;
+    };
+    if (!state.records) return persisted;
+    const migrated = {
+        ...state,
+        records: state.records.map(group => ({
+            ...group,
+            packIdentifier: group.packIdentifier ?? "day0ff:pack-classic",
+        })),
+    };
+    return migrated;
+};

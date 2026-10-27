@@ -19,6 +19,7 @@ recordsListenerMiddleware.startListening({
         if (before?.outcome !== "victory") {
             api.dispatch(addWinningRecord({
                 gameType: GAME_MODES[game.mode].recordGameType,
+                packIdentifier: game.packIdentifier,
                 record: {
                     playerName: currentProfileNameSelector(state) ?? "",
                     score: calculateGameScore(game),
@@ -27,7 +28,7 @@ recordsListenerMiddleware.startListening({
             }));
         } else if (setTime.match(action) && before.time !== game.time) {
             // The running timer flushes its final elapsed time when victory stops play.
-            api.dispatch(finalizeWinningRecordTime({gameType: GAME_MODES[game.mode].recordGameType, time: game.time}));
+            api.dispatch(finalizeWinningRecordTime({gameType: GAME_MODES[game.mode].recordGameType, packIdentifier: game.packIdentifier, time: game.time}));
         }
     },
 });

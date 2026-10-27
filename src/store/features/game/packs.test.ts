@@ -17,11 +17,14 @@ import {getInitialGame} from "./constants.ts";
 import {restoreGame} from "./helpers.ts";
 import {gameListenerMiddleware} from "./middleware.ts";
 import {resetSelectedDungeon, selectGamePack} from "./actions.ts";
+import {activePackSelector} from "./selectors.ts";
 import {doesReplayMatchGame} from "./replay.ts";
 
 const alternate: PackDataType<string> = {
     ...classicPack,
     identifier: "day0ff:pack-test-alternate",
+    castle: "/test/castle.png", room: "/test/room.png",
+    dungeon: "/test/dungeon.png", discard: "/test/discard.png", crypt: "/test/crypt.png",
     decks: [{identifier: "day0ff:deck-skeleton", cards: ["day0ff:pasteboard-skeleton.2"]}],
 };
 
@@ -57,6 +60,7 @@ export const runGamePackTests = async () => {
         assert.equal(selected(), classicPack.identifier);
         dispatch(selectGamePack(alternate.identifier));
         assert.equal(selected(), alternate.identifier);
+        assert.equal(activePackSelector(store.getState() as RootState), alternate);
         const preview = store.getState().game;
         assert.ok(preview);
         dispatch(selectGamePack(alternate.identifier));
@@ -71,6 +75,7 @@ export const runGamePackTests = async () => {
         dispatch(clearGame());
         assert.equal(store.getState().game, null);
         assert.equal(selected(), alternate.identifier);
+        assert.equal(activePackSelector(store.getState() as RootState).castle, alternate.castle);
 
         // A profile without a run or selection must not inherit the previous profile's pack.
         dispatch(setCurrentProfileId("second"));
@@ -80,6 +85,7 @@ export const runGamePackTests = async () => {
         dispatch(setCurrentProfileId("first"));
         assert.equal(store.getState().game, null);
         assert.equal(selected(), alternate.identifier);
+        assert.equal(activePackSelector(store.getState() as RootState).castle, alternate.castle);
 
         // Persist and restore after defeat, when only the remembered selection remains.
         const serialized = serializeTransform.in(store.getState().profiles, "profiles", {});

@@ -44,7 +44,7 @@ const GameResult: FC<GameResultPropsType> = ({ outcome, isOpen, onClose }) => {
     if (pendingExitRef.current) return;
     pendingExitRef.current = () => dispatch(resetSelectedDungeon(hero?.identifier));
     setLeaving(true);
-    navigate("/dungeon-preview");
+    navigate("/pack-selection");
   };
   const handleMainMenu = () => {
     if (pendingExitRef.current) return;

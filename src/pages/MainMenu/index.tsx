@@ -3,7 +3,7 @@ import { gameSelector } from "store/features/game/selectors.ts";
 import { useEffect, useRef } from "react";
 import { useAudioManager } from "hooks/useAudioManager.ts";
 import { SOUND_PATHS } from "assets/sounds";
-import { BASE_URL } from "constants.ts";
+import {activePackSelector} from "store/features/game/selectors.ts";
 import Logo from "components/Logo";
 import WeatherController from "componentsShared/WeatherController";
 
@@ -20,10 +20,10 @@ import PacksButton from "./components/PacksButton";
 import SettingsButton from "./components/SettingsButton";
 import InstallPWAButton from "./components/InstallPWAButton";
 
-const src = `${BASE_URL}/images/backgrounds/castle.png`;
 
 const MainMenu = () => {
   const game = useAppSelector(gameSelector);
+  const pack = useAppSelector(activePackSelector);
   const refView = useRef<HTMLDivElement>(null);
   const audio = useAudioManager();
 
@@ -36,13 +36,13 @@ const MainMenu = () => {
   }, [audio]);
 
   return (
-    <WeatherController ref={refView} min={0} max={3} current={0} src={src}>
+    <WeatherController ref={refView} min={0} max={3} current={0} src={pack.castle}>
       <MainStyled>
         <Title />
         <MenuStyled>
           <MenuButton
             value={game ? "link.page.continue" : "link.page.new-game"}
-            to={game ? "/classic-game" : "/dungeon-preview"}
+            to={game ? "/classic-game" : "/pack-selection"}
             autoFocus={true}
           />
           <ProfilesButton />

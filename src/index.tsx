@@ -10,6 +10,7 @@ import "./index.css";
 
 import Home from "pages/Home";
 import MainMenu from "pages/MainMenu";
+import PackSelection from "pages/PackSelection";
 import DungeonPreview from "pages/DungeonPreview";
 import ClassicGame from "pages/ClassicGame";
 import Records from "pages/Records";
@@ -30,6 +31,7 @@ function Index() {
                     <PageTransitionRoutes>
                         <Route index element={<Home/>}/>
                         <Route path={"/main-menu"} element={<MainMenu/>}/>
+                        <Route path={"/pack-selection"} element={<PackSelection/>}/>
                         <Route path={"/dungeon-preview"} element={<DungeonPreview/>}/>
                         <Route path={"/classic-game"} element={<ClassicGame/>}/>
                         <Route path={"/records"} element={<Records/>}/>

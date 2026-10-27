@@ -8,10 +8,13 @@ import {calculateGameScore} from "store/features/game/score.ts";
 import profiles, {createProfile, setCurrentProfileId} from "store/features/profiles";
 import records, {addWinningRecord} from "./index.ts";
 import {recordsListenerMiddleware} from "./middleware.ts";
+import {classicPack} from "entities/packs/classic.ts";
+import {allPacks} from "entities/packs/constants.ts";
+import type {PackIdentifierType} from "entities/packs/types.ts";
 import {rankedRecordsSelector} from "./selectors.ts";
 
-const fixture = (kind: "skeleton" | "weapon" | "heal" = "skeleton") => {
-    const game = createGame([], getSeededRandom("RECORDS"));
+const fixture = (kind: "skeleton" | "weapon" | "heal" = "skeleton", packIdentifier: PackIdentifierType = classicPack.identifier) => {
+    const game = createGame([], getSeededRandom("RECORDS"), undefined, "classic", packIdentifier);
     game.started = true;
     game.time = "00:02:15";
     game.zones.room.cards = [initPasteboard(`day0ff:pasteboard-${kind}.2`)];
@@ -28,7 +31,7 @@ export const runRecordsTests = () => {
             .concat(recordsListenerMiddleware.middleware),
     });
     const defaultRecord = {playerName: "Scoundrel", score: 1, time: "01:07:00"};
-    assert.deepEqual(store.getState().records[0], {gameType: "classic", records: [defaultRecord]});
+    assert.deepEqual(store.getState().records[0], {gameType: "classic", packIdentifier: classicPack.identifier, records: [defaultRecord]});
     passed.push("classic game starts with the default Scoundrel record");
     const profileAction = createProfile("Record Player");
     store.dispatch(profileAction);
@@ -38,7 +41,7 @@ export const runRecordsTests = () => {
     store.dispatch(attackCard({cardId: game.zones.weapons.cards[0].id, enemyId: game.zones.room.cards[0].id}));
     const winner = store.getState().game!;
     assert.equal(winner.outcome, "victory");
-    assert.deepEqual(store.getState().records[0], {gameType: "classic", records: [defaultRecord, {
+    assert.deepEqual(store.getState().records[0], {gameType: "classic", packIdentifier: classicPack.identifier, records: [defaultRecord, {
         playerName: "Record Player", score: calculateGameScore(winner), time: "00:02:15",
     }]});
     passed.push("winning attack automatically saves player name, final score and time");
@@ -70,10 +73,10 @@ export const runRecordsTests = () => {
 
     let ranking = records(undefined, {type: "init"});
     for (const time of ["100:00:00", "02:00:00", "00:01:59", "00:01:59"]) {
-        ranking = records(ranking, addWinningRecord({gameType: "classic", record: {playerName: time, score: 10, time}}));
+        ranking = records(ranking, addWinningRecord({gameType: "classic", packIdentifier: classicPack.identifier, record: {playerName: time, score: 10, time}}));
     }
-    ranking = records(ranking, addWinningRecord({gameType: "classic", record: {playerName: "Higher score", score: 20, time: "100:00:00"}}));
-    ranking = records(ranking, addWinningRecord({gameType: "classic", record: {playerName: "Lower score", score: 5, time: "00:00:01"}}));
+    ranking = records(ranking, addWinningRecord({gameType: "classic", packIdentifier: classicPack.identifier, record: {playerName: "Higher score", score: 20, time: "100:00:00"}}));
+    ranking = records(ranking, addWinningRecord({gameType: "classic", packIdentifier: classicPack.identifier, record: {playerName: "Lower score", score: 5, time: "00:00:01"}}));
     const sorted = rankedRecordsSelector.resultFunc(ranking);
     assert.deepEqual(sorted[0].records.map(({score, time}) => ({score, time})), [
         {score: 20, time: "100:00:00"},
@@ -88,5 +91,21 @@ export const runRecordsTests = () => {
     assert.equal(ranking[0].records[1].time, "100:00:00");
     assert.deepEqual(JSON.parse(JSON.stringify(ranking)), ranking);
     passed.push("rankings prioritize highest score, then fastest time, preserve stored order, and serialize");
+    const alternate = {...classicPack, identifier: "day0ff:pack-records-test" as const};
+    allPacks.push(alternate);
+    try {
+        store.dispatch(setGame(fixture("skeleton", alternate.identifier)));
+        const otherGame = store.getState().game!;
+        store.dispatch(attackCard({cardId: otherGame.zones.weapons.cards[0].id, enemyId: otherGame.zones.room.cards[0].id}));
+        assert.equal(store.getState().records.length, 2);
+        assert.equal(store.getState().records[0].records.length, 4);
+        assert.equal(store.getState().records[1].packIdentifier, alternate.identifier);
+        store.dispatch(setTime("00:04:00"));
+        assert.equal(store.getState().records[1].records[0].time, "00:04:00");
+        assert.equal(store.getState().records[0].records[1].time, "00:03:04");
+        passed.push("wins and timer finalization are isolated by pack within Classic mode");
+    } finally {
+        allPacks.splice(allPacks.indexOf(alternate), 1);
+    }
     return passed;
 };

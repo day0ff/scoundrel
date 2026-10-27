@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {createMigrate} from "redux-persist";
-import {migrateGameState} from "./migrations.ts";
+import {migrateGameState, migrateRecordsByPack} from "./migrations.ts";
 import {getInitialGame} from "./features/game/constants.ts";
 import {restoreGame} from "./features/game/helpers.ts";
 import {gameSlice, startGame} from "./features/game";
@@ -38,6 +38,30 @@ export const runGameMigrationTests = async () => {
     assert.deepEqual(await migrateGameState(migrated as unknown as typeof persisted), migrated);
     assert.equal(await migrateGameState(undefined), undefined);
 
+    const historical = {
+        ...persisted,
+        settings: {sound: {enabled: true, volume: 0.5}},
+        records: [{gameType: "classic-game", records: [{playerName: "Old", score: 10, time: "00:01:00"}]}],
+    };
+    const before = structuredClone(historical);
+    const migrateToOne = createMigrate({0: migrateGameState, 1: migrateRecordsByPack});
+    const upgraded = await migrateToOne(historical, 1) as unknown as typeof historical & {
+        records: Array<{packIdentifier: string}>;
+    };
+    assert.equal(upgraded.records[0].gameType, "classic");
+    assert.equal(upgraded.records[0].packIdentifier, "day0ff:pack-classic");
+    assert.deepEqual(upgraded.records[0].records, historical.records[0].records);
+    assert.deepEqual(upgraded.settings, historical.settings);
+    assert.deepEqual(historical, before);
+    const fromZero = {...historical, _persist: {version: 0, rehydrated: true}};
+    assert.deepEqual(await migrateToOne(fromZero, 1), migrateRecordsByPack(fromZero));
+    const fromOne = {...upgraded, _persist: {version: 1, rehydrated: true}};
+    assert.equal(await migrateToOne(fromOne, 1), fromOne);
+    assert.equal(await migrateToOne(undefined, 1), undefined);
+    assert.equal(migrateRecordsByPack(undefined), undefined);
+    const known = {...fromOne, records: [{...fromOne.records[0], packIdentifier: "day0ff:pack-other"}]};
+    assert.deepEqual(migrateRecordsByPack(known), known);
+
     const started = gameSlice.reducer(initial, startGame());
     assert.ok(started);
     const replayed = replayGameLog({
@@ -47,5 +71,5 @@ export const runGameMigrationTests = async () => {
             healthAfter: started.hero.health.current, seedAfter: started.seed}],
     });
     assert.deepEqual(replayed, started);
-    return ["version -1 saves run migration 0; version 0 saves skip it", "legacy root and profile saves migrate, restore and remain stable", "legacy replay actions run through the shared game slice"];
+    return ["migration 1 assigns legacy records to Classic, preserves data, and supports skipped releases", "version -1 saves run migration 0; version 0 saves skip it", "legacy root and profile saves migrate, restore and remain stable", "legacy replay actions run through the shared game slice"];
 };

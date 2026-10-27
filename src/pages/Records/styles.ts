@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { OldScreenStyle, PixelCardStyled } from "styles";
 import MenuButton from "pages/MainMenu/components/MenuButton";
-import { PackBoxDraggableDeckStyled } from "componentsShared/Packs/components/PackBox/styles.ts";
 
 export const RecordsStyled = styled(PixelCardStyled).attrs({ as: "main" })<{
   $url: string;
@@ -69,14 +68,6 @@ export const RecordsPanelStyled = styled(PixelCardStyled)`
   overflow: hidden;
 `;
 
-export const TabsStyled = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 16px;
-  border-bottom: 1px solid #8c693b;
-`;
-
 export const RecordsModeTitleStyled = styled.h2`
   margin: 0;
   padding: 16px 16px 0;
@@ -133,37 +124,6 @@ export const RecordsHeaderButtonStyled = styled(MenuButton)`
   @media ${({ theme }) => theme.media.mobile} {
     font-size: clamp(18px, 5vw, 24px);
     letter-spacing: 0;
-  }
-`;
-
-export const TabStyled = styled.button`
-  position: relative;
-  width: fit-content;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  flex-shrink: 0;
-  filter: brightness(0.7);
-
-  &[aria-selected="true"] {
-    filter: drop-shadow(0 0 6px #d2a052);
-  }
-
-  &:focus-visible {
-    outline: 2px solid gold;
-    outline-offset: 4px;
-  }
-`;
-
-export const TabPackBoxStyled = styled(PackBoxDraggableDeckStyled).attrs({
-  size: 2,
-  wobbleIntensity: 0,
-  wobbleSpeed: 0,
-})`
-  width: 80px;
-  @media ${({ theme }) => theme.media.tablet} {
-    width: 60px;
   }
 `;
 
