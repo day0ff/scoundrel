@@ -1,4 +1,6 @@
 import type {GameModeType} from "entities/game-modes/types.ts";
+import type {PackIdentifierType} from "entities/packs/types.ts";
+import {getPack} from "entities/packs/constants.ts";
 import {createGameLog} from "./log.ts";
 import {getAttackRejection} from "./attack.ts";
 import {SeededRandom} from "helpers/SeededRandom.ts";
@@ -39,6 +41,7 @@ export const createGame = (
     seed: SeedType,
     heroIdentifier: Parameters<typeof initHero>[0] = "day0ff:hero-wanderer",
     mode: GameModeType = "classic",
+    packIdentifier: PackIdentifierType = GAME_MODES[mode].defaultPackIdentifier,
 ): GameStateType => {
     const hero = initHero(heroIdentifier);
     const zones = Object.fromEntries(Object.entries(hero.zones).map(([kind, config]) => [
@@ -52,6 +55,7 @@ export const createGame = (
     zones.dungeon.cards.push(...cards.map(restorePasteboard));
     const state: GameStateType = {
         mode,
+        packIdentifier,
         seed,
         started: false,
         time: "00:00:00",
@@ -120,6 +124,7 @@ const restoreGameState = (state: GameStateType | PreAnimationGameStateType | Pre
     const rejectedCards = hand.cards.filter(card => card.suit !== "weapon" && card.suit !== "heal");
     return {
         mode: "classic",
+        packIdentifier: GAME_MODES.classic.defaultPackIdentifier,
         seed: state.seed,
         time: "00:00:00",
         hero,
@@ -142,6 +147,9 @@ const restoreGameState = (state: GameStateType | PreAnimationGameStateType | Pre
 export const restoreGame = (state: Parameters<typeof restoreGameState>[0]): GameStateType => {
     const restored = restoreGameState(state);
     restored.mode ??= "classic";
+    if (!restored.packIdentifier || !getPack(restored.packIdentifier)) {
+        restored.packIdentifier = GAME_MODES[restored.mode].defaultPackIdentifier;
+    }
     restored.zones = {...restored.zones};
     for (const kind of Object.keys(restored.zones) as ZoneKindType[]) {
         if (kind === "room") {

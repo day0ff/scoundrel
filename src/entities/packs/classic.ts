@@ -31,9 +31,6 @@ const healPotionsCardsIdentifiers = [
   "day0ff:pasteboard-heal.8",
   "day0ff:pasteboard-heal.9",
   "day0ff:pasteboard-heal.T",
-  // "day0ff:pasteboard-heal.J",
-  // "day0ff:pasteboard-heal.Q",
-  // "day0ff:pasteboard-heal.K",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 const skeletonCardsIdentifiers = [
@@ -74,7 +71,10 @@ export const classicPack = {
     description: "pack.classic.description",
     card: PACKS_CARDS_MAP["day0ff:card-pack.classic"],
     castle: `${BASE_URL}/images/packs/classic/castle.png`,
-    dungeon: `${BASE_URL}/images/packs/classic/dungeon.png`,
+    room: `${BASE_URL}/images/packs/classic/room.png`,
+    dungeon: `${BASE_URL}/images/packs/classic/dungen.png`,
+    discard: `${BASE_URL}/images/packs/classic/discard.png`,
+    crypt: `${BASE_URL}/images/packs/classic/crypt.png`,
     isLocked: false,
     isNotFound: false,
     decks: [

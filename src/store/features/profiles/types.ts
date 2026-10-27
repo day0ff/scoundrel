@@ -1,4 +1,5 @@
 import type {GameModeType} from "entities/game-modes/types.ts";
+import type {PackIdentifierType} from "entities/packs/types.ts";
 import {CollectionsStateType} from "../collections/types.ts";
 import {GameStateType} from "entities/game/types.ts";
 
@@ -6,6 +7,7 @@ import {GameStateType} from "entities/game/types.ts";
 export type ProfileType = {
     profileId: string;
     name: string;
+    selectedPackIdentifier?: PackIdentifierType;
     collections: CollectionsStateType;
     games: Partial<Record<GameModeType, GameStateType | null>>;
 }

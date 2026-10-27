@@ -13,7 +13,7 @@ export const gameSlice = createSlice({
     reducers: {
         resetDungeon: {
             reducer: (_state, action: PayloadAction<GameStateType>) => action.payload,
-            prepare: (heroIdentifier?: Parameters<typeof getInitialGame>[0], mode?: Parameters<typeof getInitialGame>[1]) => ({payload: getInitialGame(heroIdentifier, mode)}),
+            prepare: (...args: Parameters<typeof getInitialGame>) => ({payload: getInitialGame(...args)}),
         },
         clearGame: () => null,
         setTime: (state, {payload}: PayloadAction<string>) => {

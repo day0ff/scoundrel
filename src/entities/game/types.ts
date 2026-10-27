@@ -1,4 +1,5 @@
 import type {GameModeType} from "entities/game-modes/types.ts";
+import type {PackIdentifierType} from "entities/packs/types.ts";
 import {InitDeckDataType} from "entities/decks/types.ts";
 import {InitHeroDataType} from "entities/heroes/types.ts";
 import {InitPasteboardDataType} from "entities/pasteboards/types.ts";
@@ -30,6 +31,7 @@ export type GameOutcomeType = "victory" | "defeat";
 
 export type GameStateType = {
     mode: GameModeType;
+    packIdentifier: PackIdentifierType;
     time: string;
     scoreRange?: {min: number; max: number};
     lastPlayedCard?: Pick<PlayingCardType, "role" | "rank">;

@@ -1,4 +1,5 @@
 import type {GameModeType} from "entities/game-modes/types.ts";
+import {GAME_MODES} from "entities/game-modes/constants.ts";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {v4 as getUuid} from "uuid";
 import {initialCollectionsState} from "../collections/constants.ts";
@@ -33,6 +34,7 @@ export const profilesSlice = createSlice({
                     payload: {
                         profileId,
                         name,
+                        selectedPackIdentifier: GAME_MODES.classic.defaultPackIdentifier,
                         collections: initialCollectionsState,
                         games: {},
                     },
@@ -54,7 +56,10 @@ export const profilesSlice = createSlice({
         },
         updateProfileGame: (state, action: PayloadAction<{mode: GameModeType; game: GameStateType | null}>) => {
             const profile = state.profiles.find(item => item.profileId === state.currentProfileId);
-            if (profile) profile.games[action.payload.mode] = action.payload.game;
+            if (profile) {
+                profile.games[action.payload.mode] = action.payload.game;
+                if (action.payload.game) profile.selectedPackIdentifier = action.payload.game.packIdentifier;
+            }
         },
         updateProfileCollectionsData: (state, action: PayloadAction<CollectionsStateType>) => {
             if (state === null) return;

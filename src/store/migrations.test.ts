@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {createMigrate} from "redux-persist";
 import {migrateGameState} from "./migrations.ts";
 import {getInitialGame} from "./features/game/constants.ts";
 import {restoreGame} from "./features/game/helpers.ts";
@@ -17,13 +18,23 @@ export const runGameMigrationTests = async () => {
             profileId: "old", name: "Old", collections: initialCollectionsState, classicGame: legacy,
         }]},
     };
-    const migrated = await migrateGameState(persisted) as unknown as {
+    let migrationCalls = 0;
+    const migrate = createMigrate({0: state => {
+        migrationCalls += 1;
+        return migrateGameState(state);
+    }});
+    const migrated = await migrate(persisted, 0) as unknown as {
         game: typeof initial;
         profiles: {profiles: Array<{games: {classic: typeof initial}}>};
     };
     assert.equal("classicGame" in migrated, false);
     assert.equal(restoreGame(migrated.game).mode, "classic");
     assert.equal(restoreGame(migrated.profiles.profiles[0].games.classic).mode, "classic");
+    assert.equal(migrationCalls, 1);
+    // persistReducer writes the configured version after rehydration.
+    const versionZero = {...migrated, _persist: {version: 0, rehydrated: true}};
+    assert.equal(await migrate(versionZero, 0), versionZero);
+    assert.equal(migrationCalls, 1);
     assert.deepEqual(await migrateGameState(migrated as unknown as typeof persisted), migrated);
     assert.equal(await migrateGameState(undefined), undefined);
 
@@ -36,5 +47,5 @@ export const runGameMigrationTests = async () => {
             healthAfter: started.hero.health.current, seedAfter: started.seed}],
     });
     assert.deepEqual(replayed, started);
-    return ["legacy root and profile saves migrate, restore and remain stable", "legacy replay actions run through the shared game slice"];
+    return ["version -1 saves run migration 0; version 0 saves skip it", "legacy root and profile saves migrate, restore and remain stable", "legacy replay actions run through the shared game slice"];
 };

@@ -13,6 +13,8 @@ try {
     for (const name of runPackTests()) process.stdout.write(`PASS ${name}\n`);
     const {runGameMigrationTests} = await server.ssrLoadModule("/src/store/migrations.test.ts");
     for (const name of await runGameMigrationTests()) process.stdout.write(`PASS ${name}\n`);
+    const {runGamePackTests} = await server.ssrLoadModule("/src/store/features/game/packs.test.ts");
+    for (const name of await runGamePackTests()) process.stdout.write(`PASS ${name}\n`);
     const {runGameTests} = await server.ssrLoadModule("/src/store/features/game/lifecycle.test.ts");
     for (const name of runGameTests()) process.stdout.write(`PASS ${name}\n`);
 } finally {

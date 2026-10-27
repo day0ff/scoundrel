@@ -5,5 +5,5 @@ export const classicMode = {
     identifier: "classic",
     phaseLifecycle: classicPhaseLifecycle,
     recordGameType: "classic",
-    pack: classicPack.identifier,
+    defaultPackIdentifier: classicPack.identifier,
 } as const;

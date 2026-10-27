@@ -3,7 +3,8 @@ import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "store/hooks.ts";
 import { heroGameSelector } from "store/features/game/selectors.ts";
-import { clearGame, resetDungeon } from "store/features/game";
+import { clearGame } from "store/features/game";
+import {resetSelectedDungeon} from "store/features/game/actions.ts";
 import { useSoundEffect } from "hooks/useSoundEffect.ts";
 import { MODAL_BACKDROP_DURATION_MS } from "components/Modal/constants.ts";
 import { GameButtonStyled } from "../../styles.ts";
@@ -41,7 +42,7 @@ const GameResult: FC<GameResultPropsType> = ({ outcome, isOpen, onClose }) => {
 
   const handleNewGame = () => {
     if (pendingExitRef.current) return;
-    pendingExitRef.current = () => dispatch(resetDungeon(hero?.identifier));
+    pendingExitRef.current = () => dispatch(resetSelectedDungeon(hero?.identifier));
     setLeaving(true);
     navigate("/dungeon-preview");
   };

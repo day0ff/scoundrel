@@ -4,7 +4,8 @@ import {useTranslation} from "react-i18next";
 import {BASE_URL} from "constants.ts";
 import {useAppDispatch, useAppSelector} from "store/hooks.ts";
 import {gameSelector} from "store/features/game/selectors.ts";
-import {clearGame, resetDungeon, startGame} from "store/features/game";
+import {clearGame, startGame} from "store/features/game";
+import {resetSelectedDungeon} from "store/features/game/actions.ts";
 import MenuButton from "pages/MainMenu/components/MenuButton";
 import DungeonRooms from "components/DungeonRooms";
 import {DungeonPreviewStyled, ActionsStyled, DungeonPreviewTitleStyled, DungeonPreviewParagraphStyled} from "./styles.ts";
@@ -19,7 +20,7 @@ const DungeonPreview: FC = () => {
     useEffect(() => {
         if (initialized.current) return;
         initialized.current = true;
-        if (!game) dispatch(resetDungeon());
+        if (!game) dispatch(resetSelectedDungeon());
     }, [dispatch, game]);
     const enterDungeon = () => {
         dispatch(startGame());
@@ -32,7 +33,7 @@ const DungeonPreview: FC = () => {
             {game && <DungeonRooms appendTo={() => previewRef.current ?? document.body}/>}
             <ActionsStyled>
                 <MenuButton value="ui.dungeonRooms.enter" autoFocus data-page-autofocus onClick={enterDungeon}/>
-                <MenuButton value="ui.dungeonRooms.reroll" onClick={() => dispatch(resetDungeon(game?.hero.identifier))}/>
+                <MenuButton value="ui.dungeonRooms.reroll" onClick={() => dispatch(resetSelectedDungeon(game?.hero.identifier))}/>
                 <MenuButton value="ui.dungeonRooms.back" onClick={() => { dispatch(clearGame()); navigate("/main-menu"); }}/>
             </ActionsStyled>
         </DungeonPreviewStyled>

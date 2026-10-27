@@ -1,6 +1,6 @@
 import {migrateGameState} from "./migrations.ts";
 import {configureStore, combineReducers} from "@reduxjs/toolkit";
-import {persistReducer, persistStore} from "redux-persist";
+import {createMigrate, persistReducer, persistStore} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 import collections from "store/features/collections";
@@ -20,7 +20,10 @@ import {serializeTransform} from "./serializer.ts";
 // ---- PERSIST CONFIG ----
 const persistConfig = {
     key: 'root',
-    migrate: migrateGameState,
+    version: 0,
+    migrate: createMigrate({
+        0: migrateGameState,
+    }),
     storage,
     whitelist: ['profiles', 'settings', 'game', 'records'], // "animation", "collections", "dialog", "game" and "roll" slices are ignored
     transforms: [profilesTransform, serializeTransform],

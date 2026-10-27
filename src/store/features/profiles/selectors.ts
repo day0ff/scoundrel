@@ -1,5 +1,7 @@
 import {createSelector} from "@reduxjs/toolkit";
 import type {RootState} from "store/types.ts";
+import {getPack} from "entities/packs/constants.ts";
+import {GAME_MODES} from "entities/game-modes/constants.ts";
 import {
     ProfilesStateType, ProfileType,
 } from "./types.ts";
@@ -22,6 +24,11 @@ export const currentProfileSelector = createSelector([profilesCurrentProfileIdSe
 
 export const currentProfileNameSelector = createSelector(currentProfileSelector, (profile: ProfileType | undefined ): string | undefined => {
     return profile?.name;
+});
+
+export const selectedPackIdentifierSelector = createSelector(currentProfileSelector, profile => {
+    const identifier = profile?.selectedPackIdentifier ?? profile?.games.classic?.packIdentifier;
+    return identifier && getPack(identifier) ? identifier : GAME_MODES.classic.defaultPackIdentifier;
 });
 
 export const getProfileByIndexSelector = (index: number) => createSelector(profilesProfilesSelector, (profiles:Array<ProfileType> ): ProfileType | undefined => {

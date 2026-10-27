@@ -90,4 +90,9 @@ Skills are stored in:
 
 Before performing work covered by a skill, read the relevant `SKILL.md`.
 
+* [store-migrations](.agents/skills/store-migrations/SKILL.md) — Follow the versioned
+  Redux Persist migration workflow when changing persisted state, migration versions,
+  or saved-data compatibility. Covers sequential migrations, root and profile saves,
+  rehydration, and migration testing.
+
 Do not assume that a skill's conventions apply to unrelated parts of the project.

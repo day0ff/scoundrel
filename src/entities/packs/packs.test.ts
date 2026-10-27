@@ -6,7 +6,7 @@ export const runPackTests = () => {
     const first = initPack(classicPack.identifier);
     const second = initPack(classicPack.identifier);
     assert.equal(first.decks.length, 4);
-    assert.equal(first.decks.flatMap(deck => deck.pasteboards).length, 51);
+    assert.equal(first.decks.flatMap(deck => deck.pasteboards).length, 46);
     assert.notEqual(first.id, second.id);
     assert.notEqual(first.decks[0].id, second.decks[0].id);
     assert.notEqual(first.decks[0].pasteboards[0].id, second.decks[0].pasteboards[0].id);

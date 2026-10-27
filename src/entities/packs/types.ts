@@ -18,12 +18,17 @@ type PackType<Identifier extends string, Type extends string> = {
     description: PackTranslationKeysType<Type>;
     card: PackCardType<string>;
     castle: string;
+    room: string;
     dungeon: string;
+    discard: string;
+    crypt: string;
     styles?: DeckDataType<string>["styles"];
     decks: PackDeckType[];
 };
 
 export type PackDataType<Type extends string> = PackType<"pack", Type> & CollectionType;
+
+export type PackIdentifierType = PackDataType<string>["identifier"];
 
 export type InitPackDataType<Type extends string> = Omit<PackDataType<Type>, "decks"> & {
     id: string;
