@@ -76,6 +76,7 @@ const DraggableDeck: FC<DraggableDeckPropsType> = (
             $isSelected={isSelected}
             ref={setNodeRef}
             className={className}
+            amount={amount}
             // @ts-ignore
             style={{cursor, transition: transition ? `${transition}, ${transitionStyle}` : transitionStyle, transform: CSS.Transform.toString(transform)}}
             {...attributes}

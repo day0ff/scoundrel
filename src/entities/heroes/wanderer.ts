@@ -14,5 +14,5 @@ export const wandererHero = {
   card: HERO_CARDS_MAP["day0ff:card-hero.wanderer"],
   rarity: RarityTypes.COMMON,
   zones: configureHeroZones(),
-  health: { min: 0, max: 20, current: 10 },
+  health: { min: 0, max: 20, current: 20 },
 } satisfies WandererHeroDataType;

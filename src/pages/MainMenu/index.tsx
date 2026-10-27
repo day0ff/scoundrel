@@ -16,7 +16,7 @@ import {
   MenuStyled,
   VersionStyled,
 } from "./styles.ts";
-import DecksButton from "./components/DecksButton";
+import PacksButton from "./components/PacksButton";
 import SettingsButton from "./components/SettingsButton";
 import InstallPWAButton from "./components/InstallPWAButton";
 
@@ -46,7 +46,7 @@ const MainMenu = () => {
             autoFocus={true}
           />
           <ProfilesButton />
-          <DecksButton />
+          <PacksButton />
           <MenuButton value="page.records.title" to="/records" />
           <SettingsButton />
           <InstallPWAButton />

@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import {TextStrokeWithShadowStyle} from "styles";
 
-export const DecksTitleStyled = styled.h2`
+export const DecksTitleStyled = styled.h2<{$color: string}>`
     font-size: ${({theme}) => theme.fontSize.huge};
     text-align: center;
     ${TextStrokeWithShadowStyle};
-    color: whitesmoke;
+    color: ${({$color}) => $color};
     margin: 0;
     line-height: 1.4;
     @media ${({theme}) => theme.media.tablet} {

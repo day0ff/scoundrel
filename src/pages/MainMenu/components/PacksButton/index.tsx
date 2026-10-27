@@ -1,12 +1,10 @@
 import {FC, useCallback, useRef, useState} from "react";
-import {useTranslation} from "react-i18next";
-import Decks from "componentsShared/Decks";
+import Packs from "componentsShared/Packs";
 import ModalStack from "componentsShared/ModalStack";
 import MenuButton from "../MenuButton";
-import {DecksButtonPropsType} from "./types.ts";
+import {PacksButtonPropsType} from "./types.ts";
 
-const DecksButton: FC<DecksButtonPropsType> = ({...props}) => {
-    const {t} = useTranslation();
+const PacksButton: FC<PacksButtonPropsType> = ({...props}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const dialogRef = useRef<HTMLDialogElement>(null);
     const getTooltipContainer = useCallback(() => dialogRef.current ?? document.body, []);
@@ -21,10 +19,10 @@ const DecksButton: FC<DecksButtonPropsType> = ({...props}) => {
 
     return (
         <>
-            <ModalStack ref={dialogRef} isOpen={isModalOpen} initialNode={<Decks appendTo={getTooltipContainer}/>} onClose={handleCloseModal} />
-            <MenuButton value={t`button.decks.text`} {...props} onClick={handleOpenModal}/>
+            <ModalStack ref={dialogRef} isOpen={isModalOpen} initialNode={<Packs appendTo={getTooltipContainer}/>} onClose={handleCloseModal} />
+            <MenuButton value="button.packs.text" {...props} onClick={handleOpenModal}/>
         </>
     );
 }
 
-export default DecksButton;
+export default PacksButton;

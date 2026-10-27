@@ -21,7 +21,6 @@ export const DraggableCardWrapper = styled(animated.div).attrs<WithAnimated & Dr
     z-index: ${({$isSelectable, $isSelected}) => $isSelectable ? $isSelected ? "5" : "1" : "0"};
     perspective: 1000px;
     pointer-events: ${({$isSelectable}) => $isSelectable ? 'auto' : 'none'};
-    filter: ${({$isSelected}) => $isSelected ? "drop-shadow(8px 12px 0 #00000099)" : "drop-shadow(4px 4px 0 #00000099)"};
     transition: ${transitionStyle};
 
     &:hover, &:focus, &:focus-within {
