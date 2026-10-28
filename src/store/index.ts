@@ -1,4 +1,4 @@
-import {migrateGameState, migrateRecordsByPack, migrateCollectionsProgress, migrateAnyGameUnlock} from "./migrations.ts";
+import {migrateGameState, migrateRecordsByPack, migrateCollectionsProgress, migrateAnyGameUnlock, migrateVictoryUnlock} from "./migrations.ts";
 import {configureStore, combineReducers} from "@reduxjs/toolkit";
 import {createMigrate, persistReducer, persistStore} from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -22,12 +22,13 @@ import {serializeTransform} from "./serializer.ts";
 // ---- PERSIST CONFIG ----
 const persistConfig = {
     key: 'root',
-    version: 3,
+    version: 4,
     migrate: createMigrate({
         0: migrateGameState,
         1: migrateRecordsByPack,
         2: migrateCollectionsProgress,
         3: migrateAnyGameUnlock,
+        4: migrateVictoryUnlock,
     }),
     storage,
     whitelist: ['profiles', 'settings', 'game', 'records', 'collections'],

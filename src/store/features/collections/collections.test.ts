@@ -63,8 +63,9 @@ export const runCollectionTests = () => {
     dispatch(startGame());
     const started = store.getState().game!;
     dispatch(surrenderGame());
-    assert.equal(pack().isLocked, false);
-    assert.equal(pack().isNotFound, false);
+    assert.equal(pack().isLocked, true);
+    assert.equal(pack().isNotFound, true);
+    assert.deepEqual(store.getState().collections.progress.gamesWon ?? {}, {});
     const key = getCompletedGamesKey("classic", classicPack.identifier);
     assert.equal(store.getState().collections.progress.gamesCompleted[key], 1);
     dispatch(setTime("00:00:10"));
@@ -74,22 +75,22 @@ export const runCollectionTests = () => {
     assert.equal(store.getState().collections.progress.gamesCompleted[key], 1);
     assert.deepEqual(store.getState().profiles.profiles[0].collections, store.getState().collections);
     dispatch(selectGamePack(necromancerPack.identifier));
-    assert.equal(store.getState().game?.packIdentifier, necromancerPack.identifier);
+    assert.equal(store.getState().game?.packIdentifier, classicPack.identifier);
 
     dispatch(setCurrentProfileId("second"));
     assert.equal(pack().isLocked, true);
     dispatch(setGame(getInitialGame(undefined, "classic", necromancerPack.identifier)));
     dispatch(startGame());
     dispatch(surrenderGame());
-    assert.equal(pack().isLocked, false); // Any pack now satisfies Necromancer's condition.
+    assert.equal(pack().isLocked, true); // A defeat with any pack must not satisfy a victory condition.
     dispatch(setCurrentProfileId("first"));
-    assert.equal(pack().isLocked, false);
+    assert.equal(pack().isLocked, true);
 
     const snapshot = serializeTransform.in(store.getState().profiles, "profiles", {});
     const restoredProfiles = serializeTransform.out(JSON.parse(JSON.stringify(snapshot)), "profiles", {}) as ProfilesStateType;
     const restored = makeStore(restoredProfiles);
     restored.dispatch({type: REHYDRATE, key: "root"});
-    assert.equal(restored.getState().collections.packs.find(item => item.identifier === necromancerPack.identifier)?.isLocked, false);
+    assert.equal(restored.getState().collections.packs.find(item => item.identifier === necromancerPack.identifier)?.isLocked, true);
     assert.equal(restored.getState().collections.progress.gamesCompleted[key], 1);
 
     const combat = getInitialGame();
@@ -122,6 +123,15 @@ export const runCollectionTests = () => {
     dispatch(attackCard({cardId: victory.zones.weapons.cards[0].id, enemyId: victory.zones.room.cards[0].id}));
     assert.equal(store.getState().game?.outcome, "victory");
     assert.equal(store.getState().collections.progress.gamesCompleted[key], 2);
+    assert.equal(store.getState().collections.progress.gamesWon?.[key], 1);
+    assert.equal(pack().isLocked, false);
+    assert.equal(pack().isNotFound, false);
+    dispatch(setGame(victory));
+    dispatch(attackCard({cardId: victory.zones.weapons.cards[0].id, enemyId: victory.zones.room.cards[0].id}));
+    assert.equal(store.getState().collections.progress.gamesWon?.[key], 1);
+    const wonProgress = store.getState().collections.progress;
+    assert.equal(isConditionSatisfied({type: "gamesWon", packIdentifier: classicPack.identifier, count: 1}, wonProgress), true);
+    assert.equal(isConditionSatisfied({type: "gamesWon", packIdentifier: necromancerPack.identifier, count: 1}, wonProgress), false);
 
     const custom = structuredClone(initialCollectionsState);
     custom.decks[0].isLocked = true;
@@ -142,7 +152,7 @@ export const runCollectionTests = () => {
     assert.equal(store.getState().collections.progress.enemiesDefeated.skeleton, 100);
 
     return [
-        "collection unlocks accept any completed game and count each run once",
+        "Necromancer unlocks only after victory; losses and surrenders do not count, and each win counts once",
         "unlocks and progress are isolated by profile and survive serialization and rehydration",
         "only confirmed combat defeats award enemy progress; invalid actions, discards and replay do not",
         "discovery and unlock conditions support separate enemy thresholds and deduplicate events",
@@ -175,9 +185,14 @@ export const runCollectionPersistenceTests = async () => {
     const first = createStore();
     let firstPersistor!: ReturnType<typeof persistStore>;
     await new Promise<void>(resolve => { firstPersistor = persistStore(first, undefined, resolve); });
-    first.dispatch(setGame(getInitialGame()));
-    first.dispatch(startGame());
-    first.dispatch(surrenderGame());
+    const victory = getInitialGame();
+    victory.started = true;
+    victory.zones.dungeon.cards = [];
+    victory.zones.discard.cards = [];
+    victory.zones.room.cards = [initPasteboard("day0ff:pasteboard-skeleton.2")];
+    victory.log = createGameLog(victory, "newGame");
+    first.dispatch(setGame(victory));
+    first.dispatch(attackCard({cardId: victory.zones.weapons.cards[0].id, enemyId: victory.zones.room.cards[0].id}));
     await firstPersistor.flush();
     firstPersistor.pause();
     const persisted = JSON.parse(saved.get("persist:collection-test")!);

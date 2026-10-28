@@ -17,8 +17,8 @@ export const necromancerPack = {
     isNotFound: true,
     condition: {
         description: "pack.necromancer.unlock.description",
-        unlock: {type: "gamesCompleted", mode: "classic", packIdentifier: classicPack.identifier, count: 1},
-        discover: {type: "gamesCompleted", mode: "classic", packIdentifier: classicPack.identifier, count: 1},
+        unlock: {type: "gamesWon", count: 1},
+        discover: {type: "gamesWon", count: 1},
     },
     decks: classicPack.decks,
 } as const satisfies PackDataType<"necromancer">;

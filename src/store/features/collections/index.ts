@@ -17,6 +17,10 @@ export const collectionsSlice = createSlice({
                 if (event.type === "gameCompleted") {
                     const key = getCompletedGamesKey(event.mode, event.packIdentifier);
                     state.progress.gamesCompleted[key] = (state.progress.gamesCompleted[key] ?? 0) + 1;
+                    if (event.outcome === "victory") {
+                        state.progress.gamesWon ??= {};
+                        state.progress.gamesWon[key] = (state.progress.gamesWon[key] ?? 0) + 1;
+                    }
                 } else {
                     state.progress.enemiesDefeated[event.suit] = (state.progress.enemiesDefeated[event.suit] ?? 0) + 1;
                 }

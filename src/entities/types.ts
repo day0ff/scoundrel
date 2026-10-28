@@ -27,7 +27,7 @@ export type StatItemsType<T> = StatType & {
 }
 
 export type CollectionConditionType =
-    | {type: "gamesCompleted"; mode?: GameModeType; packIdentifier?: PackIdentifierType; count: number}
+    | {type: "gamesCompleted" | "gamesWon"; mode?: GameModeType; packIdentifier?: PackIdentifierType; count: number}
     | {type: "enemiesDefeated"; suit: string; count: number};
 
 export type CollectionType = {

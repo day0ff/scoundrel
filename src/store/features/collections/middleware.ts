@@ -31,7 +31,7 @@ collectionsListenerMiddleware.startListening({
             // Initial card UUIDs identify a run even if its hero or seed is reused on retry.
             const initial = after.log?.initialState;
             const runId = initial && Object.values(initial.zones).flatMap(zone => zone.cards)[0]?.id;
-            if (runId) events.push({id: `game:${runId}`, type: "gameCompleted", mode: after.mode, packIdentifier: after.packIdentifier});
+            if (runId) events.push({id: `game:${runId}`, type: "gameCompleted", mode: after.mode, packIdentifier: after.packIdentifier, outcome: after.outcome});
         }
         if (events.length) api.dispatch(recordCollectionProgress(events));
     },

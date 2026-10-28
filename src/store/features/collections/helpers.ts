@@ -7,8 +7,10 @@ export const getCompletedGamesKey = (mode: GameModeType, packIdentifier: PackIde
 
 export const isConditionSatisfied = (condition: CollectionConditionType, progress: CollectionProgressType): boolean => {
     switch (condition.type) {
-        case "gamesCompleted": {
-            const completed = Object.entries(progress.gamesCompleted).reduce((total, [key, count]) => {
+        case "gamesCompleted":
+        case "gamesWon": {
+            const games = condition.type === "gamesWon" ? progress.gamesWon ?? {} : progress.gamesCompleted;
+            const completed = Object.entries(games).reduce((total, [key, count]) => {
                 if (condition.mode && !key.startsWith(`${condition.mode}:`)) return total;
                 if (condition.packIdentifier && !key.endsWith(`:${condition.packIdentifier}`)) return total;
                 return total + count;

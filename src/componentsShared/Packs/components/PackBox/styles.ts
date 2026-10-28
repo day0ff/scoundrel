@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { getColoredTextStrokeStyle, PixelCardStyled } from "styles";
+import { getColoredTextStrokeStyle } from "styles";
 import DraggableDeck from "components/DraggableDeck";
 import Tooltip from "components/Tooltip";
 import { MarkTop } from "components/Card/styles.ts";
@@ -23,7 +23,7 @@ export const PackCardWrapperStyled = styled.div`
 `;
 
 export const PackBoxDraggableDeckStyled = styled(DraggableDeck).attrs({
-  size: 6,
+  size: 2,
   wobbleIntensity: 3,
   wobbleSpeed: 0.001,
 })<{ $color: string; $textStroke: string }>`
@@ -33,8 +33,8 @@ export const PackBoxDraggableDeckStyled = styled(DraggableDeck).attrs({
   width: 200px;
   container-type: inline-size;
   aspect-ratio: 2 / 3;
-  ${({ isSelected }) =>
-    isSelected ? "filter: drop-shadow(0 0 8px #b77b34)" : null};
+  ${({ isSelected, $color }) =>
+    isSelected ? `filter: drop-shadow(0 0 8px ${$color})` : null};
 
   ${MarkTop.toString()} {
     top: 10cqw;

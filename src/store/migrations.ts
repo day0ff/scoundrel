@@ -135,3 +135,37 @@ export const migrateAnyGameUnlock = (persisted: PersistedState): PersistedState 
     };
     return migrated;
 };
+
+// Version 4: track victories separately and require one win for Necromancer.
+export const migrateVictoryUnlock = (persisted: PersistedState): PersistedState => {
+    if (!persisted) return persisted;
+    const state = persisted as PersistedState & {
+        collections?: CollectionsStateType;
+        profiles?: {profiles: ProfileType[]};
+    };
+    const upgrade = (collections: CollectionsStateType): CollectionsStateType => {
+        const progress = {...collections.progress, gamesWon: collections.progress.gamesWon ?? {}};
+        return {
+            ...collections,
+            progress,
+            packs: collections.packs.map(pack => {
+                if (pack.identifier !== "day0ff:pack-necromancer") return pack;
+                const updated = {...pack, condition: {
+                    description: "pack.necromancer.unlock.description",
+                    unlock: {type: "gamesWon", count: 1},
+                    discover: {type: "gamesWon", count: 1},
+                } satisfies NonNullable<typeof pack.condition>};
+                evaluateCollection(updated, progress);
+                return updated;
+            }),
+        };
+    };
+    const migrated = {
+        ...state,
+        ...(state.collections ? {collections: upgrade(state.collections)} : {}),
+        ...(state.profiles ? {profiles: {...state.profiles, profiles: state.profiles.profiles.map(profile => ({
+            ...profile, collections: upgrade(profile.collections),
+        }))}} : {}),
+    };
+    return migrated;
+};

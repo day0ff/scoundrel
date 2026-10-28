@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {createMigrate} from "redux-persist";
-import {migrateGameState, migrateRecordsByPack, migrateCollectionsProgress, migrateAnyGameUnlock} from "./migrations.ts";
+import {migrateGameState, migrateRecordsByPack, migrateCollectionsProgress, migrateAnyGameUnlock, migrateVictoryUnlock} from "./migrations.ts";
 import {getInitialGame} from "./features/game/constants.ts";
 import {restoreGame} from "./features/game/helpers.ts";
 import {gameSlice, startGame} from "./features/game";
@@ -130,6 +130,34 @@ export const runGameMigrationTests = async () => {
     const skipToThree = await migrateToThree(historical, 3) as unknown as typeof versionThree;
     assert.deepEqual(skipToThree.collections.packs.find(pack => pack.identifier === "day0ff:pack-necromancer")?.condition?.unlock, {type: "gamesCompleted", count: 1});
 
+    const migrateToFour = createMigrate({0: migrateGameState, 1: migrateRecordsByPack, 2: migrateCollectionsProgress, 3: migrateAnyGameUnlock, 4: migrateVictoryUnlock});
+    const beforeFour = structuredClone(currentThree);
+    const versionFour = await migrateToFour(currentThree, 4) as unknown as typeof currentThree;
+    assert.deepEqual(currentThree, beforeFour);
+    for (const collections of [versionFour.collections, ...versionFour.profiles.profiles.map(profile => profile.collections)]) {
+        const pack = collections.packs.find(pack => pack.identifier === "day0ff:pack-necromancer")!;
+        assert.deepEqual(pack.condition?.unlock, {type: "gamesWon", count: 1});
+        assert.deepEqual(pack.condition?.discover, {type: "gamesWon", count: 1});
+        assert.equal(pack.isLocked, false); // Earned unlocks are preserved.
+        assert.deepEqual(collections.progress.gamesWon, {});
+    }
+    assert.deepEqual(migrateVictoryUnlock(versionFour), versionFour);
+    assert.equal(migrateVictoryUnlock(undefined), undefined);
+    const targetFour = {...versionFour, _persist: {version: 4, rehydrated: true}};
+    assert.equal(await migrateToFour(targetFour, 4), targetFour);
+    const skipToFour = await migrateToFour(historical, 4) as unknown as typeof versionFour;
+    assert.deepEqual(skipToFour.collections.packs.find(pack => pack.identifier === "day0ff:pack-necromancer")?.condition?.unlock, {type: "gamesWon", count: 1});
+    assert.equal(versionFour.game, null);
+    assert.deepEqual(skipToFour.game, skipToThree.game);
+    const guestWithWins = {...guestSave, collections: {...initialCollectionsState,
+        progress: {...initialCollectionsState.progress, gamesWon: {"classic:day0ff:pack-classic": 1}}}};
+    const guestFour = migrateVictoryUnlock(guestWithWins) as unknown as typeof versionFour;
+    assert.equal(guestFour.collections.packs.find(pack => pack.identifier === "day0ff:pack-necromancer")?.isLocked, false);
+    const guestWithLosses = {...guestSave, collections: {...initialCollectionsState,
+        progress: {...initialCollectionsState.progress, gamesCompleted: {"classic:day0ff:pack-classic": 10}}}};
+    const lossesOnly = migrateVictoryUnlock(guestWithLosses) as unknown as typeof versionFour;
+    assert.equal(lossesOnly.collections.packs.find(pack => pack.identifier === "day0ff:pack-necromancer")?.isLocked, true);
+
     const started = gameSlice.reducer(initial, startGame());
     assert.ok(started);
     const replayed = replayGameLog({
@@ -139,5 +167,5 @@ export const runGameMigrationTests = async () => {
             healthAfter: started.hero.health.current, seedAfter: started.seed}],
     });
     assert.deepEqual(replayed, started);
-    return ["migration 2 initializes root and profile collections without changing heroes, decks or runs; skipped releases and repeated migration are supported", "migration 1 assigns legacy records to Classic, preserves data, and supports skipped releases", "version -1 saves run migration 0; version 0 saves skip it", "legacy root and profile saves migrate, restore and remain stable", "legacy replay actions run through the shared game slice"];
+    return ["migration 4 applies victory conditions to root and profile saves, preserves earned unlocks, and supports skipped releases", "migration 2 initializes root and profile collections without changing heroes, decks or runs; skipped releases and repeated migration are supported", "migration 1 assigns legacy records to Classic, preserves data, and supports skipped releases", "version -1 saves run migration 0; version 0 saves skip it", "legacy root and profile saves migrate, restore and remain stable", "legacy replay actions run through the shared game slice"];
 };
