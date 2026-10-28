@@ -1,4 +1,6 @@
 {
+  "animation.summon.name": "Summon",
+  "animation.summon.description": "An existing Thing rises from the ground before consuming enemies.",
   "animation.consume.name": "Consume",
   "animation.consume.description": "An enemy crumples and is absorbed by the Thing before moving to the crypt.",
   "card.pasteboard.skeleton.F.thing.name": "$t(pasteboard.skeleton.F.thing.name)",

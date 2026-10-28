@@ -6,6 +6,7 @@ import {useAppSelector} from "store/hooks.ts";
 import {useAudioManager} from "hooks/useAudioManager.ts";
 import type {SoundPlaybackType} from "utils/AudioManager/types.ts";
 import {thingPasteboard} from "entities/pasteboards/skeleton/Thing.ts";
+import {pendingSummonsGameSelector} from "store/features/game/selectors.ts";
 import {currentRoomNumberSelector, roomWithAttackFeedbackSelector} from "./selectors.ts";
 import {DEAL_SOUNDS, REMOVE_SOUNDS, THING_DEAL_SOUND} from "./constants.ts";
 import {CARD_STAGGER_MS, CARD_REVEAL_MS, CARD_REMOVE_MS} from "../CardZone/constants.ts";
@@ -18,6 +19,7 @@ const RoomZone: FC<RoomZonePropsType> = ({zone, appendTo, onAttack, previewEnemy
     const pageTransitionBusy = useContext(PageTransitionContext);
     const roomNumber = useAppSelector(currentRoomNumberSelector);
     const feedbackZone = useAppSelector(roomWithAttackFeedbackSelector);
+    const pendingSummons = useAppSelector(pendingSummonsGameSelector);
     const currentZone = feedbackZone ?? zone;
     const [display, setDisplay] = useState({roomNumber, zone: currentZone, animation: "reveal" as "reveal" | "remove" | undefined});
 
@@ -51,7 +53,7 @@ const RoomZone: FC<RoomZonePropsType> = ({zone, appendTo, onAttack, previewEnemy
         } else {
             for (let index = 0; index < cardCount; index++) {
                 timers.push(setTimeout(() => play(DEAL_SOUNDS), index * CARD_STAGGER_MS));
-                if (dealtCards[index].identifier === thingPasteboard.identifier) {
+                if (dealtCards[index].identifier === thingPasteboard.identifier && !pendingSummons.some(event => event.summonedId === dealtCards[index].id)) {
                     // Let the growl finish even after the room's reveal animation ends.
                     timers.push(setTimeout(() => play([THING_DEAL_SOUND], true), index * CARD_STAGGER_MS));
                 }
@@ -67,7 +69,7 @@ const RoomZone: FC<RoomZonePropsType> = ({zone, appendTo, onAttack, previewEnemy
             timers.forEach(clearTimeout);
             playbacks.forEach(playback => playback.stop());
         };
-    }, [animation, cardCount, dealtCards, roomNumber, audio, onTransitionChange, pageTransitionBusy]);
+    }, [animation, cardCount, dealtCards, roomNumber, audio, onTransitionChange, pageTransitionBusy, pendingSummons]);
 
     useEffect(() => () => onTransitionChange(false), [onTransitionChange]);
 

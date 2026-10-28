@@ -12,7 +12,7 @@ import WeaponLastKill from "../../../WeaponLastKill";
 import type {GameCardPropsType} from "./types.ts";
 import {GameCardStyled, StrikeStyled} from "./styles.ts";
 import {firstAttackerIdSelector, pendingAttacksSelector, pendingConsumesSelector} from "./selectors.ts";
-import {activeEffectAnimationGameSelector} from "store/features/game/selectors.ts";
+import {activeEffectAnimationGameSelector, pendingSummonsGameSelector} from "store/features/game/selectors.ts";
 import {ANIMATIONS_MAP} from "entities/animations/constants.ts";
 import {useTouchDoubleTap} from "hooks/useTouchDoubleTap.ts";
 
@@ -26,6 +26,8 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
     const lastKilledStrength = card.killedEnemies?.at(-1)?.strength;
     const pendingAttacks = useAppSelector(pendingAttacksSelector);
     const pendingConsumes = useAppSelector(pendingConsumesSelector);
+    const pendingSummons = useAppSelector(pendingSummonsGameSelector);
+    const summoned = zone === "room" && pendingSummons.some(event => event.summonedId === card.id);
     const consumed = zone === "room" && pendingConsumes.some(event => event.enemyId === card.id);
     const activeEffect = useAppSelector(activeEffectAnimationGameSelector);
     const defeated = zone === "room" && pendingAttacks.some(event => event.enemyId === card.id);
@@ -47,6 +49,7 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
 
     return (
         <GameCardStyled
+            style={{visibility: summoned ? "hidden" : undefined}}
             {...doubleTapHandlers}
             onPointerDownCapture={event => {
                 pointerType.current = event.pointerType;

@@ -134,6 +134,69 @@ export const runFoolTests = () => {
     ];
 };
 
+export const runSummonTests = () => {
+    for (const source of ["dungeon", "discard", "crypt"] as const) {
+        const summoner = necromancer();
+        const existing = {...thing(), strength: 23};
+        const game = waiting([]);
+        game.zones.dungeon.cards = [summoner];
+        game.zones[source].cards.push(existing);
+        // Leave Thing below the initial deal when it is in the dungeon.
+        game.zones.room.capacity = 1;
+        game.log = createGameLog(game, "newGame");
+        let result = apply(game, startGame());
+        assert.equal(result.zones[source].cards.some(card => card.id === existing.id), false);
+        assert.equal(result.zones.room.cards[0].id, existing.id);
+        assert.equal(result.zones.room.cards[0].strength, 23 + summoner.strength!);
+        assert.equal(existing.strength, 23);
+        const event = result.animationEvents[0];
+        assert.equal(event.animation, "day0ff:animation-summon");
+        if (event.animation !== "day0ff:animation-summon") throw new Error("Missing summon event");
+        assert.equal(event.summonedId, existing.id);
+        assert.equal(event.roomBefore.find(card => card.id === existing.id)?.strength, 23);
+        assert.ok(event.roomBefore.some(card => card.id === summoner.id));
+        assert.equal(cryptWithEffectFeedbackSelector.resultFunc(result)!.cards.length, 0);
+        assert.equal(isConsumingGameSelector({game: result} as RootState), true);
+        assert.ok(doesReplayMatchGame(result.log!, result));
+        const saved = serializeTransform.out(JSON.parse(JSON.stringify(serializeTransform.in(result, "game", {}))), "game", {}) as GameStateType;
+        assert.equal(restoreGame(saved).zones.room.cards[0].strength, 23 + summoner.strength!);
+        result = apply(result, completeEffectAnimation(event.id));
+        assert.equal(result.animationEvents[0].animation, "day0ff:animation-consume");
+        result = apply(result, completeEffectAnimation(result.animationEvents[0].id));
+        assert.equal(isConsumingGameSelector({game: result} as RootState), false);
+    }
+
+    const game = waiting([]);
+    const summoner = necromancer();
+    const dungeonThing = thing();
+    const discardThing = thing();
+    const cryptThing = thing();
+    game.started = true;
+    game.zones.dungeon.cards = [dungeonThing];
+    game.zones.discard.cards = [discardThing];
+    game.zones.crypt.cards = [cryptThing];
+    game.log = createGameLog(game, "newGame");
+    let result = apply(game, addCardsToZone({zone: "room", cards: [summoner]}));
+    assert.equal(result.zones.room.cards[0].id, dungeonThing.id);
+    assert.ok(result.zones.discard.cards.some(card => card.id === discardThing.id));
+    assert.ok(result.zones.crypt.cards.some(card => card.id === cryptThing.id));
+    const withoutDungeon = structuredClone(game);
+    withoutDungeon.zones.dungeon.cards = [];
+    result = apply(withoutDungeon, addCardsToZone({zone: "room", cards: [summoner]}));
+    assert.equal(result.zones.room.cards[0].id, discardThing.id);
+
+    const fallback = apply(waiting([necromancer()]), startGame());
+    assert.equal(fallback.zones.room.cards[0].identifier, thing().identifier);
+    assert.equal(fallback.zones.room.cards[0].strength, 1 + necromancer().strength!);
+    assert.equal(fallback.animationEvents[0].animation, "day0ff:animation-summon");
+    assert.ok(doesReplayMatchGame(fallback.log!, fallback));
+    return [
+        "Necromancer retrieves an existing Thing from dungeon, discard, or crypt with identity and strength preserved",
+        "summoning searches dungeon then discard then crypt and creates a deterministic Thing when none exists",
+        "summon feedback precedes consumption, blocks input, and survives save restoration and exact replay",
+    ];
+};
+
 export const runThingWeaponTests = () => {
     const weapon = initPasteboard("day0ff:pasteboard-weapon.T");
     const previousEnemy = skeleton("2");
@@ -175,12 +238,15 @@ export const runConsumeAnimationTests = () => {
     const consumer = thing();
     const potion = initPasteboard("day0ff:pasteboard-heal.2");
     let game = apply(waiting([consumer, skeleton("3"), necromancer(), potion]), startGame());
+    const summon = game.animationEvents[0];
+    assert.equal(summon.animation, "day0ff:animation-summon");
+    game = apply(game, completeEffectAnimation(summon.id));
     const events = game.animationEvents;
     assert.equal(events.length, 3);
     assert.ok(events.every(event => event.animation === "day0ff:animation-consume"));
-    assert.equal(game.zones.room.cards[0].strength, 19);
+    assert.equal(game.zones.room.cards[0].strength, 5 + necromancer().strength!);
     assert.equal(game.zones.crypt.cards.length, 3);
-    const expectedStrengths = [1, 4, 18];
+    const expectedStrengths = [1, 4, 4 + necromancer().strength!];
     for (let index = 0; index < events.length; index++) {
         const event = game.animationEvents[0];
         assert.equal(event.animation, "day0ff:animation-consume");
@@ -199,7 +265,7 @@ export const runConsumeAnimationTests = () => {
         assert.ok(cryptWithEffectFeedbackSelector.resultFunc(game)!.cards.some(card => card.id === event.enemyId));
     }
     assert.equal(isConsumingGameSelector({game} as RootState), false);
-    assert.equal(roomWithAttackFeedbackSelector.resultFunc(game)!.cards[0].strength, 19);
+    assert.equal(roomWithAttackFeedbackSelector.resultFunc(game)!.cards[0].strength, 5 + necromancer().strength!);
     assert.equal(cryptWithEffectFeedbackSelector.resultFunc(game)!.cards.length, 3);
     assert.equal(game.roomProgress?.cardsPlayed, 0);
     assert.equal(game.hero.health.current, game.hero.health.max);

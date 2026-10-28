@@ -8,7 +8,7 @@ export const necromancerPasteboardCard = {
     suit: "skeleton",
     variant: "necromancer",
     rank: "F",
-    color: "purple",
+    color: "gray",
     face: {
         base: `${BASE_URL}/images/cards/base/white-paper.png`,
         image: `${BASE_URL}/images/decks/skeleton/Necromancer.png`,

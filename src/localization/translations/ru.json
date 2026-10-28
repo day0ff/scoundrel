@@ -1,4 +1,6 @@
 {
+  "animation.summon.name": "Призыв",
+  "animation.summon.description": "Нечто поднимается из земли, затем поглощает врагов.",
   "animation.consume.name": "Поглощение",
   "animation.consume.description": "Враг сминается и поглощается Нечто, затем отправляется в склеп.",
   "card.pasteboard.skeleton.F.thing.name": "$t(pasteboard.skeleton.F.thing.name)",

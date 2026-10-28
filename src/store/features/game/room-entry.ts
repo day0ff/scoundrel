@@ -1,21 +1,31 @@
-import {initPasteboard} from "entities/pasteboards/constants.ts";
 import {getCardStrength} from "entities/pasteboards/helpers.ts";
 import type {GameStateType, PlayingCardType} from "entities/game/types.ts";
 import {consumeAnimation} from "entities/animations/consume.ts";
+import {summonAnimation} from "entities/animations/summon.ts";
 
 export const resolveRoomEntryEffects = (state: GameStateType, entered: PlayingCardType[]) => {
     const arriving = [...entered];
     // Summon first, then let the arriving Things absorb the complete enemy group.
     for (const card of arriving) {
         if (card.roomEntryEffect?.type !== "summon") continue;
+        const identifier = card.roomEntryEffect.identifier;
+        const source = [state.zones.dungeon, state.zones.discard, state.zones.crypt]
+            .find(zone => zone.cards.some(item => item.identifier === identifier));
         card.roomEntries = (card.roomEntries ?? 0) + 1;
-        const summoned = {
-            ...initPasteboard(card.roomEntryEffect.identifier),
-            // A stable source/entry ID makes summons identical during save replay.
-            id: `${card.id}:summon:${card.roomEntries}`,
-        };
+        const summoned = source
+            ? source.cards.splice(source.cards.findIndex(item => item.identifier === identifier), 1)[0]
+            : {...initPasteboard(identifier), id: `${card.id}:summon:${card.roomEntries}`};
         state.zones.room.cards.push(summoned);
         arriving.push(summoned);
+        state.animationEvents.push({
+            id: ++state.animationSequence,
+            animation: summonAnimation.identifier,
+            summonerId: card.id,
+            summonedId: summoned.id,
+            roomBefore: state.zones.room.cards.map(item => ({...item})),
+            healthBefore: {...state.hero.health},
+            healthAfter: {...state.hero.health},
+        });
     }
     for (const card of arriving) {
         if (card.roomEntryEffect?.type !== "consumeEnemies" || !state.zones.room.cards.some(item => item.id === card.id)) continue;
@@ -38,3 +48,4 @@ export const resolveRoomEntryEffects = (state: GameStateType, entered: PlayingCa
         }
     }
 };
+import {initPasteboard} from "entities/pasteboards/constants.ts";

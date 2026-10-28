@@ -39,7 +39,14 @@ export type ConsumeAnimationEventType = HealthAnimationEventType & {
     roomBefore: InitPasteboardDataType<string, RankType>[];
 };
 
+export type SummonAnimationEventType = HealthAnimationEventType & {
+    animation: AnimationDataType<"summon">["identifier"];
+    summonerId: string;
+    summonedId: string;
+    roomBefore: InitPasteboardDataType<string, RankType>[];
+};
+
 export type EffectAnimationEventType = (HealthAnimationEventType & {
     animation: AnimationDataType<"heal">["identifier"];
     potion?: InitPasteboardDataType<string, RankType>;
-}) | AttackAnimationEventType | ConsumeAnimationEventType;
+}) | AttackAnimationEventType | ConsumeAnimationEventType | SummonAnimationEventType;

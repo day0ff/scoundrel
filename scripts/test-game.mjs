@@ -9,7 +9,8 @@ const server = await createServer({
     appType: "custom",
 });
 try {
-    const {runFoolTests, runConsumeAnimationTests, runThingWeaponTests} = await server.ssrLoadModule("/src/store/features/game/fools.test.ts");
+    const {runFoolTests, runConsumeAnimationTests, runThingWeaponTests, runSummonTests} = await server.ssrLoadModule("/src/store/features/game/fools.test.ts");
+    for (const name of runSummonTests()) process.stdout.write(`PASS ${name}\n`);
     for (const name of runThingWeaponTests()) process.stdout.write(`PASS ${name}\n`);
     for (const name of runConsumeAnimationTests()) process.stdout.write(`PASS ${name}\n`);
     for (const name of runFoolTests()) process.stdout.write(`PASS ${name}\n`);

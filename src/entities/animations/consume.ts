@@ -5,5 +5,5 @@ export const consumeAnimation = {
     name: "animation.consume.name",
     description: "animation.consume.description",
     durationMs: 1300,
-    color: "#9271b5",
+    color: "skyblue",
 } satisfies AnimationDataType<"consume">;
