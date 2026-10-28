@@ -17,6 +17,7 @@ import Records from "pages/Records";
 import NotFoundPage from "./pages/NotFound";
 
 import ModalDialog from "./components/ModalDialog";
+import CollectionToasts from "components/CollectionToasts";
 import PageTransitionRoutes from "components/PageTransitionRoutes";
 import {AppContainerStyled} from "./styles";
 import {HealingEffectsLayerStyled} from "pages/ClassicGame/components/EffectAnimations/components/HealFeedback/styles.ts";
@@ -40,6 +41,7 @@ function Index() {
                 </BrowserRouter>
                 <HealingEffectsLayerStyled id="healing-effects" />
                 <ModalDialog />
+                <CollectionToasts />
             </AppContainerStyled>
         </ThemeProvider>
     )

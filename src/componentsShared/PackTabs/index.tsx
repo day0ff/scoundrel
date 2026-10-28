@@ -1,5 +1,6 @@
 import {type FC, type KeyboardEvent, useRef} from "react";
 import {useTranslation} from "react-i18next";
+import {getCollectionCard} from "entities/cards/helpers.ts";
 import type {PackTabsPropsType} from "./types.ts";
 import {TabsStyled, TabStyled, TabPackBoxStyled} from "./styles.ts";
 
@@ -23,7 +24,7 @@ const PackTabs: FC<PackTabsPropsType> = ({packs, selectedIdentifier, onSelect, l
         button?.focus();
     };
     return (
-        <TabsStyled ref={tabs} role={panelId ? "tablist" : "group"} aria-label={label}>
+        <TabsStyled $fullSize={size === "full"} ref={tabs} role={panelId ? "tablist" : "group"} aria-label={label}>
             {packs.map(pack => (
                 <TabStyled key={pack.identifier} type="button" id={`${idPrefix}-${pack.identifier}`}
                     role={panelId ? "tab" : undefined} aria-controls={panelId}
@@ -33,7 +34,8 @@ const PackTabs: FC<PackTabsPropsType> = ({packs, selectedIdentifier, onSelect, l
                     aria-label={t(pack.name)} title={t(pack.name)} disabled={pack.isLocked || pack.isNotFound}
                     onClick={() => onSelect(pack.identifier)} onKeyDown={event => handleKeyDown(event, pack.identifier)}>
                     <div inert aria-hidden="true">
-                        <TabPackBoxStyled $fullSize={size === "full"} {...pack} id={`${idPrefix}-card-${pack.identifier}`}
+                        <TabPackBoxStyled key={`${pack.identifier}-${pack.isLocked}-${pack.isNotFound}`} $fullSize={size === "full"} {...pack} id={`${idPrefix}-card-${pack.identifier}`}
+                            card={getCollectionCard(pack.card, pack)}
                             isSelected={selectedIdentifier === pack.identifier} isSelectable={false} isFlippable={false}
                             $color={pack.card.color ?? "black"} $textStroke={pack.styles?.text?.stroke ?? "black"}
                             amount={Math.trunc(pack.decks.reduce((total, deck) => total + (deck.cards?.length ?? 0), 0) / 5)}/>

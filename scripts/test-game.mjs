@@ -9,6 +9,8 @@ const server = await createServer({
     appType: "custom",
 });
 try {
+    const {runCollectionToastTests} = await server.ssrLoadModule("/src/store/features/collection-toasts/collection-toasts.test.ts");
+    for (const name of runCollectionToastTests()) process.stdout.write(`PASS ${name}\n`);
     const {runCollectionTests, runCollectionPersistenceTests} = await server.ssrLoadModule("/src/store/features/collections/collections.test.ts");
     for (const name of runCollectionTests()) process.stdout.write(`PASS ${name}\n`);
     for (const name of await runCollectionPersistenceTests()) process.stdout.write(`PASS ${name}\n`);

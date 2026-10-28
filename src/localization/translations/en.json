@@ -1,4 +1,7 @@
 {
+  "toast.collection.unlocked": "Unlocked!",
+  "toast.collection.discovered": "Discovered!",
+  "toast.collection.dismiss": "Dismiss notification",
   "page.pack-selection.enter": "Enter castle",
   "page.pack-selection.home": "Go home",
   "button.packs.text": "Packs",
@@ -429,7 +432,7 @@
   "ui.dungeonRooms.completed": "Completed",
   "ui.dungeonRooms.enemies": "Enemies",
   "ui.dungeonRooms.strength": "Enemy strength",
-  "ui.dungeonRooms.back": "Back to Castle Selection",
+  "ui.dungeonRooms.back": "Back to Castle",
   "ui.dungeonRooms.reroll": "Reroll dungeon",
   "ui.dungeonRooms.enter": "Enter dungeon",
   "page.dungeon-preview.title": "Dungeon",

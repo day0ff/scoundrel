@@ -4,6 +4,8 @@ import {advancePhase, attackCard, endTurn, moveCard, playCard, skipRoom, startGa
 import {updateProfileCollectionsData} from "store/features/profiles";
 import {recordCollectionProgress, setCollections} from "./index.ts";
 import type {CollectionProgressEventType} from "./types.ts";
+import {enqueueCollectionToasts} from "store/features/collection-toasts";
+import {getCollectionToasts} from "store/features/collection-toasts/helpers.ts";
 
 export const collectionsListenerMiddleware = createListenerMiddleware();
 
@@ -37,7 +39,13 @@ collectionsListenerMiddleware.startListening({
 
 collectionsListenerMiddleware.startListening({
     matcher: isAnyOf(recordCollectionProgress, setCollections),
-    effect: (_action, api) => {
+    effect: (action, api) => {
+        if (recordCollectionProgress.match(action)) {
+            const before = (api.getOriginalState() as RootState).collections;
+            const after = (api.getState() as RootState).collections;
+            const toasts = getCollectionToasts(before, after);
+            if (toasts.length) api.dispatch(enqueueCollectionToasts(toasts));
+        }
         api.dispatch(updateProfileCollectionsData((api.getState() as RootState).collections));
     },
 });

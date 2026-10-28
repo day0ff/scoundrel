@@ -1,4 +1,7 @@
 {
+  "toast.collection.unlocked": "Разблокировано!",
+  "toast.collection.discovered": "Найдено!",
+  "toast.collection.dismiss": "Закрыть уведомление",
   "page.pack-selection.enter": "Войти в замок",
   "page.pack-selection.home": "На главную",
   "button.packs.text": "Наборы",

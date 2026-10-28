@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { SOUND_PATHS } from "assets/sounds";
 import { useHoverSound } from "hooks/useHoverSound.ts";
 import { initPack } from "entities/packs/constants.ts";
-import { billetDeckCard } from "entities/cards/decks/billet.ts";
+import { getCollectionCard } from "entities/cards/helpers.ts";
 import Decks from "componentsShared/Decks";
 import CardTooltipContent from "components/CardTooltipContent";
 import TooltipContent from "components/TooltipContent";
@@ -34,29 +34,7 @@ const PackBox: FC<PackBoxPropsType> = ({
 }) => {
   const { t } = useTranslation();
   const hoverSounds = useHoverSound(SOUND_PATHS.DeckShove);
-  const card = useMemo(() => {
-    if (isLocked || isNotFound) {
-      return {
-        ...cardProp,
-        face: {
-          ...cardProp.face,
-          image: cardProp.back.image,
-          imageMode: billetDeckCard.face.imageMode,
-          overlay: billetDeckCard.face.overlay,
-          overlayMode: billetDeckCard.face.overlayMode,
-          overlayColor: cardProp.color ?? "black",
-        },
-        back: {
-          ...cardProp.back,
-          imageMode: billetDeckCard.back.imageMode,
-          overlay: billetDeckCard.back.overlay,
-          overlayMode: billetDeckCard.back.overlayMode,
-          overlayColor: cardProp.color ?? "black",
-        },
-      };
-    }
-    return cardProp;
-  }, [isLocked, isNotFound, cardProp]);
+  const card = useMemo(() => getCollectionCard(cardProp, {isLocked, isNotFound}), [isLocked, isNotFound, cardProp]);
   const name = isLocked ? "tag.collection.locked.name" : isNotFound ? "tag.collection.notFound.name" : nameProp;
   const description = isLocked ? condition?.description ?? "tag.collection.locked.pack.description" : isNotFound ? "tag.collection.notFound.pack.description" : descriptionProp;
   const color = cardProp.color ?? "black";

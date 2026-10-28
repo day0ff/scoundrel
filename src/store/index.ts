@@ -4,6 +4,7 @@ import {createMigrate, persistReducer, persistStore} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 import collections from "store/features/collections";
+import collectionToasts from "store/features/collection-toasts";
 import {collectionsListenerMiddleware} from "store/features/collections/middleware.ts";
 import dialog from "store/features/dialog";
 import profiles from "store/features/profiles";
@@ -35,6 +36,7 @@ const persistConfig = {
 
 export const rootReducer = combineReducers({
     collections,
+    collectionToasts,
     dialog,
     profiles,
     settings,

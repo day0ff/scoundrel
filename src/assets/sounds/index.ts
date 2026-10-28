@@ -6,6 +6,7 @@ const PieceImpact1 = `${BASE_URL}/sounds/piece-impact-1.mp3`;
 const PieceImpact2 = `${BASE_URL}/sounds/piece-impact-2.mp3`;
 
 export const SOUND_PATHS = {
+    Unlock: `${BASE_URL}/sounds/unlock.mp3`,
     Transition: `${BASE_URL}/sounds/transition.mp3`,
     CardShove: `${BASE_URL}/sounds/card-shove.ogg`,
     DeckShove: `${BASE_URL}/sounds/deck-shove.mp3`,
