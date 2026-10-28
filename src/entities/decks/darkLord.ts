@@ -15,6 +15,6 @@ export const darkLordDeck = {
         },
     },
     pasteboards: allDarkPasteBoards,
-    isLocked: false,
-    isNotFound: false,
+    isLocked: true,
+    isNotFound: true,
 } as const satisfies DarkLordDeckDataType;

@@ -1,9 +1,10 @@
 import {v4 as getUuid} from "uuid";
 import {initDeck} from "entities/decks/constants.ts";
 import {classicPack} from "./classic.ts";
+import {necromancerPack} from "./necromancer.ts";
 import type {InitPackDataType, PackDataType, PackDeckType} from "./types.ts";
 
-export const allPacks: PackDataType<string>[] = [classicPack];
+export const allPacks: PackDataType<string>[] = [classicPack, necromancerPack];
 
 export const getPack = (identifier: PackDataType<string>["identifier"]) =>
     allPacks.find(pack => pack.identifier === identifier);

@@ -47,6 +47,15 @@ export const CardImage = styled.img`
     pointer-events: none;
 `;
 
+export const CardOverlayTintStyled = styled.div`
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    mix-blend-mode: color;
+`;
+
 export const GlossLayer = styled(animated.div)`
     position: absolute;
     inset: 0;

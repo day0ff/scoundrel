@@ -43,12 +43,14 @@ const DeckBox: FC<DeckBoxPropsType> = (
                     imageMode: billetDeckCard.face.imageMode,
                     overlay: billetDeckCard.face.overlay,
                     overlayMode: billetDeckCard.face.overlayMode,
+                    overlayColor: cardProp.color ?? "black",
                 },
                 back: {
                     ...cardProp.back,
                     imageMode: billetDeckCard.back.imageMode,
                     overlay: billetDeckCard.back.overlay,
                     overlayMode: billetDeckCard.back.overlayMode,
+                    overlayColor: cardProp.color ?? "black",
                 }
             }
         }

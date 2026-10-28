@@ -26,7 +26,7 @@ const Packs: FC<PacksPropsType> = ({onPush, appendTo}) => {
                 {t("modal.packs.title")}
             </PacksTitleStyled>
             <PacksWrapperStyled>
-                <PaginatedGrid key={`${rows}-${columns}`} rowSize={rows} columnSize={columns} gap={12} items={packs} ItemComponent={PackItem} onPush={onPush}/>
+                <PaginatedGrid key={`${rows}-${columns}`} rowSize={rows} columnSize={columns} gap={32} items={packs} ItemComponent={PackItem} onPush={onPush}/>
             </PacksWrapperStyled>
         </>
     );

@@ -1,8 +1,9 @@
-import type { FC } from "react";
+import { useMemo, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { SOUND_PATHS } from "assets/sounds";
 import { useHoverSound } from "hooks/useHoverSound.ts";
 import { initPack } from "entities/packs/constants.ts";
+import { billetDeckCard } from "entities/cards/decks/billet.ts";
 import Decks from "componentsShared/Decks";
 import CardTooltipContent from "components/CardTooltipContent";
 import TooltipContent from "components/TooltipContent";
@@ -19,27 +20,53 @@ import {
 const PackBox: FC<PackBoxPropsType> = ({
   identifier,
   id,
-  name,
-  description,
-  card,
+  name: nameProp,
+  description: descriptionProp,
+  card: cardProp,
   decks,
   styles,
   isLocked,
   isNotFound,
   isSelected,
+  condition,
   appendTo,
   onPush,
 }) => {
   const { t } = useTranslation();
   const hoverSounds = useHoverSound(SOUND_PATHS.DeckShove);
-  const color = card.color ?? "black";
+  const card = useMemo(() => {
+    if (isLocked || isNotFound) {
+      return {
+        ...cardProp,
+        face: {
+          ...cardProp.face,
+          image: cardProp.back.image,
+          imageMode: billetDeckCard.face.imageMode,
+          overlay: billetDeckCard.face.overlay,
+          overlayMode: billetDeckCard.face.overlayMode,
+          overlayColor: cardProp.color ?? "black",
+        },
+        back: {
+          ...cardProp.back,
+          imageMode: billetDeckCard.back.imageMode,
+          overlay: billetDeckCard.back.overlay,
+          overlayMode: billetDeckCard.back.overlayMode,
+          overlayColor: cardProp.color ?? "black",
+        },
+      };
+    }
+    return cardProp;
+  }, [isLocked, isNotFound, cardProp]);
+  const name = isLocked ? "tag.collection.locked.name" : isNotFound ? "tag.collection.notFound.name" : nameProp;
+  const description = isLocked ? condition?.description ?? "tag.collection.locked.pack.description" : isNotFound ? "tag.collection.notFound.pack.description" : descriptionProp;
+  const color = cardProp.color ?? "black";
   const handleOpen = () => {
     if (isLocked || isNotFound) return;
     const pack = initPack(identifier, decks);
     onPush?.(
       <Decks
         decks={pack.decks}
-        name={name}
+        name={nameProp}
         color={color}
         appendTo={appendTo}
       />,

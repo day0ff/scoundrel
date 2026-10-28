@@ -3,6 +3,7 @@ import {useTranslation} from "react-i18next";
 import {getMixBlendMode} from "entities/cards/constants.ts";
 import {
     CardImage,
+    CardOverlayTintStyled,
     CardInner,
     MarkTop,
     GlossLayer,
@@ -35,6 +36,7 @@ const Card:FC<CardPropsType> = ({$size, type, name, color, face, back, rotateY, 
                 {face.base && <CardImage src={face.base}/>}
                 {face.image && <CardImage src={face.image} style={faceImageStyle}/>}
                 {face.overlay && <CardImage src={face.overlay} style={faceOverlayStyle}/>}
+                {face.overlay && face.overlayColor && <CardOverlayTintStyled aria-hidden="true" style={{backgroundColor: face.overlayColor, maskImage: `url(${JSON.stringify(face.overlay)})`}}/>}
                 <PixelCardFaceStyled $size={$size}/>
                 {mark ?? <MarkTop $color={color}>{t(name ?? type)}</MarkTop>}
                 {tooltip}
@@ -51,6 +53,7 @@ const Card:FC<CardPropsType> = ({$size, type, name, color, face, back, rotateY, 
                 {back.base && <CardImage src={back.base}/>}
                 {back.image && <CardImage src={back.image} style={backImageStyle}/>}
                 {back.overlay && <CardImage src={back.overlay} style={backOverlayStyle}/>}
+                {back.overlay && back.overlayColor && <CardOverlayTintStyled aria-hidden="true" style={{backgroundColor: back.overlayColor, maskImage: `url(${JSON.stringify(back.overlay)})`}}/>}
                 <PixelCardFaceStyled $size={$size}/>
                 {tooltip}
                 <GlossLayer

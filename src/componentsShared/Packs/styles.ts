@@ -12,7 +12,7 @@ export const PacksTitleStyled = styled.h2`
         font-size: 28px;
         margin-bottom: -12px;
     }
-    @media ${({theme}) => theme.media.mobile}, ${({theme}) => theme.media.laptop} and (orientation: landscape) and (max-height: 480px) {
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
         margin-bottom: -24px;    
         font-size: 22px;
     }
@@ -28,4 +28,10 @@ export const PacksWrapperStyled = styled.div`
     flex-direction: column;
     align-items: center;
     margin: 12px 0 24px;
+    padding: 16px;
+    box-sizing: border-box;
+
+    @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
+        padding: 0;
+    }
 `;

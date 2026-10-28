@@ -1,5 +1,12 @@
-import {activePackSelector} from "store/features/game/selectors.ts";
-import { useCallback, useLayoutEffect, useRef, useState, type FC, type KeyboardEvent } from "react";
+import { activePackSelector } from "store/features/game/selectors.ts";
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type FC,
+  type KeyboardEvent,
+} from "react";
 import { createPortal } from "react-dom";
 import { Navigate, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -25,18 +32,21 @@ import {
   surrenderGame,
   clearGame,
 } from "store/features/game";
-import {useGameTimer} from "hooks/useGameTimer.ts";
+import { useGameTimer } from "hooks/useGameTimer.ts";
 import Toast from "components/Toast";
 import type { ToastHandleType } from "components/Toast/types.ts";
 import {
   canPlayPotion,
   getCardMoveRejection,
 } from "store/features/game/helpers.ts";
-import { getAttackRejection, resolveAttack } from "store/features/game/attack.ts";
+import {
+  getAttackRejection,
+  resolveAttack,
+} from "store/features/game/attack.ts";
 import DungeonRooms from "components/DungeonRooms";
 import CardZone from "./components/CardZone";
 import RoomZone from "./components/RoomZone";
-import {currentRoomNumberSelector} from "./components/RoomZone/selectors.ts";
+import { currentRoomNumberSelector } from "./components/RoomZone/selectors.ts";
 import DeckZone from "./components/DeckZone";
 import CardDragPreview from "./components/CardDragPreview";
 import HeroHealthBar from "./components/HeroHealthBar";
@@ -57,16 +67,19 @@ import {
   GameTableStyled,
 } from "./styles.ts";
 
-
 const getPreviewAttackerId = (target: EventTarget | null) =>
   target instanceof Element
-    ? target.closest("[data-attack-preview-id]")?.getAttribute("data-attack-preview-id") ?? null
+    ? (target
+        .closest("[data-attack-preview-id]")
+        ?.getAttribute("data-attack-preview-id") ?? null)
     : null;
 
 const ClassicGame: FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const tabletLandscape = useMediaQuery({query: `${theme.media.tablet} and (orientation: landscape)`});
+  const tabletLandscape = useMediaQuery({
+    query: `${theme.media.tablet} and (orientation: landscape)`,
+  });
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const game = useAppSelector(gameSelector);
@@ -74,21 +87,31 @@ const ClassicGame: FC = () => {
   useGameTimer();
   const currentRoomNumber = useAppSelector(currentRoomNumberSelector);
   const gameRef = useRef<HTMLElement>(null);
-  const appendTooltipTo = useCallback(() => gameRef.current ?? document.body, []);
+  const appendTooltipTo = useCallback(
+    () => gameRef.current ?? document.body,
+    [],
+  );
   const [roomTransition, setRoomTransition] = useState(true);
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
-  const [hoveredAttackerId, setHoveredAttackerId] = useState<string | null>(null);
-  const [focusedAttackerId, setFocusedAttackerId] = useState<string | null>(null);
+  const [hoveredAttackerId, setHoveredAttackerId] = useState<string | null>(
+    null,
+  );
+  const [focusedAttackerId, setFocusedAttackerId] = useState<string | null>(
+    null,
+  );
   const toastRef = useRef<ToastHandleType>(null);
   const [resultDismissed, setResultDismissed] = useState(false);
   const pendingExitRef = useRef<(() => void) | null>(null);
 
-  useLayoutEffect(() => () => {
-    // Clear the finished game after the route curtains cover the outgoing page.
-    const completeExit = pendingExitRef.current;
-    pendingExitRef.current = null;
-    completeExit?.();
-  }, []);
+  useLayoutEffect(
+    () => () => {
+      // Clear the finished game after the route curtains cover the outgoing page.
+      const completeExit = pendingExitRef.current;
+      pendingExitRef.current = null;
+      completeExit?.();
+    },
+    [],
+  );
 
   const handleHome = () => {
     if (game?.outcome) pendingExitRef.current = () => dispatch(clearGame());
@@ -110,9 +133,10 @@ const ClassicGame: FC = () => {
     .find((card) => card.id === activeCardId);
   const dragging = activeCardId !== null;
   const previewAttackerId = hoveredAttackerId ?? focusedAttackerId;
-  const previewEnemyId = !dragging && previewAttackerId
-    ? resolveAttack(game, previewAttackerId)?.enemy.id
-    : undefined;
+  const previewEnemyId =
+    !dragging && previewAttackerId
+      ? resolveAttack(game, previewAttackerId)?.enemy.id
+      : undefined;
   const waitingForPlayer =
     !game.outcome && game.currentPhase === game.phaseLifecycle.waitingPhase;
   const handleAttack = (cardId: string, enemyId?: string) => {
@@ -121,7 +145,8 @@ const ClassicGame: FC = () => {
       toastRef.current?.enqueue(t(`ui.${reason}.rejection`));
       return;
     }
-    if (resolveAttack(game, cardId, enemyId)) dispatch(attackCard({cardId, enemyId}));
+    if (resolveAttack(game, cardId, enemyId))
+      dispatch(attackCard({ cardId, enemyId }));
   };
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     setActiveCardId(null);
@@ -211,23 +236,39 @@ const ClassicGame: FC = () => {
         onDragCancel={() => setActiveCardId(null)}
         onDragEnd={handleDragEnd}
       >
-      <GameHeaderStyled>
-        <HeaderBurgerMenu onHome={handleHome} onSurrender={handleSurrender} />
-        <HeaderMenuButtonStyled onClick={handleHome} value="link.page.home" showBullet={false} />
-        <HeaderMenuButtonStyled
-          value="ui.game.surrender"
-          showBullet={false}
-          disabled={dragging}
-          onClick={handleSurrender}
-        />
-        <HeaderRoomTitleStyled>{t("ui.zone.room")} {currentRoomNumber}</HeaderRoomTitleStyled>
-      </GameHeaderStyled>
+        <GameHeaderStyled>
+          <HeaderBurgerMenu onHome={handleHome} onSurrender={handleSurrender} />
+          <HeaderMenuButtonStyled
+            onClick={handleHome}
+            value="link.page.home"
+            showBullet={false}
+          />
+          <HeaderMenuButtonStyled
+            value="ui.game.surrender"
+            showBullet={false}
+            disabled={dragging}
+            onClick={handleSurrender}
+          />
+          <HeaderRoomTitleStyled>
+            {t("ui.zone.room")} {currentRoomNumber}
+          </HeaderRoomTitleStyled>
+        </GameHeaderStyled>
         <GameTableStyled
           inert={roomTransition}
-          onMouseOver={event => { if (!dragging) setHoveredAttackerId(getPreviewAttackerId(event.target)); }}
-          onMouseOut={event => { if (!dragging) setHoveredAttackerId(getPreviewAttackerId(event.relatedTarget)); }}
-          onFocusCapture={event => setFocusedAttackerId(getPreviewAttackerId(event.target))}
-          onBlurCapture={event => setFocusedAttackerId(getPreviewAttackerId(event.relatedTarget))}
+          onMouseOver={(event) => {
+            if (!dragging)
+              setHoveredAttackerId(getPreviewAttackerId(event.target));
+          }}
+          onMouseOut={(event) => {
+            if (!dragging)
+              setHoveredAttackerId(getPreviewAttackerId(event.relatedTarget));
+          }}
+          onFocusCapture={(event) =>
+            setFocusedAttackerId(getPreviewAttackerId(event.target))
+          }
+          onBlurCapture={(event) =>
+            setFocusedAttackerId(getPreviewAttackerId(event.relatedTarget))
+          }
         >
           <div data-dungeon-rooms>
             <DungeonRooms appendTo={appendTooltipTo} />
@@ -238,6 +279,7 @@ const ClassicGame: FC = () => {
             name={t("ui.deck.dungeon.name")}
             description={t("ui.deck.dungeon.description")}
             image={pack.dungeon}
+            overlayColor={pack.card.color}
           />
           <RoomZone
             onTransitionChange={setRoomTransition}
@@ -247,8 +289,14 @@ const ClassicGame: FC = () => {
             previewEnemyId={previewEnemyId}
           />
           <div data-health-frame>
-            {tabletLandscape ? <HeroHealthBar /> : (
-              <HealthFrameStyled variant="inner" tileVariant="tile" cornerRadius={8}>
+            {tabletLandscape ? (
+              <HeroHealthBar />
+            ) : (
+              <HealthFrameStyled
+                variant="inner"
+                tileVariant="tile"
+                cornerRadius={8}
+              >
                 <HeroHealthBar />
               </HealthFrameStyled>
             )}
@@ -260,6 +308,7 @@ const ClassicGame: FC = () => {
             description={t("ui.deck.discard.description")}
             direction="right"
             image={pack.discard}
+            overlayColor={pack.card.color}
           />
           <div data-turn-controls>
             <TurnControls disabled={dragging} />
@@ -271,13 +320,18 @@ const ClassicGame: FC = () => {
             description={t("ui.deck.crypt.description")}
             direction="right"
             image={pack.crypt}
+            overlayColor={pack.card.color}
           />
           <div data-hero-frame>
-            <HeroFrameStyled variant="inner" tileVariant="stone" cornerRadius={32}>
+            <HeroFrameStyled
+              variant="inner"
+              tileVariant="stone"
+              cornerRadius={32}
+            >
               <HeroZonesStyled>
                 <CardZone
                   appendTo={appendTooltipTo}
-                framed={false}
+                  framed={false}
                   zone={game.zones.weapons}
                   onAttack={handleAttack}
                   label={t("ui.zone.weapons")}
@@ -285,7 +339,7 @@ const ClassicGame: FC = () => {
                 />
                 <CardZone
                   appendTo={appendTooltipTo}
-                framed={false}
+                  framed={false}
                   zone={game.zones.potions}
                   onAttack={handleAttack}
                   label={t("ui.zone.potions")}
@@ -302,13 +356,21 @@ const ClassicGame: FC = () => {
             zIndex={1000}
             style={{ pointerEvents: "none" }}
           >
-            {activeCard && <CardDragPreview card={activeCard} appendTo={appendTooltipTo} />}
+            {activeCard && (
+              <CardDragPreview card={activeCard} appendTo={appendTooltipTo} />
+            )}
           </DragOverlay>,
           document.body,
         )}
       </DndContext>
       <Toast ref={toastRef} />
-      {game.outcome && <GameResult outcome={game.outcome} isOpen={!resultDismissed} onClose={() => setResultDismissed(true)} />}
+      {game.outcome && (
+        <GameResult
+          outcome={game.outcome}
+          isOpen={!resultDismissed}
+          onClose={() => setResultDismissed(true)}
+        />
+      )}
     </ClassicGameStyled>
   );
 };

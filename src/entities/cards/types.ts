@@ -10,6 +10,7 @@ export type CardSideType = Partial<{
     imageMode?: MixBlendMode;
     overlay: string;
     overlayMode?: MixBlendMode;
+    overlayColor?: string;
 }>;
 
 type CardTranslationKeysType<Type extends string, Subtype extends string> = Extract<TranslationKeysType, `card.${Type}.${Subtype}.name`>;

@@ -51,4 +51,5 @@ export const DeckOverlayStyled = styled.div<{$color: string}>`
     mask-position: center;
     mask-repeat: no-repeat;
     pointer-events: none;
+    filter: brightness(0.5);
 `;
