@@ -1,7 +1,7 @@
 
 import {ValueOf} from "helpers";
 import {TranslationKeysType} from "localization/types.ts";
-import {EntityTypes, HandTypes, RarityTypes, TimeTypes} from "./constants.ts";
+import {HandTypes, RarityTypes, TimeTypes} from "./constants.ts";
 import type {GameModeType} from "entities/game-modes/types.ts";
 import type {PackIdentifierType} from "entities/packs/types.ts";
 
@@ -10,7 +10,6 @@ export type RankType = 'A' | 'K' | 'Q' | 'J' | 'T' | '9' | '8' | '7' | '6' | '5'
 
 export type RarityType = ValueOf<typeof RarityTypes>;
 
-export type EntityTypeType = ValueOf<typeof EntityTypes>;
 
 export type HandTypeType = ValueOf<typeof HandTypes>;
 

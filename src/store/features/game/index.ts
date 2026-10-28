@@ -4,6 +4,7 @@ import {getInitialGame} from "./constants.ts";
 import {advanceGamePhase, canPlaceCardInZone, canMoveCard, canPlayPotion, restoreGame, shuffleDungeonCards, applyPotion, recordRoomPlay, canEndRoom, canSkipRoom, dealNextRoom, completeRoom} from "./helpers.ts";
 import {applyAttack} from "./attack.ts";
 import {checkGameVictory} from "./helpers.ts";
+import {resolveRoomEntryEffects} from "./room-entry.ts";
 import type {AttackCardPayloadType} from "entities/game/types.ts";
 import type {GameStateType, PreAnimationGameStateType, PreLifecycleGameStateType, HeroLessGameStateType, HandGameStateType, LegacyGameStateType, OldZoneGameStateType, MoveCardPayloadType, PlayCardPayloadType, PlayingCardType, ZoneKindType} from "entities/game/types.ts";
 
@@ -121,7 +122,7 @@ export const gameSlice = createSlice({
                 destination.cards.splice(targetIndex, 0, card);
             }
             if (source !== destination && ["room", "weapons", "potions"].includes(payload.from)) {
-                state.lastPlayedCard = {role: movingCard.role, rank: movingCard.rank};
+                state.lastPlayedCard = {role: movingCard.role, rank: movingCard.rank, strength: movingCard.strength};
                 recordRoomPlay(state, payload.from === "room" ? 1 : 0);
             }
             if (![state.zones.room, state.zones.weapons, state.zones.potions]
@@ -133,12 +134,16 @@ export const gameSlice = createSlice({
             if (state.outcome) return;
             const zone = state.zones[payload.zone];
             const ids = new Set(Object.values(state.zones).flatMap(item => item.cards.map(card => card.id)));
+            const entered: PlayingCardType[] = [];
             for (const card of payload.cards) {
                 if (zone.cards.length >= zone.capacity) break;
                 if (ids.has(card.id) || !canPlaceCardInZone(card, payload.zone)) continue;
-                zone.cards.push(card);
+                const added = {...card};
+                zone.cards.push(added);
+                entered.push(added);
                 ids.add(card.id);
             }
+            if (payload.zone === "room") resolveRoomEntryEffects(state, entered);
         },
         removeCardsFromZone: (state, {payload}: PayloadAction<{zone: ZoneKindType; cardIds: string[]}>) => {
             if (!state) return;

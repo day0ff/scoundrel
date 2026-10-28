@@ -1,4 +1,4 @@
-import {useEffect, type FC} from "react";
+import {useEffect, useRef, type FC} from "react";
 import {createPortal} from "react-dom";
 import {useAppDispatch, useAppSelector} from "store/hooks.ts";
 import {clearEffectAnimations, completeEffectAnimation} from "store/features/game";
@@ -8,15 +8,20 @@ import AttackFeedback from "./components/AttackFeedback";
 import HealFeedback from "./components/HealFeedback";
 import {useAudioManager} from "hooks/useAudioManager.ts";
 import {ATTACK_SOUNDS} from "./components/AttackFeedback/constants.ts";
+import ConsumeFeedback from "./components/ConsumeFeedback";
+import type {EffectAnimationsPropsType} from "./types.ts";
 
-const EffectAnimations: FC = () => {
+const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
     const dispatch = useAppDispatch();
     const audio = useAudioManager();
     const event = useAppSelector(activeEffectAnimationGameSelector);
     const animation = event && ANIMATIONS_MAP[event.animation];
+    const mounted = useRef(false);
+    const paused = event?.animation === "day0ff:animation-consume" && roomTransition;
 
     useEffect(() => {
-        if (!event || !animation) return;
+        if (!event || !animation || paused) return;
+        const duration = event.animation === "day0ff:animation-consume" && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : animation.durationMs;
         const timeout = setTimeout(() => {
             dispatch(completeEffectAnimation(event.id));
             if (event.animation === "day0ff:animation-attack" && event.weaponBroken) {
@@ -25,13 +30,26 @@ const EffectAnimations: FC = () => {
                     console.warn("Unable to play weapon break sound", error);
                 });
             }
-        }, animation.durationMs);
+        }, duration);
         return () => clearTimeout(timeout);
-    }, [audio, dispatch, event, animation]);
+    }, [audio, dispatch, event, animation, paused]);
 
-    useEffect(() => () => { dispatch(clearEffectAnimations()); }, [dispatch]);
+    useEffect(() => {
+        mounted.current = true;
+        return () => {
+            mounted.current = false;
+            // Strict Mode's effect replay must not discard entry animations already queued before mount.
+            queueMicrotask(() => {
+                if (!mounted.current) dispatch(clearEffectAnimations());
+            });
+        };
+    }, [dispatch]);
 
-    if (!event || !animation) return null;
+    if (!event || !animation || paused) return null;
+
+    if (event.animation === "day0ff:animation-consume") {
+        return createPortal(<ConsumeFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+    }
 
     if (event.animation === "day0ff:animation-attack") {
         return createPortal(<AttackFeedback key={event.id} event={event} duration={animation.durationMs} />, document.body);

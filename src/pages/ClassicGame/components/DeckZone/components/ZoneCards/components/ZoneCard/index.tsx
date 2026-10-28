@@ -4,10 +4,11 @@ import {useTranslation} from "react-i18next";
 import Card from "components/Card";
 import CardTilt from "components/CardTilt";
 import PasteboardCardMark from "components/PasteboardCard/components/PasteboardCardMark";
+import CardStrength from "components/CardStrength";
 import {ZoneCardStyled} from "./styles.ts";
 import type {ZoneCardPropsType} from "./types.ts";
 
-const ZoneCard: FC<ZoneCardPropsType> = ({card, suit, rank, name, isSelected, onSelect}) => {
+const ZoneCard: FC<ZoneCardPropsType> = ({card, suit, rank, strength, name, isSelected, onSelect}) => {
     const {t} = useTranslation();
     const [flipped, setFlipped] = useState(false);
     const {rotateY} = useSpring({
@@ -48,7 +49,8 @@ const ZoneCard: FC<ZoneCardPropsType> = ({card, suit, rank, name, isSelected, on
         >
             <CardTilt wobbleIntensity={3} wobbleSpeed={0.001}>
                 <Card {...card} $size={6} rotateY={rotateY}
-                      mark={<PasteboardCardMark suit={suit} rank={rank} color={card.color}/>}/>
+                      mark={<PasteboardCardMark suit={suit} rank={rank} color={card.color}/>}
+                      labels={<CardStrength rank={rank} strength={strength}/>}/>
             </CardTilt>
         </ZoneCardStyled>
     );

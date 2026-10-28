@@ -1,10 +1,11 @@
-import {RANK_STRENGTH_MAP} from "entities/constants.ts";
+import {getCardStrength} from "entities/pasteboards/helpers.ts";
+import {getEncounterStrength} from "entities/pasteboards/encounters.ts";
 import type {GameStateType, PlayingCardType} from "entities/game/types.ts";
 
-const cardValue = (card: Pick<PlayingCardType, "rank">) => RANK_STRENGTH_MAP[card.rank] ?? 0;
+const cardValue = (card: Pick<PlayingCardType, "rank" | "strength">) => getCardStrength(card) ?? 0;
 
 export const calculateScoreRange = (cards: PlayingCardType[], maxLife: number) => ({
-    min: -cards.filter(card => card.role === "enemy").reduce((sum, card) => sum + cardValue(card), 0),
+    min: -cards.filter(card => card.role === "enemy").reduce((sum, card) => sum + getEncounterStrength(card), 0),
     max: maxLife + Math.max(0, ...cards.filter(card => card.role === "potion").map(cardValue)),
 });
 
@@ -13,7 +14,7 @@ export const calculateGameScore = (state: GameStateType): number => {
     if (state.outcome === "defeat") {
         const remaining = [state.zones.dungeon, state.zones.room, state.zones.discard];
         return life - remaining.flatMap(zone => zone.cards)
-            .filter(card => card.role === "enemy").reduce((sum, card) => sum + cardValue(card), 0);
+            .filter(card => card.role === "enemy").reduce((sum, card) => sum + getEncounterStrength(card), 0);
     }
     const potions = state.zones.potions.cards.filter(card => card.role === "potion");
     const lastPotionValue = state.lastPlayedCard?.role === "potion" ? cardValue(state.lastPlayedCard) : 0;

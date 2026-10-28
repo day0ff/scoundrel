@@ -8,3 +8,7 @@ export const REMOVE_SOUNDS = [
     "/sounds/cards-pack-open-1.mp3",
     "/sounds/cards-pack-open-2.mp3",
 ];
+import {BASE_URL} from "constants.ts";
+
+export const THING_DEAL_SOUND = `${BASE_URL}/sounds/growl.mp3`;
+

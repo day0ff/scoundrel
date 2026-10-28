@@ -15,8 +15,12 @@ import {queenSkeletonPasteboardCard} from "./Q.ts";
 import {kingSkeletonPasteboardCard} from "./K.ts";
 import {aceSkeletonPasteboardCard} from "./A.ts";
 import {billetSkeletonPasteboardCard} from "./B.ts";
+import {thingPasteboardCard} from "./Thing.ts";
+import {necromancerPasteboardCard} from "./Necromancer.ts";
 
 export const SKELETON_PASTEBOARD_CARDS_MAP = {
+    [thingPasteboardCard.identifier]: thingPasteboardCard,
+    [necromancerPasteboardCard.identifier]: necromancerPasteboardCard,
     "day0ff:card-pasteboard.skeleton.1": oneSkeletonPasteboardCard,
     "day0ff:card-pasteboard.skeleton.2": twoSkeletonPasteboardCard,
     "day0ff:card-pasteboard.skeleton.3": threeSkeletonPasteboardCard,

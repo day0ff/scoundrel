@@ -1,6 +1,7 @@
 import {recordRoomPlay, checkGameVictory} from "./helpers.ts";
 import {attackAnimation} from "entities/animations/attack.ts";
-import {RANK_STRENGTH_MAP} from "entities/constants.ts";
+import {getCardStrength} from "entities/pasteboards/helpers.ts";
+import {thingPasteboard} from "entities/pasteboards/skeleton/Thing.ts";
 import {calculateAttack} from "entities/effects/attack.ts";
 import type {GameStateType, PlayingCardType, ZoneKindType} from "entities/game/types.ts";
 
@@ -8,7 +9,7 @@ export const canAttackCard = (card: PlayingCardType, zone: ZoneKindType): boolea
     if (card.isLocked || card.isNotFound) return false;
     if (card.role === "fist") return zone === "weapons" && card.identifier === "day0ff:pasteboard-fist.0";
     return zone === "weapons" && card.role === "weapon"
-        && RANK_STRENGTH_MAP[card.rank] !== undefined
+        && getCardStrength(card) !== undefined
         && Number.isSafeInteger(card.durability) && (card.durability ?? 0) > 0;
 };
 
@@ -20,9 +21,10 @@ export const getAttackRejection = (state: GameStateType, attackerId: string, ene
     const attacker = state.zones.weapons.cards.find(card => card.id === attackerId);
     const enemy = enemyId === undefined ? getAttackTarget(state) : state.zones.room.cards.find(card => card.id === enemyId && card.role === "enemy");
     if (!attacker || !canAttackCard(attacker, "weapons") || attacker.role !== "weapon" || !enemy) return;
+    if (enemy.identifier === thingPasteboard.identifier) return;
     const previousKill = attacker.killedEnemies?.at(-1);
-    const previousStrength = previousKill && RANK_STRENGTH_MAP[previousKill.rank];
-    const enemyStrength = RANK_STRENGTH_MAP[enemy.rank];
+    const previousStrength = previousKill && getCardStrength(previousKill);
+    const enemyStrength = getCardStrength(enemy);
     if (previousStrength !== undefined && enemyStrength !== undefined && enemyStrength > previousStrength) return "enemyRankTooHigh";
 };
 
@@ -33,12 +35,12 @@ export const resolveAttack = (state: GameStateType, attackerId: string, enemyId?
     const enemy = enemyId === undefined ? getAttackTarget(state) : state.zones.room.cards.find(card => card.id === enemyId && card.role === "enemy");
     // Collection availability flags do not prevent fighting an enemy already on the room.
     if (!source || !attacker || !canAttackCard(attacker, source.type) || !enemy) return;
-    const enemyStrength = RANK_STRENGTH_MAP[enemy.rank];
-    const attackerStrength = attacker.role === "fist" ? 0 : RANK_STRENGTH_MAP[attacker.rank];
+    const enemyStrength = getCardStrength(enemy);
+    const attackerStrength = attacker.role === "fist" ? 0 : getCardStrength(attacker);
     if (enemyStrength === undefined || attackerStrength === undefined) return;
     const previousKill = attacker.role === "weapon" ? attacker.killedEnemies?.at(-1) : undefined;
     if (previousKill) {
-        const previousStrength = RANK_STRENGTH_MAP[previousKill.rank];
+        const previousStrength = getCardStrength(previousKill);
         if (previousStrength === undefined || getAttackRejection(state, attackerId, enemy.id)) return;
     }
     return {
@@ -51,7 +53,7 @@ export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: 
     const attack = resolveAttack(state, attackerId, enemyId);
     if (!attack) return;
     const {source, attacker, enemy, healthDamage, durability} = attack;
-    state.lastPlayedCard = {role: enemy.role, rank: enemy.rank};
+    state.lastPlayedCard = {role: enemy.role, rank: enemy.rank, strength: enemy.strength};
     recordRoomPlay(state, 1);
     const healthBefore = {...state.hero.health};
     state.hero.health.current = Math.max(state.hero.health.min, state.hero.health.current - healthDamage);
@@ -72,7 +74,7 @@ export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: 
     state.zones.room.cards.splice(state.zones.room.cards.findIndex(card => card.id === enemy.id), 1);
     state.zones.crypt.cards.push(enemy);
     if (attacker.role === "weapon") {
-        (attacker.killedEnemies ??= []).push({id: enemy.id, identifier: enemy.identifier, rank: enemy.rank});
+        (attacker.killedEnemies ??= []).push({id: enemy.id, identifier: enemy.identifier, rank: enemy.rank, strength: getCardStrength(enemy)});
     }
     if (durability !== undefined) {
         attacker.durability = durability;

@@ -17,6 +17,7 @@ import type {EffectBindingType} from "entities/effects/types.ts";
 import type {PhaseDataType} from "entities/phases/types.ts";
 import type {CardMoveRejectionType, GameStateType, PreAnimationGameStateType, PreLifecycleGameStateType, HeroLessGameStateType, HandGameStateType, LegacyGameStateType, OldZoneGameStateType, MoveCardPayloadType, PlayingCardType, ZoneKindType} from "entities/game/types.ts";
 import type {SeedType} from "../types.ts";
+import {resolveRoomEntryEffects} from "./room-entry.ts";
 
 export const canPlaceCardInZone = (card: PlayingCardType, zone: ZoneKindType): boolean => {
     if (card.identifier === "day0ff:pasteboard-fist.0") return zone === "weapons";
@@ -249,7 +250,7 @@ export const canPlayPotion = (card: PlayingCardType, zone: ZoneKindType): boolea
 
 export const applyPotion = (state: GameStateType, card: PlayingCardType, from: ZoneKindType) => {
     if (state.outcome) return;
-    state.lastPlayedCard = {role: card.role, rank: card.rank};
+    state.lastPlayedCard = {role: card.role, rank: card.rank, strength: card.strength};
     recordRoomPlay(state, from === "room" ? 1 : 0);
     const source = state.zones[from];
     source.cards.splice(source.cards.findIndex(item => item.id === card.id), 1);
@@ -325,6 +326,7 @@ export const dealNextRoom = (state: GameStateType, skipAllowed: boolean) => {
         shuffleDungeonCards(state);
     }
     room.cards = dungeon.cards.splice(0, room.capacity);
+    resolveRoomEntryEffects(state, [...room.cards]);
     state.activeRoomCards = room.cards.map(card => ({...card}));
     state.roomProgress = {fightStarted: false, cardsPlayed: 0, skipAllowed};
     state.selectedCardId = undefined;

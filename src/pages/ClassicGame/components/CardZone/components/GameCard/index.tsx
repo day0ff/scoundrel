@@ -11,7 +11,7 @@ import WeaponDurability from "../../../WeaponDurability";
 import WeaponLastKill from "../../../WeaponLastKill";
 import type {GameCardPropsType} from "./types.ts";
 import {GameCardStyled, StrikeStyled} from "./styles.ts";
-import {firstAttackerIdSelector, pendingAttacksSelector} from "./selectors.ts";
+import {firstAttackerIdSelector, pendingAttacksSelector, pendingConsumesSelector} from "./selectors.ts";
 import {activeEffectAnimationGameSelector} from "store/features/game/selectors.ts";
 import {ANIMATIONS_MAP} from "entities/animations/constants.ts";
 import {useTouchDoubleTap} from "hooks/useTouchDoubleTap.ts";
@@ -23,7 +23,10 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
     const firstAttackerId = useAppSelector(firstAttackerIdSelector);
     const {t} = useTranslation();
     const lastKilledRank = card.killedEnemies?.at(-1)?.rank;
+    const lastKilledStrength = card.killedEnemies?.at(-1)?.strength;
     const pendingAttacks = useAppSelector(pendingAttacksSelector);
+    const pendingConsumes = useAppSelector(pendingConsumesSelector);
+    const consumed = zone === "room" && pendingConsumes.some(event => event.enemyId === card.id);
     const activeEffect = useAppSelector(activeEffectAnimationGameSelector);
     const defeated = zone === "room" && pendingAttacks.some(event => event.enemyId === card.id);
     const hit = defeated && activeEffect?.animation === "day0ff:animation-attack" && activeEffect.enemyId === card.id;
@@ -49,7 +52,8 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
                 pointerType.current = event.pointerType;
                 doubleTapHandlers.onPointerDownCapture(event);
             }}
-            inert={defeated || broken}
+            inert={defeated || broken || consumed}
+            data-consumed={consumed}
             data-hit={hit}
             $role={card.role}
             data-card-zone={zone}
@@ -86,7 +90,7 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
                     <AttackTargetIcon visible={showTarget} appendTo={appendTo}/>
                 ) : zone === "weapons" && card.role === "weapon" ? (
                     <>
-                        {lastKilledRank !== undefined && <WeaponLastKill rank={lastKilledRank} appendTo={appendTo} disabled={dragging}/>}
+                        {lastKilledRank !== undefined && <WeaponLastKill rank={lastKilledRank} strength={lastKilledStrength} appendTo={appendTo} disabled={dragging}/>}
                         {card.durability !== undefined && <WeaponDurability durability={card.durability} appendTo={appendTo} disabled={dragging}/>}
                     </>
                 ) : undefined}

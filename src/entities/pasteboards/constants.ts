@@ -7,6 +7,7 @@ import {PASTEBOARD_SKELETON_MAP} from "./skeleton/constants.ts";
 import {PASTEBOARD_WEAPON_MAP} from "./weapon/constants.ts";
 import {PASTEBOARD_FIST_MAP} from "./fist/constants.ts";
 import {InitPasteboardDataType, PasteboardDataType} from "./types.ts";
+import {getCardStrength} from "./helpers.ts";
 
 const PASTEBOARD_MAP = {
     ...PASTEBOARD_DARK_MAP,
@@ -27,11 +28,15 @@ export const initPasteboard = (
 
     return ({
         ...pasteboard,
+        strength: getCardStrength(pasteboard),
         id: getUuid(),
     })
 };
 
 export const allPasteBoards = Object.values(PASTEBOARD_MAP);
+
+export const getPasteboard = (identifier: PasteboardDataType<string, RankType>["identifier"]): PasteboardDataType<string, RankType> | undefined =>
+    PASTEBOARD_MAP[identifier as keyof typeof PASTEBOARD_MAP];
 
 export const getPasteboardEffects = (pasteboard: PasteboardDataType<string, RankType>) => {
     const definition: PasteboardDataType<string, RankType> | undefined = PASTEBOARD_MAP[pasteboard.identifier as keyof typeof PASTEBOARD_MAP];
@@ -45,6 +50,8 @@ export const restorePasteboard = <T extends PasteboardDataType<string, RankType>
     const role = pasteboard.role ?? definition?.role;
     return {
         ...pasteboard,
+        strength: getCardStrength({...pasteboard, strength: pasteboard.strength ?? definition?.strength}),
+        roomEntryEffect: pasteboard.roomEntryEffect ?? definition?.roomEntryEffect,
         ...(role ? {role} : {}),
         ...(role === "weapon" ? {durability: pasteboard.durability ?? definition?.durability ?? DEFAULT_WEAPON_DURABILITY} : {}),
     };

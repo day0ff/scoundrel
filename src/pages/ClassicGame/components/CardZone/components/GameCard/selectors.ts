@@ -6,6 +6,11 @@ export const pendingAttacksSelector = createSelector(
     game => game?.animationEvents.filter(event => event.animation === "day0ff:animation-attack") ?? [],
 );
 
+export const pendingConsumesSelector = createSelector(
+    gameSelector,
+    game => game?.animationEvents.filter(event => event.animation === "day0ff:animation-consume") ?? [],
+);
+
 export const firstAttackerIdSelector = createSelector(
     gameSelector,
     game => {

@@ -32,7 +32,14 @@ export type AttackAnimationEventType = HealthAnimationEventType & {
     weaponBroken: boolean;
 };
 
+export type ConsumeAnimationEventType = HealthAnimationEventType & {
+    animation: AnimationDataType<"consume">["identifier"];
+    consumerId: string;
+    enemyId: string;
+    roomBefore: InitPasteboardDataType<string, RankType>[];
+};
+
 export type EffectAnimationEventType = (HealthAnimationEventType & {
     animation: AnimationDataType<"heal">["identifier"];
     potion?: InitPasteboardDataType<string, RankType>;
-}) | AttackAnimationEventType;
+}) | AttackAnimationEventType | ConsumeAnimationEventType;

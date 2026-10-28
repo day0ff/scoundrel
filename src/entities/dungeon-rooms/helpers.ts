@@ -3,14 +3,14 @@ import {roomDungeonRoom} from "./room.ts";
 import {royalDungeonRoom} from "./royal.ts";
 import {monsterDungeonRoom} from "./monster.ts";
 import {DUNGEON_ROOM_DANGER_THRESHOLDS} from "./constants.ts";
-import {RANK_STRENGTH_MAP} from "entities/constants.ts";
+import {getEncounterStrength} from "entities/pasteboards/encounters.ts";
 import type {GameStateType, PlayingCardType} from "entities/game/types.ts";
 import type {DungeonRoomDangerType, DungeonRoomType} from "./types.ts";
 
 export const classifyDungeonRoom = (cards: PlayingCardType[], status: DungeonRoomType["status"] = "upcoming"): DungeonRoomType => {
     const enemies = cards.filter(card => card.role === "enemy");
     const royals = enemies.filter(card => ["J", "Q", "K", "A"].includes(card.rank)).length;
-    const strength = enemies.reduce((sum, card) => sum + (RANK_STRENGTH_MAP[card.rank] ?? 0), 0);
+    const strength = enemies.reduce((sum, card) => sum + getEncounterStrength(card), 0);
     const danger = (Object.keys(DUNGEON_ROOM_DANGER_THRESHOLDS) as DungeonRoomDangerType[])
         .find(level => strength < DUNGEON_ROOM_DANGER_THRESHOLDS[level]);
     return {

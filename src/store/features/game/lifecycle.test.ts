@@ -18,6 +18,7 @@ import {gameListenerMiddleware} from "./middleware.ts";
 import type {GameStateType, PlayingCardType} from "entities/game/types.ts";
 import type {RankType} from "entities/types.ts";
 import {getAttackRejection, resolveAttack} from "./attack.ts";
+import {getCardStrength} from "entities/pasteboards/helpers.ts";
 import {formatRaceTime, parseRaceTime} from "./time.ts";
 import {calculateGameScore} from "./score.ts";
 import {canDropCardOnTarget, getCardMove} from "pages/ClassicGame/helpers.ts";
@@ -371,7 +372,7 @@ export const runGameTests = (include: (name: string) => boolean = () => true) =>
         assert.equal(getCardMove(state, roomWeapon.id, "room")?.to, "room");
     });
 
-    check("weapons track equal and descending kills and reject higher ranks without changes", () => {
+    check("weapons track equal and descending kills and reject higher strength without changes", () => {
         const enemies = [card("skeleton", "K"), card("skeleton", "Q"), card("skeleton", "K"), card("skeleton", "Q"), card("skeleton", "J")];
         const weapon = card("weapon", "K");
         const base = structuredClone(fixture(enemies));
@@ -399,7 +400,7 @@ export const runGameTests = (include: (name: string) => boolean = () => true) =>
         assert.ok(broken);
         assert.equal(broken.durability, 0);
         assert.deepEqual(broken.killedEnemies, [enemies[0], enemies[1], enemies[3], enemies[4]].map(enemy => ({
-            id: enemy.id, identifier: enemy.identifier, rank: enemy.rank,
+            id: enemy.id, identifier: enemy.identifier, rank: enemy.rank, strength: getCardStrength(enemy),
         })));
         assert.equal(state.zones.room.cards[0].id, enemies[2].id);
         assert.equal(state.roomProgress?.cardsPlayed, 4);

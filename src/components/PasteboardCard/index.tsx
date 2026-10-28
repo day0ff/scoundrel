@@ -11,6 +11,8 @@ import { PasteboardCardPropsType } from "./types.ts";
 import PasteboardCardMark from "./components/PasteboardCardMark";
 import { getBCard } from "./helpers.ts";
 import {VIEWPORT_TOOLTIP_POPPER_OPTIONS} from "components/Tooltip/constants.ts";
+import {getCardStrength} from "entities/pasteboards/helpers.ts";
+import CardStrength from "components/CardStrength";
 
 const PasteboardCard: FC<PasteboardCardPropsType> = ({
   isLocked,
@@ -22,6 +24,8 @@ const PasteboardCard: FC<PasteboardCardPropsType> = ({
   card: cardProp,
   appendTo,
   tooltipDisabled = false,
+  strength,
+  labels,
   ...restProps
 }) => {
   const tooltipRef = useRef<Instance | null>(null);
@@ -71,6 +75,7 @@ const PasteboardCard: FC<PasteboardCardPropsType> = ({
             name={name}
             description={description}
             color={card.color}
+            strength={getCardStrength({rank, strength})}
           />
         }
       >
@@ -82,6 +87,10 @@ const PasteboardCard: FC<PasteboardCardPropsType> = ({
             {...restProps}
             card={card}
             mark={mark}
+            labels={<>
+              {!isLocked && !isNotFound && <CardStrength rank={rank} strength={strength} appendTo={appendTo} disabled={tooltipDisabled}/>}
+              {labels}
+            </>}
           />
         </PasteboardCardWrapperStyled>
       </Tooltip>

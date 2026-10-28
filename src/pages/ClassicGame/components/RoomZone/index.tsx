@@ -5,8 +5,9 @@ import CardZone from "../CardZone";
 import {useAppSelector} from "store/hooks.ts";
 import {useAudioManager} from "hooks/useAudioManager.ts";
 import type {SoundPlaybackType} from "utils/AudioManager/types.ts";
+import {thingPasteboard} from "entities/pasteboards/skeleton/Thing.ts";
 import {currentRoomNumberSelector, roomWithAttackFeedbackSelector} from "./selectors.ts";
-import {DEAL_SOUNDS, REMOVE_SOUNDS} from "./constants.ts";
+import {DEAL_SOUNDS, REMOVE_SOUNDS, THING_DEAL_SOUND} from "./constants.ts";
 import {CARD_STAGGER_MS, CARD_REVEAL_MS, CARD_REMOVE_MS} from "../CardZone/constants.ts";
 import {RoomZoneStyled} from "./styles.ts";
 import type {RoomZonePropsType} from "./types.ts";
@@ -29,18 +30,19 @@ const RoomZone: FC<RoomZonePropsType> = ({zone, appendTo, onAttack, previewEnemy
 
     const animation = display.animation;
     const cardCount = display.zone.cards.length;
+    const dealtCards = display.zone.cards;
     useEffect(() => {
         onTransitionChange(!!animation);
         if (!animation || pageTransitionBusy) return;
         let cancelled = false;
         const playbacks: SoundPlaybackType[] = [];
         const timers: ReturnType<typeof setTimeout>[] = [];
-        const play = (sounds: string[]) => {
+        const play = (sounds: string[], finishAfterDeal = false) => {
             const url = sounds[Math.floor(Math.random() * sounds.length)];
             void audio.playSound({url}).then(playback => {
                 if (!playback) return;
                 if (cancelled) playback.stop();
-                else playbacks.push(playback);
+                else if (!finishAfterDeal) playbacks.push(playback);
             }).catch((error: unknown) => console.warn("Unable to play card sound", error));
         };
         // Timers also avoid duplicate playback during Strict Mode's discarded effect setup.
@@ -49,6 +51,10 @@ const RoomZone: FC<RoomZonePropsType> = ({zone, appendTo, onAttack, previewEnemy
         } else {
             for (let index = 0; index < cardCount; index++) {
                 timers.push(setTimeout(() => play(DEAL_SOUNDS), index * CARD_STAGGER_MS));
+                if (dealtCards[index].identifier === thingPasteboard.identifier) {
+                    // Let the growl finish even after the room's reveal animation ends.
+                    timers.push(setTimeout(() => play([THING_DEAL_SOUND], true), index * CARD_STAGGER_MS));
+                }
             }
         }
         const duration = cardCount ? (cardCount - 1) * CARD_STAGGER_MS +
@@ -61,7 +67,7 @@ const RoomZone: FC<RoomZonePropsType> = ({zone, appendTo, onAttack, previewEnemy
             timers.forEach(clearTimeout);
             playbacks.forEach(playback => playback.stop());
         };
-    }, [animation, cardCount, roomNumber, audio, onTransitionChange, pageTransitionBusy]);
+    }, [animation, cardCount, dealtCards, roomNumber, audio, onTransitionChange, pageTransitionBusy]);
 
     useEffect(() => () => onTransitionChange(false), [onTransitionChange]);
 

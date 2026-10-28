@@ -34,7 +34,7 @@ export type GameStateType = {
     packIdentifier: PackIdentifierType;
     time: string;
     scoreRange?: {min: number; max: number};
-    lastPlayedCard?: Pick<PlayingCardType, "role" | "rank">;
+    lastPlayedCard?: Pick<PlayingCardType, "role" | "rank" | "strength">;
     log?: GameLogType;
     outcome?: GameOutcomeType;
     seed: SeedType;

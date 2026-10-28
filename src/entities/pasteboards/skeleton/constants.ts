@@ -14,8 +14,12 @@ import {jackSkeletonPasteboard} from "./J.ts";
 import {queenSkeletonPasteboard} from "./Q.ts";
 import {kingSkeletonPasteboard} from "./K.ts";
 import {SkeletonPasteboardDataType} from "./types.ts";
+import {thingPasteboard} from "./Thing.ts";
+import {necromancerPasteboard} from "./Necromancer.ts";
 
 export const PASTEBOARD_SKELETON_MAP = {
+    [thingPasteboard.identifier]: thingPasteboard,
+    [necromancerPasteboard.identifier]: necromancerPasteboard,
     "day0ff:pasteboard-skeleton.A": aceSkeletonPasteboard,
     "day0ff:pasteboard-skeleton.1": oneSkeletonPasteboard,
     "day0ff:pasteboard-skeleton.2": twoSkeletonPasteboard,

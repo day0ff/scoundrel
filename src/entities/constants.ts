@@ -28,10 +28,6 @@ export const RarityTypes = {
     IMPOSSIBLE: 0
 } as const;
 
-export const EntityTypes = {
-    DICE: "dice",
-} as const;
-
 export const HandTypes = {
     NONE: "none",
     HIGH: "high",

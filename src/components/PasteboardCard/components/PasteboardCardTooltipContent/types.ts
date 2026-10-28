@@ -6,4 +6,5 @@ export type CardTooltipContentPropsType = EffectPayload & {
     name: TranslationKeysType;
     description: TranslationKeysType;
     color?: string;
+    strength?: number;
 };

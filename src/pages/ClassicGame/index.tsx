@@ -23,7 +23,7 @@ import {
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useAppDispatch, useAppSelector } from "store/hooks.ts";
-import { gameSelector } from "store/features/game/selectors.ts";
+import { gameSelector, isConsumingGameSelector, cryptWithEffectFeedbackSelector } from "store/features/game/selectors.ts";
 import {
   moveCard,
   playCard,
@@ -83,6 +83,8 @@ const ClassicGame: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const game = useAppSelector(gameSelector);
+  const consuming = useAppSelector(isConsumingGameSelector);
+  const cryptFeedback = useAppSelector(cryptWithEffectFeedbackSelector);
   const pack = useAppSelector(activePackSelector);
   useGameTimer();
   const currentRoomNumber = useAppSelector(currentRoomNumberSelector);
@@ -92,6 +94,12 @@ const ClassicGame: FC = () => {
     [],
   );
   const [roomTransition, setRoomTransition] = useState(true);
+  const [dealtRoomNumber, setDealtRoomNumber] = useState<number | null>(null);
+  const roomBusy = roomTransition || dealtRoomNumber !== currentRoomNumber;
+  const handleRoomTransitionChange = useCallback((busy: boolean) => {
+    setRoomTransition(busy);
+    if (!busy) setDealtRoomNumber(currentRoomNumber);
+  }, [currentRoomNumber]);
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const [hoveredAttackerId, setHoveredAttackerId] = useState<string | null>(
     null,
@@ -138,8 +146,9 @@ const ClassicGame: FC = () => {
       ? resolveAttack(game, previewAttackerId)?.enemy.id
       : undefined;
   const waitingForPlayer =
-    !game.outcome && game.currentPhase === game.phaseLifecycle.waitingPhase;
+    !game.outcome && !consuming && game.currentPhase === game.phaseLifecycle.waitingPhase;
   const handleAttack = (cardId: string, enemyId?: string) => {
+    if (roomBusy || consuming) return;
     const reason = getAttackRejection(game, cardId, enemyId);
     if (reason) {
       toastRef.current?.enqueue(t(`ui.${reason}.rejection`));
@@ -150,6 +159,7 @@ const ClassicGame: FC = () => {
   };
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     setActiveCardId(null);
+    if (consuming) return;
     if (!over) return;
     const move = getCardMove(game, String(active.id), String(over.id));
     if (!move) return;
@@ -162,7 +172,7 @@ const ClassicGame: FC = () => {
   };
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (
-      roomTransition ||
+      roomBusy ||
       !waitingForPlayer ||
       dragging ||
       event.repeat ||
@@ -225,7 +235,7 @@ const ClassicGame: FC = () => {
     return <Navigate to="/dungeon-preview" replace />;
   return (
     <ClassicGameStyled ref={gameRef} $url={pack.room} onKeyDown={handleKeyDown}>
-      <EffectAnimations />
+      <EffectAnimations roomTransition={roomBusy}/>
       <DndContext
         autoScroll={false}
         sensors={sensors}
@@ -254,7 +264,7 @@ const ClassicGame: FC = () => {
           </HeaderRoomTitleStyled>
         </GameHeaderStyled>
         <GameTableStyled
-          inert={roomTransition}
+          inert={roomBusy || consuming}
           onMouseOver={(event) => {
             if (!dragging)
               setHoveredAttackerId(getPreviewAttackerId(event.target));
@@ -282,7 +292,7 @@ const ClassicGame: FC = () => {
             overlayColor={pack.card.color}
           />
           <RoomZone
-            onTransitionChange={setRoomTransition}
+            onTransitionChange={handleRoomTransitionChange}
             zone={game.zones.room}
             appendTo={appendTooltipTo}
             onAttack={handleAttack}
@@ -311,10 +321,10 @@ const ClassicGame: FC = () => {
             overlayColor={pack.card.color}
           />
           <div data-turn-controls>
-            <TurnControls disabled={dragging} />
+            <TurnControls disabled={dragging || consuming} />
           </div>
           <DeckZone
-            zone={game.zones.crypt}
+            zone={cryptFeedback ?? game.zones.crypt}
             label={t("ui.deck.crypt.label")}
             name={t("ui.deck.crypt.name")}
             description={t("ui.deck.crypt.description")}

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {getColoredTextStrokeStyle} from "styles/TextStrokeStyle.ts";
 
-export const WeaponLastKillStyled = styled.span`
+export const CardStatStyled = styled.span`
     position: absolute;
     right: 16px;
     top: 16px;

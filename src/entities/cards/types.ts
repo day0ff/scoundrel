@@ -28,17 +28,19 @@ export type CardDataType<Type extends string, Subtype extends string> = CardType
 
 export type PasteboardIdentifierType<T extends string, P extends string, S extends string, R extends string> = `${IdentifierType<T, P>}.${S}.${R}`;
 
-type PasteboardCardTranslationKeysType<Type extends string, SuitType extends string, RankTypeType extends RankType> = Extract<TranslationKeysType, `card.${Type}.${SuitType}.${RankTypeType}.name`>;
+type PasteboardCardTranslationKeysType<Type extends string, SuitType extends string, RankTypeType extends RankType, VariantType extends string> = Extract<TranslationKeysType,
+    `card.${Type}.${SuitType}.${RankTypeType}.name` | `card.${Type}.${SuitType}.${RankTypeType}.${VariantType}.name`>;
 
-type PasteboardCardTypeType<Identifier extends string, Type extends string, SuitType extends string, RankTypeType extends RankType> = {
-    identifier: PasteboardIdentifierType<Identifier, Type, SuitType, RankTypeType>;
+type PasteboardCardTypeType<Identifier extends string, Type extends string, SuitType extends string, RankTypeType extends RankType, VariantType extends string> = {
+    identifier: PasteboardIdentifierType<Identifier, Type, SuitType, RankTypeType | `${RankTypeType}.${VariantType}`>;
     type: Type;
     suit: SuitType;
     rank: RankTypeType;
-    name: PasteboardCardTranslationKeysType<Type, SuitType, RankTypeType>;
+    variant?: VariantType;
+    name: PasteboardCardTranslationKeysType<Type, SuitType, RankTypeType, VariantType>;
     color?: string;
     face: CardSideType;
     back: CardSideType;
 }
 
-export type PasteboardCardDataType<Type extends string, SuitType extends string, RankTypeType extends RankType> = PasteboardCardTypeType<"card", Type, SuitType, RankTypeType>;
+export type PasteboardCardDataType<Type extends string, SuitType extends string, RankTypeType extends RankType, VariantType extends string = string> = PasteboardCardTypeType<"card", Type, SuitType, RankTypeType, VariantType>;
