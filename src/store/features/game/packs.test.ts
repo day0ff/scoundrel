@@ -10,7 +10,6 @@ import {profilesListenerMiddleware} from "store/features/profiles/middleware.ts"
 import type {ProfilesStateType} from "store/features/profiles/types.ts";
 import collectionsReducer, {setCollections} from "store/features/collections";
 import {initialCollectionsState} from "store/features/collections/constants.ts";
-import {migrateGameState} from "store/migrations.ts";
 import {serializeTransform} from "store/serializer.ts";
 import gameReducer, {clearGame, startGame, surrenderGame} from "./index.ts";
 import {getInitialGame} from "./constants.ts";
@@ -41,7 +40,7 @@ const makeStore = (profiles: ProfilesStateType = {
     ),
 });
 
-export const runGamePackTests = async () => {
+export const runGamePackTests = () => {
     allPacks.push(alternate);
     try {
         const initial = getInitialGame(undefined, "classic", alternate.identifier);
@@ -90,26 +89,13 @@ export const runGamePackTests = async () => {
         // Persist and restore after defeat, when only the remembered selection remains.
         const serialized = serializeTransform.in(store.getState().profiles, "profiles", {});
         const restoredProfiles = serializeTransform.out(JSON.parse(JSON.stringify(serialized)), "profiles", {});
-        const migrated = await migrateGameState({
-            _persist: {version: -1, rehydrated: false},
-            profiles: restoredProfiles,
-        } as Parameters<typeof migrateGameState>[0]) as unknown as {profiles: ProfilesStateType};
-        const restoredStore = makeStore(migrated.profiles);
+        const restoredStore = makeStore(restoredProfiles);
         (restoredStore.dispatch as AppDispatch)(resetSelectedDungeon());
         assert.equal(restoredStore.getState().game?.packIdentifier, alternate.identifier);
 
         const legacy = getInitialGame();
         Reflect.deleteProperty(legacy, "packIdentifier");
         assert.equal(restoreGame(legacy).packIdentifier, classicPack.identifier);
-        const legacyProfiles = {currentProfileId: "legacy", profiles: [{
-            profileId: "legacy", name: "Legacy", collections: initialCollectionsState, games: {classic: legacy},
-        }]};
-        const migratedLegacy = await migrateGameState({
-            _persist: {version: -1, rehydrated: false}, game: legacy, profiles: legacyProfiles,
-        } as Parameters<typeof migrateGameState>[0]) as unknown as {game: typeof legacy; profiles: ProfilesStateType};
-        assert.equal(migratedLegacy.game.packIdentifier, classicPack.identifier);
-        assert.equal(migratedLegacy.profiles.profiles[0].selectedPackIdentifier, classicPack.identifier);
-        assert.equal(migratedLegacy.profiles.profiles[0].games.classic?.packIdentifier, classicPack.identifier);
 
         const beforeInvalidSelection = store.getState();
         dispatch(selectGamePack("day0ff:pack-test-missing"));
@@ -124,7 +110,7 @@ export const runGamePackTests = async () => {
             "Classic rules initialize the selected pack's cards and replay snapshot",
             "reroll and retry preserve pack and hero; clearing a defeated run preserves selection",
             "pack selection is isolated by profile and survives persistence without a run",
-            "older games and profiles default to Classic; unavailable pack selection is ignored",
+            "restored games default to Classic; unavailable pack selection is ignored",
         ];
     } finally {
         allPacks.splice(allPacks.indexOf(alternate), 1);

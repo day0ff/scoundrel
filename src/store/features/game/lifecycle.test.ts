@@ -280,7 +280,7 @@ export const runGameTests = (include: (name: string) => boolean = () => true) =>
         }
     });
 
-    check("saved potion flags migrate to counts and missing limits default to one", () => {
+    check("restoration normalizes potion counts and defaults missing limits to one", () => {
         const base = structuredClone(fixture([card("heal")]));
         base.hero.health.current = 5;
         delete (base.zones.potions as Partial<typeof base.zones.potions>).maximumPotionsPerRoom;
@@ -581,7 +581,7 @@ export const runGameTests = (include: (name: string) => boolean = () => true) =>
         assert.throws(() => replayGameLog(log, -1));
     });
 
-    check("save migration fills defaults and begins logging at the restored state", () => {
+    check("restoration fills defaults and begins logging at the restored state", () => {
         const old = structuredClone(fixture([card("skeleton"), card("heal")])) as Partial<GameStateType>;
         delete old.log;
         delete old.roomProgress;

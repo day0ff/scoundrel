@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
-import {createMigrate, persistReducer, persistStore, REHYDRATE} from "redux-persist";
+import {persistReducer, persistStore, REHYDRATE} from "redux-persist";
 import {classicPack} from "entities/packs/classic.ts";
 import {necromancerPack} from "entities/packs/necromancer.ts";
 import {initPasteboard} from "entities/pasteboards/constants.ts";
@@ -15,7 +15,6 @@ import {profilesListenerMiddleware} from "store/features/profiles/middleware.ts"
 import type {ProfilesStateType} from "store/features/profiles/types.ts";
 import {rehydrateListenerMiddleware} from "store/middleware.ts";
 import {serializeTransform} from "store/serializer.ts";
-import {migrateCollectionsProgress, migrateGameState, migrateRecordsByPack} from "store/migrations.ts";
 import type {RootState, AppDispatch} from "store/types.ts";
 import collectionsReducer, {recordCollectionProgress, setCollections} from "./index.ts";
 import {initialCollectionsState} from "./constants.ts";
@@ -173,10 +172,9 @@ export const runCollectionPersistenceTests = async () => {
     });
     const createStore = () => configureStore({
         reducer: persistReducer<ReturnType<typeof reducer>>({
-            key: "collection-test", version: 2, storage,
+            key: "collection-test", storage,
             whitelist: ["profiles", "collections", "game"],
             transforms: [serializeTransform],
-            migrate: createMigrate({0: migrateGameState, 1: migrateRecordsByPack, 2: migrateCollectionsProgress}),
         }, reducer),
         middleware: getDefault => getDefault({serializableCheck: false}).concat(
             collectionsListenerMiddleware.middleware, gameListenerMiddleware.middleware, rehydrateListenerMiddleware.middleware,
@@ -196,7 +194,6 @@ export const runCollectionPersistenceTests = async () => {
     await firstPersistor.flush();
     firstPersistor.pause();
     const persisted = JSON.parse(saved.get("persist:collection-test")!);
-    assert.equal(JSON.parse(persisted._persist).version, 2);
     assert.equal(JSON.parse(persisted.collections).packs.find((pack: {identifier: string}) => pack.identifier === necromancerPack.identifier).isLocked, false);
 
     const second = createStore();
@@ -204,9 +201,8 @@ export const runCollectionPersistenceTests = async () => {
     await new Promise<void>(resolve => { secondPersistor = persistStore(second, undefined, resolve); });
     assert.deepEqual(second.getState().collections, first.getState().collections);
     assert.deepEqual(second.getState().profiles.profiles[0].collections, first.getState().collections);
-    assert.equal(second.getState()._persist.version, 2);
     assert.equal(second.getState()._persist.rehydrated, true);
     await secondPersistor.flush();
     secondPersistor.pause();
-    return ["Redux Persist writes root and profile collection progress and restores unlocks at version 2"];
+    return ["Redux Persist writes root and profile collection progress and restores unlocks"];
 };
