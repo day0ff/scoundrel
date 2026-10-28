@@ -3,9 +3,20 @@ import {PixelCardStyled} from "styles/PixelCardStyled.ts";
 import {OldScreenStyle} from "styles/OldScreenStyle.ts";
 import {REVEAL_DELAY_MS, REVEAL_DURATION_MS, TOAST_FADE_DURATION_MS, TOAST_FADE_IN_DURATION_MS} from "./constants.ts";
 
-const erase = keyframes`
-    from { opacity: 1; clip-path: inset(0); }
-    to { opacity: 0; clip-path: inset(0 0 100% 0); }
+const splitCover = keyframes`
+    0% {
+        opacity: 1;
+        transform: translateX(0) rotate(0deg);
+    }
+    15% {
+        opacity: 1;
+        transform: translateX(calc(var(--split-direction) * 3px)) rotate(calc(var(--split-direction) * 2deg));
+    }
+    65% { opacity: 1; }
+    100% {
+        opacity: 0;
+        transform: translateX(calc(var(--split-direction) * 90%)) rotate(calc(var(--split-direction) * 10deg));
+    }
 `;
 
 export const CollectionRevealStyled = styled(PixelCardStyled)<{$closing: boolean; $visible: boolean}>`
@@ -54,11 +65,16 @@ export const RevealCardStyled = styled.div`
     }
 `;
 
-export const RevealCoverStyled = styled.div<{$visible: boolean}>`
+export const RevealCoverStyled = styled.div<{$visible: boolean; $side: "left" | "right"}>`
     position: absolute;
     inset: 0;
+    --split-direction: ${({$side}) => $side === "left" ? -1 : 1};
+    transform-origin: ${({$side}) => $side} center;
+    clip-path: ${({$side}) => $side === "left"
+        ? "polygon(0 0, 50% 0, 46% 18%, 55% 33%, 45% 50%, 54% 68%, 47% 83%, 50% 100%, 0 100%)"
+        : "polygon(50% 0, 100% 0, 100% 100%, 50% 100%, 47% 83%, 54% 68%, 45% 50%, 55% 33%, 46% 18%)"};
     ${({$visible}) => $visible && css`
-        animation: ${erase} ${REVEAL_DURATION_MS}ms ease-in-out ${REVEAL_DELAY_MS}ms both;
+        animation: ${splitCover} ${REVEAL_DURATION_MS}ms ease-in-out ${REVEAL_DELAY_MS}ms both;
     `}
     pointer-events: none;
 

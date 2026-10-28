@@ -72,7 +72,10 @@ const CollectionReveal: FC<CollectionRevealPropsType> = ({toast, isVisible, onCl
             <RevealTitleStyled aria-hidden="true">{title}</RevealTitleStyled>
             <RevealCardStyled aria-hidden="true">
                 <Card {...getRevealCard(toast.card, toast.after)} $size={6} mark={<span/>}/>
-                <RevealCoverStyled $visible={isVisible}>
+                <RevealCoverStyled $visible={isVisible} $side="left">
+                    <Card {...getRevealCard(toast.card, toast.before)} $size={6} mark={<span/>}/>
+                </RevealCoverStyled>
+                <RevealCoverStyled $visible={isVisible} $side="right">
                     <Card {...getRevealCard(toast.card, toast.before)} $size={6} mark={<span/>}/>
                 </RevealCoverStyled>
             </RevealCardStyled>

@@ -14,7 +14,7 @@ export const necromancerPack = {
     discard: `${BASE_URL}/images/packs/necromancer/discard.png`,
     crypt: `${BASE_URL}/images/packs/necromancer/crypt.png`,
     isLocked: true,
-    isNotFound: false,
+    isNotFound: true,
     condition: {
         description: "pack.necromancer.unlock.description",
         unlock: {type: "gamesCompleted", mode: "classic", packIdentifier: classicPack.identifier, count: 1},
