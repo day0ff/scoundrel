@@ -5,9 +5,16 @@ import {InitHeroDataType} from "entities/heroes/types.ts";
 import {DeckDataType} from "entities/decks/types.ts";
 import type {RootState} from "../../types.ts";
 import {CollectionsStateType} from "./types.ts";
+import {classicPack} from "entities/packs/classic.ts";
+import {isConditionSatisfied} from "./helpers.ts";
 
 
 export const collectionsSelector = createSelector((state: RootState) => state, (state: RootState): CollectionsStateType => state.collections);
+
+export const hasBeatenClassicPackSelector = createSelector(
+    collectionsSelector,
+    ({progress}) => isConditionSatisfied({type: "gamesWon", packIdentifier: classicPack.identifier, count: 1}, progress),
+);
 
 export type CollectionStatisticsType =  {available: number, total: number};
 

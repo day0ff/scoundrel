@@ -19,10 +19,12 @@ import {
 import PacksButton from "./components/PacksButton";
 import SettingsButton from "./components/SettingsButton";
 import InstallPWAButton from "./components/InstallPWAButton";
+import {hasBeatenClassicPackSelector} from "store/features/collections/selectors.ts";
 
 
 const MainMenu = () => {
   const game = useAppSelector(gameSelector);
+  const hasBeatenClassicPack = useAppSelector(hasBeatenClassicPackSelector);
   const pack = useAppSelector(activePackSelector);
   const refView = useRef<HTMLDivElement>(null);
   const audio = useAudioManager();
@@ -42,7 +44,7 @@ const MainMenu = () => {
         <MenuStyled>
           <MenuButton
             value={game ? "link.page.continue" : "link.page.new-game"}
-            to={game ? "/classic-game" : "/pack-selection"}
+            to={game ? "/classic-game" : hasBeatenClassicPack ? "/pack-selection" : "/dungeon-preview"}
             autoFocus={true}
           />
           <ProfilesButton />
