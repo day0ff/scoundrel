@@ -1,5 +1,5 @@
 import {createSelector} from "@reduxjs/toolkit";
-import {getPack} from "entities/packs/constants.ts";
+import {packsCollectionsSelector} from "store/features/collections/selectors.ts";
 import {classicPack} from "entities/packs/classic.ts";
 import {selectedPackIdentifierSelector} from "store/features/profiles/selectors.ts";
 import type {RootState} from "../../types.ts";
@@ -22,5 +22,6 @@ export const gameTimeSelector = (state: RootState) => state.game?.time ?? "00:00
 export const activePackSelector = createSelector(
     gameSelector,
     selectedPackIdentifierSelector,
-    (game, selected) => getPack(game?.packIdentifier ?? selected) ?? classicPack,
+    packsCollectionsSelector,
+    (game, selected, packs) => packs.find(pack => pack.identifier === (game?.packIdentifier ?? selected)) ?? classicPack,
 );

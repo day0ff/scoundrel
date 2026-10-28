@@ -5,7 +5,7 @@ import {useAppDispatch, useAppSelector} from "store/hooks.ts";
 import {activePackSelector, gameSelector} from "store/features/game/selectors.ts";
 import {clearGame} from "store/features/game";
 import {resetSelectedDungeon, selectGamePack} from "store/features/game/actions.ts";
-import {allPacks} from "entities/packs/constants.ts";
+import {packsCollectionsSelector} from "store/features/collections/selectors.ts";
 import PackTabs from "componentsShared/PackTabs";
 import PackBackground from "componentsShared/PackBackground";
 import MenuButton from "pages/MainMenu/components/MenuButton";
@@ -20,6 +20,7 @@ const PackSelection: FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const pack = useAppSelector(activePackSelector);
+    const packs = useAppSelector(packsCollectionsSelector);
     const game = useAppSelector(gameSelector);
     const handleEnter = () => {
         if (!game || game.outcome) dispatch(resetSelectedDungeon());
@@ -34,7 +35,7 @@ const PackSelection: FC = () => {
         <PackSelectionStyled>
             <PackBackground src={pack.castle}/>
             <PackSelectionTitleStyled $color={pack.card.color ?? "black"}>{t(pack.name)}</PackSelectionTitleStyled>
-            <PackTabs packs={allPacks} selectedIdentifier={pack.identifier}
+            <PackTabs packs={packs} selectedIdentifier={pack.identifier}
                 onSelect={identifier => dispatch(selectGamePack(identifier))}
                 label={t("modal.packs.title")} idPrefix="select-pack" size="full"/>
             <ActionsStyled>

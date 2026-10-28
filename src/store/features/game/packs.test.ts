@@ -8,7 +8,7 @@ import profilesReducer, {setCurrentProfileId} from "store/features/profiles";
 import {selectedPackIdentifierSelector} from "store/features/profiles/selectors.ts";
 import {profilesListenerMiddleware} from "store/features/profiles/middleware.ts";
 import type {ProfilesStateType} from "store/features/profiles/types.ts";
-import collectionsReducer from "store/features/collections";
+import collectionsReducer, {setCollections} from "store/features/collections";
 import {initialCollectionsState} from "store/features/collections/constants.ts";
 import {migrateGameState} from "store/migrations.ts";
 import {serializeTransform} from "store/serializer.ts";
@@ -31,11 +31,11 @@ const alternate: PackDataType<string> = {
 const makeStore = (profiles: ProfilesStateType = {
     currentProfileId: "first",
     profiles: ["first", "second"].map(profileId => ({
-        profileId, name: profileId, collections: initialCollectionsState, games: {},
+        profileId, name: profileId, collections: {...initialCollectionsState, packs: [...initialCollectionsState.packs, alternate]}, games: {},
     })),
 }) => configureStore({
     reducer: {game: gameReducer, profiles: profilesReducer, collections: collectionsReducer},
-    preloadedState: {profiles},
+    preloadedState: {profiles, collections: profiles.profiles.find(profile => profile.profileId === profiles.currentProfileId)?.collections ?? initialCollectionsState},
     middleware: getDefault => getDefault({serializableCheck: false}).concat(
         gameListenerMiddleware.middleware, profilesListenerMiddleware.middleware,
     ),
@@ -59,7 +59,7 @@ export const runGamePackTests = async () => {
         const selected = () => selectedPackIdentifierSelector(store.getState() as RootState);
         assert.equal(selected(), classicPack.identifier);
         dispatch(selectGamePack(alternate.identifier));
-        assert.equal(selected(), alternate.identifier);
+        assert.equal(selected(), alternate.identifier, "selection remembers the alternate pack");
         assert.equal(activePackSelector(store.getState() as RootState), alternate);
         const preview = store.getState().game;
         assert.ok(preview);
@@ -74,7 +74,7 @@ export const runGamePackTests = async () => {
         assert.equal(store.getState().game?.started, false);
         dispatch(clearGame());
         assert.equal(store.getState().game, null);
-        assert.equal(selected(), alternate.identifier);
+        assert.equal(selected(), alternate.identifier, "clearing a game preserves alternate selection");
         assert.equal(activePackSelector(store.getState() as RootState).castle, alternate.castle);
 
         // A profile without a run or selection must not inherit the previous profile's pack.
@@ -84,7 +84,7 @@ export const runGamePackTests = async () => {
         assert.equal(store.getState().game?.packIdentifier, classicPack.identifier);
         dispatch(setCurrentProfileId("first"));
         assert.equal(store.getState().game, null);
-        assert.equal(selected(), alternate.identifier);
+        assert.equal(selected(), alternate.identifier, "switching back restores alternate selection");
         assert.equal(activePackSelector(store.getState() as RootState).castle, alternate.castle);
 
         // Persist and restore after defeat, when only the remembered selection remains.
@@ -114,10 +114,11 @@ export const runGamePackTests = async () => {
         const beforeInvalidSelection = store.getState();
         dispatch(selectGamePack("day0ff:pack-test-missing"));
         assert.equal(store.getState(), beforeInvalidSelection);
-        alternate.isLocked = true;
+        dispatch(setCollections({...store.getState().collections, packs: store.getState().collections.packs.map(pack =>
+            pack.identifier === alternate.identifier ? {...pack, isLocked: true} : pack)}));
+        const beforeLockedSelection = store.getState();
         dispatch(selectGamePack(alternate.identifier));
-        assert.equal(store.getState(), beforeInvalidSelection);
-        alternate.isLocked = false;
+        assert.equal(store.getState(), beforeLockedSelection);
 
         return [
             "Classic rules initialize the selected pack's cards and replay snapshot",

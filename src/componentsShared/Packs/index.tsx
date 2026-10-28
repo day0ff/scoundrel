@@ -1,4 +1,5 @@
-import {allPacks} from "entities/packs/constants.ts";
+import {packsCollectionsSelector} from "store/features/collections/selectors.ts";
+import {useAppSelector} from "store/hooks.ts";
 import {useCallback, type FC} from "react";
 import {useTheme} from "styled-components";
 import {useMediaQuery} from "react-responsive";
@@ -12,7 +13,8 @@ import type {PackBoxPropsType} from "./components/PackBox/types.ts";
 
 const Packs: FC<PacksPropsType> = ({onPush, appendTo}) => {
     const {t} = useTranslation();
-    const packs = allPacks.map(pack => ({...pack, id: pack.identifier, isSelected: false}));
+    const collection = useAppSelector(packsCollectionsSelector);
+    const packs = collection.map(pack => ({...pack, id: pack.identifier, isSelected: false}));
     const theme = useTheme();
     const compactLandscape = useMediaQuery({query: `${theme.media.laptop} and (orientation: landscape) and (max-height: 480px)`});
     const columns = compactLandscape ? 4 : theme.device?.isTabletCascade ? 2 : theme.device?.isLaptopCascade ? 3 : 4;

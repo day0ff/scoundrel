@@ -15,5 +15,10 @@ export const necromancerPack = {
     crypt: `${BASE_URL}/images/packs/necromancer/crypt.png`,
     isLocked: true,
     isNotFound: true,
+    condition: {
+        description: "pack.necromancer.unlock.description",
+        unlock: {type: "gamesCompleted", count: 1},
+        discover: {type: "gamesCompleted", count: 1},
+    },
     decks: classicPack.decks,
 } as const satisfies PackDataType<"necromancer">;

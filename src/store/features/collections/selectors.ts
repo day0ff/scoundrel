@@ -27,3 +27,7 @@ export const heroesStatisticsCollectionSelector = statisticsCollectionSelectorFa
 export const decksCollectionsSelector = createSelector(collectionsSelector, (collections:CollectionsStateType): Array<DeckDataType<string>> => collections.decks);
 
 export const decksStatisticsCollectionSelector = statisticsCollectionSelectorFactory(decksCollectionsSelector);
+
+export const packsCollectionsSelector = createSelector(collectionsSelector, collections => collections.packs);
+
+export const packsStatisticsCollectionSelector = statisticsCollectionSelectorFactory(packsCollectionsSelector);

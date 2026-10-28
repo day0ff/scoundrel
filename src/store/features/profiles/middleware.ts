@@ -3,6 +3,7 @@ import {RootState} from "../../types.ts";
 import {setCollections} from "../collections";
 import {clearGame, setGame} from "../game";
 import {setCurrentProfileId} from "./index.ts";
+import {initialCollectionsState} from "../collections/constants.ts";
 
 export const profilesListenerMiddleware = createListenerMiddleware();
 
@@ -21,6 +22,7 @@ profilesListenerMiddleware.startListening({
                 const profile = state.profiles.profiles?.find(({profileId}: {profileId: string}) => profileId === state.profiles.currentProfileId);
 
                 if (!profile) {
+                    dispatch(setCollections(initialCollectionsState));
                     dispatch(clearGame());
                     return;
                 }

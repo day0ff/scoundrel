@@ -75,8 +75,8 @@ export const classicPack = {
     dungeon: `${BASE_URL}/images/packs/classic/dungen.png`,
     discard: `${BASE_URL}/images/packs/classic/discard.png`,
     crypt: `${BASE_URL}/images/packs/classic/crypt.png`,
-    isLocked: true,
-    isNotFound: true,
+    isLocked: false,
+    isNotFound: false,
     decks: [
         {identifier: "day0ff:deck-darkLord", cards: darkLordCardsIdentifiers},
         {identifier: "day0ff:deck-skeleton", cards: skeletonCardsIdentifiers},

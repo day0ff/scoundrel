@@ -1,9 +1,10 @@
-import {migrateGameState, migrateRecordsByPack} from "./migrations.ts";
+import {migrateGameState, migrateRecordsByPack, migrateCollectionsProgress, migrateAnyGameUnlock} from "./migrations.ts";
 import {configureStore, combineReducers} from "@reduxjs/toolkit";
 import {createMigrate, persistReducer, persistStore} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 import collections from "store/features/collections";
+import {collectionsListenerMiddleware} from "store/features/collections/middleware.ts";
 import dialog from "store/features/dialog";
 import profiles from "store/features/profiles";
 import settings from "store/features/settings";
@@ -20,13 +21,15 @@ import {serializeTransform} from "./serializer.ts";
 // ---- PERSIST CONFIG ----
 const persistConfig = {
     key: 'root',
-    version: 1,
+    version: 3,
     migrate: createMigrate({
         0: migrateGameState,
         1: migrateRecordsByPack,
+        2: migrateCollectionsProgress,
+        3: migrateAnyGameUnlock,
     }),
     storage,
-    whitelist: ['profiles', 'settings', 'game', 'records'], // "animation", "collections", "dialog", "game" and "roll" slices are ignored
+    whitelist: ['profiles', 'settings', 'game', 'records', 'collections'],
     transforms: [profilesTransform, serializeTransform],
 };
 
@@ -61,6 +64,7 @@ export const store = configureStore({
         })
             .concat(rehydrateListenerMiddleware.middleware)
             .concat(profilesListenerMiddleware.middleware)
+            .concat(collectionsListenerMiddleware.middleware)
             .concat(gameListenerMiddleware.middleware)
             .concat(recordsListenerMiddleware.middleware),
 });

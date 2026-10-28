@@ -2,7 +2,7 @@ import type {ThunkAction, UnknownAction} from "@reduxjs/toolkit";
 import type {RootState} from "store/types.ts";
 import type {GameModeType} from "entities/game-modes/types.ts";
 import type {PackIdentifierType} from "entities/packs/types.ts";
-import {getPack} from "entities/packs/constants.ts";
+import {packsCollectionsSelector} from "store/features/collections/selectors.ts";
 import {selectedPackIdentifierSelector} from "store/features/profiles/selectors.ts";
 import {resetDungeon} from "./index.ts";
 import type {getInitialGame} from "./constants.ts";
@@ -24,7 +24,7 @@ export const resetSelectedDungeon = (
 
 // Selecting a pack prepares an unstarted Classic run and remembers it on the profile.
 export const selectGamePack = (identifier: PackIdentifierType): GameThunkType => (dispatch, getState) => {
-    const pack = getPack(identifier);
+    const pack = packsCollectionsSelector(getState()).find(item => item.identifier === identifier);
     if (!pack || pack.isLocked || pack.isNotFound) return;
     const {game} = getState();
     if (game?.packIdentifier === identifier) return;

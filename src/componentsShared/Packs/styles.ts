@@ -32,6 +32,6 @@ export const PacksWrapperStyled = styled.div`
     box-sizing: border-box;
 
     @media ${({theme}) => theme.media.tablet} and (orientation: landscape) {
-        padding: 0;
+        padding: 0 24px;
     }
 `;

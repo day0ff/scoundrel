@@ -2,6 +2,8 @@
 import {ValueOf} from "helpers";
 import {TranslationKeysType} from "localization/types.ts";
 import {EntityTypes, HandTypes, RarityTypes, TimeTypes} from "./constants.ts";
+import type {GameModeType} from "entities/game-modes/types.ts";
+import type {PackIdentifierType} from "entities/packs/types.ts";
 
 // F - as fool or joker, E - as either, B - as billet
 export type RankType = 'A' | 'K' | 'Q' | 'J' | 'T' | '9' | '8' | '7' | '6' | '5' | '4' | '3' | '2' | '1' | '0' | 'F' | 'E' | 'B';
@@ -24,11 +26,17 @@ export type StatItemsType<T> = StatType & {
     items: Array<T>;
 }
 
+export type CollectionConditionType =
+    | {type: "gamesCompleted"; mode?: GameModeType; packIdentifier?: PackIdentifierType; count: number}
+    | {type: "enemiesDefeated"; suit: string; count: number};
+
 export type CollectionType = {
     isLocked: boolean;
     isNotFound: boolean;
     condition?: {
         description: TranslationKeysType;
+        unlock?: CollectionConditionType;
+        discover?: CollectionConditionType;
     };
 }
 

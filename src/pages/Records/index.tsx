@@ -1,7 +1,7 @@
 import { useState, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import PackTabs from "componentsShared/PackTabs";
-import {allPacks} from "entities/packs/constants.ts";
+import {packsCollectionsSelector} from "store/features/collections/selectors.ts";
 import type {PackIdentifierType} from "entities/packs/types.ts";
 import {activePackSelector} from "store/features/game/selectors.ts";
 import { useAppSelector } from "store/hooks.ts";
@@ -24,6 +24,7 @@ import {
 const Records: FC = () => {
   const { t } = useTranslation();
   const groups = useAppSelector(rankedRecordsSelector);
+  const packs = useAppSelector(packsCollectionsSelector);
   const activePack = useAppSelector(activePackSelector);
   const gameType: RecordGameType = "classic";
   const [packIdentifier, setPackIdentifier] = useState<PackIdentifierType>(activePack.identifier);
@@ -44,7 +45,7 @@ const Records: FC = () => {
       <RecordsScrollStyled>
         <RecordsPanelStyled>
           <RecordsModeTitleStyled>{t(GAME_TYPE_LABELS[gameType])}</RecordsModeTitleStyled>
-          <PackTabs packs={allPacks} selectedIdentifier={packIdentifier} onSelect={setPackIdentifier}
+          <PackTabs packs={packs} selectedIdentifier={packIdentifier} onSelect={setPackIdentifier}
             label={t("modal.packs.title")} idPrefix="records-pack" panelId="records-panel"/>
           <section
             id="records-panel"
