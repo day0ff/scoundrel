@@ -7,7 +7,7 @@ export type PhaseType<Identifier extends string, Type extends string> = {
     identifier: IdentifierType<Identifier, Type>;
     name: PhaseTranslationKeysType<Type>;
     description: PhaseTranslationKeysType<Type>;
-    trigger: "cardPlayed" | "turnStarted" | "playerActionStarted" | "turnEnded";
+    trigger: "cardPlayed" | "turnStarted" | "playerActionStarted" | "beforeTurnEnded" | "turnEnded";
 };
 
 export type PhaseDataType<Type extends string> = PhaseType<"phase", Type>;

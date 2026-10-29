@@ -1,4 +1,11 @@
 {
+  "phase.beforeTurnEnd.name": "Перед концом хода",
+  "phase.beforeTurnEnd.description": "Выполнить призывы перед завершением хода.",
+
+  "card.pasteboard.skeleton.F.osteomancer.name": "$t(pasteboard.skeleton.F.osteomancer.name)",
+  "pasteboard.skeleton.F.osteomancer.name": "Остеомант",
+  "pasteboard.skeleton.F.osteomancer.description": "Сила: {{strength}}. В конце комнаты заполняет пустые места скелетами начиная с ранга 2. Каждый призыв повышает следующий ранг до максимума 9. Сохраняет прогресс между появлениями.",
+
   "animation.summon.name": "Призыв",
   "animation.summon.description": "Нечто поднимается из земли, затем поглощает врагов.",
   "animation.consume.name": "Поглощение",

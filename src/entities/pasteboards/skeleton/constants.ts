@@ -1,3 +1,4 @@
+import {osteomancerPasteboard} from "./Osteomancer.ts";
 import {RankType} from "../../types.ts";
 import {aceSkeletonPasteboard} from "./A.ts";
 import {oneSkeletonPasteboard} from "./1.ts";
@@ -18,6 +19,7 @@ import {thingPasteboard} from "./Thing.ts";
 import {necromancerPasteboard} from "./Necromancer.ts";
 
 export const PASTEBOARD_SKELETON_MAP = {
+    [osteomancerPasteboard.identifier]: osteomancerPasteboard,
     [thingPasteboard.identifier]: thingPasteboard,
     [necromancerPasteboard.identifier]: necromancerPasteboard,
     "day0ff:pasteboard-skeleton.A": aceSkeletonPasteboard,

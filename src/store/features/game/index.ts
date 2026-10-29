@@ -1,9 +1,11 @@
+import {beforeTurnEndPhase} from "entities/phases/beforeTurnEnd.ts";
 import {createSlice, type PayloadAction, type UnknownAction} from "@reduxjs/toolkit";
 import {createGameLog, isLoggedGameAction} from "./log.ts";
 import {getInitialGame} from "./constants.ts";
-import {advanceGamePhase, canPlaceCardInZone, canMoveCard, canPlayPotion, restoreGame, shuffleDungeonCards, applyPotion, recordRoomPlay, canEndRoom, canSkipRoom, dealNextRoom, completeRoom} from "./helpers.ts";
+import {advanceGamePhase, canPlaceCardInZone, canMoveCard, canPlayPotion, restoreGame, shuffleDungeonCards, applyPotion, recordRoomPlay, canEndRoom, canSkipRoom, dealNextRoom, completeRoom, completeTurn} from "./helpers.ts";
 import {applyAttack} from "./attack.ts";
 import {checkGameVictory} from "./helpers.ts";
+import {summonOsteomancerSkeletons} from "./osteomancer.ts";
 import {resolveRoomEntryEffects} from "./room-entry.ts";
 import type {AttackCardPayloadType} from "entities/game/types.ts";
 import type {GameStateType, PreAnimationGameStateType, PreLifecycleGameStateType, HeroLessGameStateType, HandGameStateType, LegacyGameStateType, OldZoneGameStateType, MoveCardPayloadType, PlayCardPayloadType, PlayingCardType, ZoneKindType} from "entities/game/types.ts";
@@ -41,7 +43,11 @@ export const gameSlice = createSlice({
         advancePhase: (state) => {
             if (!state) return;
             // Player-controlled transitions must use endTurn and its room guard.
-            if (state.currentPhase !== state.phaseLifecycle.waitingPhase) advanceGamePhase(state);
+            if (state.currentPhase === beforeTurnEndPhase.identifier) {
+                // Animation completions are presentation-only; replay advances using this logged action.
+                state.animationEvents = [];
+                completeTurn(state);
+            } else if (state.currentPhase !== state.phaseLifecycle.waitingPhase) advanceGamePhase(state);
         },
         skipRoom: (state) => {
             if (!state) return;
@@ -52,12 +58,15 @@ export const gameSlice = createSlice({
         endTurn: (state) => {
             if (!state) return;
             if (!canEndRoom(state)) return;
-            advanceGamePhase(state);
-            if (state.outcome) return;
-            completeRoom(state, false);
-            for (let index = 0; !state.outcome && state.currentPhase !== state.phaseLifecycle.waitingPhase && index < state.phaseLifecycle.phases.length; index++) {
-                advanceGamePhase(state);
+            // Existing saves can still carry the lifecycle from before this phase was added.
+            if (!state.phaseLifecycle.phases.includes(beforeTurnEndPhase.identifier)) {
+                const waitingIndex = state.phaseLifecycle.phases.indexOf(state.phaseLifecycle.waitingPhase);
+                state.phaseLifecycle.phases.splice(waitingIndex + 1, 0, beforeTurnEndPhase.identifier);
             }
+            advanceGamePhase(state);
+            const sequenceBeforeSummons = state.animationSequence;
+            summonOsteomancerSkeletons(state);
+            if (state.animationSequence === sequenceBeforeSummons) completeTurn(state);
         },
         selectCard: (state, {payload}: PayloadAction<string | null>) => {
             if (!state) return;

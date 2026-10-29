@@ -359,3 +359,13 @@ export const checkGameVictory = (state: GameStateType) => {
         state.selectedCardId = undefined;
     }
 };
+
+// Run only after the before-end animations have completed.
+export const completeTurn = (state: GameStateType) => {
+    advanceGamePhase(state);
+    if (state.outcome) return;
+    completeRoom(state, false);
+    for (let index = 0; !state.outcome && state.currentPhase !== state.phaseLifecycle.waitingPhase && index < state.phaseLifecycle.phases.length; index++) {
+        advanceGamePhase(state);
+    }
+};

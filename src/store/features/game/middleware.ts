@@ -1,7 +1,8 @@
 import {createListenerMiddleware, isAnyOf} from "@reduxjs/toolkit";
 import type {RootState} from "../../types.ts";
 import {updateProfileGame} from "../profiles";
-import {advancePhase, moveCard, playCard, setGame} from "./index.ts";
+import {advancePhase, completeEffectAnimation, clearEffectAnimations, moveCard, playCard, setGame} from "./index.ts";
+import {beforeTurnEndPhase} from "entities/phases/beforeTurnEnd.ts";
 import {audioManager} from "utils/AudioManager";
 
 const CARD_SLIDE_SOUNDS = [
@@ -52,9 +53,10 @@ gameListenerMiddleware.startListening({
     },
 });
 gameListenerMiddleware.startListening({
-    matcher: isAnyOf(advancePhase, setGame),
+    matcher: isAnyOf(advancePhase, setGame, completeEffectAnimation, clearEffectAnimations),
     effect: (_action, api) => {
         const {game} = api.getState() as RootState;
+        if (game?.currentPhase === beforeTurnEndPhase.identifier && game.animationEvents.length) return;
         if (game && !game.outcome && game.currentPhase !== game.phaseLifecycle.waitingPhase) api.dispatch(advancePhase());
     },
 });

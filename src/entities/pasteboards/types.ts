@@ -36,6 +36,7 @@ export type InitPasteboardDataType<SuitType extends string, RankTypeType extends
     & {
         id: string;
         roomEntries?: number;
+        skeletonsSummoned?: number;
         killedEnemies?: Array<{
             id: string;
             identifier: PasteboardDataType<string, RankType>["identifier"];

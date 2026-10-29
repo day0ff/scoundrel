@@ -4,6 +4,7 @@ import {useAppDispatch, useAppSelector} from "store/hooks.ts";
 import {clearEffectAnimations, completeEffectAnimation} from "store/features/game";
 import {activeEffectAnimationGameSelector} from "store/features/game/selectors.ts";
 import {ANIMATIONS_MAP} from "entities/animations/constants.ts";
+import {thingPasteboard} from "entities/pasteboards/skeleton/Thing.ts";
 import AttackFeedback from "./components/AttackFeedback";
 import HealFeedback from "./components/HealFeedback";
 import {useAudioManager} from "hooks/useAudioManager.ts";
@@ -27,7 +28,8 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
         const duration = roomEntry && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : animation.durationMs;
         const timeout = setTimeout(() => {
             dispatch(completeEffectAnimation(event.id));
-            if (event.animation === "day0ff:animation-summon") {
+            if (event.animation === "day0ff:animation-summon"
+                && event.roomBefore.some(card => card.id === event.summonedId && card.identifier === thingPasteboard.identifier)) {
                 void audio.playSound({url: THING_DEAL_SOUND}).catch((error: unknown) => {
                     console.warn("Unable to play Thing growl", error);
                 });
