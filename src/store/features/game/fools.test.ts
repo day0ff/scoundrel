@@ -19,7 +19,7 @@ import {cryptWithEffectFeedbackSelector, isConsumingGameSelector} from "./select
 import type {RootState} from "store/types.ts";
 
 const thing = () => initPasteboard("day0ff:pasteboard-skeleton.F.thing");
-const necromancer = () => initPasteboard("day0ff:pasteboard-skeleton.F.necromancer");
+const osteomancer = () => initPasteboard("day0ff:pasteboard-skeleton.F.osteomancer");
 const skeleton = (rank: "2" | "3" | "K" = "2") => initPasteboard(`day0ff:pasteboard-skeleton.${rank}`);
 
 const waiting = (cards: PlayingCardType[]): GameStateType => {
@@ -40,9 +40,9 @@ export const runFoolTests = () => {
     const potion = initPasteboard("day0ff:pasteboard-heal.2");
     const originalThing = thing();
     assert.equal(originalThing.suit, "skeleton");
-    assert.equal(necromancer().suit, "skeleton");
+    assert.equal(osteomancer().suit, "skeleton");
     assert.equal(originalThing.variant, "thing");
-    assert.equal(necromancer().variant, "necromancer");
+    assert.equal(osteomancer().variant, "osteomancer");
     let game = apply(waiting([originalThing, skeleton("3"), skeleton("K"), potion]), startGame());
     const grown = game.zones.room.cards.find(card => card.identifier === originalThing.identifier)!;
     assert.equal(grown.rank, "F");
@@ -56,14 +56,14 @@ export const runFoolTests = () => {
     assert.equal(game.activeRoomCards?.find(card => card.id === grown.id)?.strength, 17);
     assert.ok(doesReplayMatchGame(game.log!, game));
 
-    const summoner = necromancer();
+    const summoner = osteomancer();
     game = apply(waiting([summoner]), startGame());
     assert.equal(game.zones.room.cards.length, 1);
     assert.equal(game.zones.room.cards[0].identifier, originalThing.identifier);
     assert.equal(game.zones.room.cards[0].strength, 15);
     assert.equal(game.zones.crypt.cards[0].id, summoner.id);
     assert.ok(doesReplayMatchGame(game.log!, game));
-    game = apply(waiting([necromancer(), thing(), thing(), skeleton()]), startGame());
+    game = apply(waiting([osteomancer(), thing(), thing(), skeleton()]), startGame());
     assert.equal(game.zones.room.cards.length, 1);
     assert.equal(game.zones.room.cards[0].strength, 19);
     assert.equal(game.zones.crypt.cards.length, 4);
@@ -78,7 +78,7 @@ export const runFoolTests = () => {
     assert.equal(game.zones.room.cards.length, 2);
     assert.equal(arriving.strength, 2);
     assert.equal(game.roomProgress?.cardsPlayed, 0);
-    game = apply(game, addCardsToZone({zone: "room", cards: [necromancer()]}));
+    game = apply(game, addCardsToZone({zone: "room", cards: [osteomancer()]}));
     assert.equal(game.zones.room.cards.length, 1);
     assert.equal(game.zones.room.cards[0].strength, 21);
     assert.ok(doesReplayMatchGame(game.log!, game));
@@ -112,9 +112,9 @@ export const runFoolTests = () => {
     assert.equal(getCardStrength({rank: "F"}), undefined);
     assert.equal(getCardStrength({rank: "F", strength: NaN}), undefined);
     assert.equal(getCardStrength({rank: "F", strength: -1}), undefined);
-    assert.equal(classifyDungeonRoom([necromancer()]).strength, 15);
+    assert.equal(classifyDungeonRoom([osteomancer()]).strength, 15);
     assert.equal(classifyDungeonRoom([grown]).strength, 17);
-    assert.equal(calculateScoreRange([necromancer(), thing()], 20).min, -16);
+    assert.equal(calculateScoreRange([osteomancer(), thing()], 20).min, -16);
     const defeat = {...killed, outcome: "defeat" as const};
     assert.equal(calculateGameScore(defeat), 17 - 14 - 13);
 
@@ -125,18 +125,18 @@ export const runFoolTests = () => {
     assert.equal(initPack(classicPack.identifier).decks.flatMap(deck => deck.pasteboards).length, 46);
     return [
         "Thing absorbs every other room enemy and adds their strength without changing its F rank",
-        "Necromancer summons a Thing that consumes him; multiple Fools resolve deterministically",
+        "Osteomancer summons a Thing that consumes him; multiple Fools resolve deterministically",
         "room re-entry and summoned arrivals resolve once without mutating action payloads",
         "summon IDs and absorbed strength survive save restoration and exact replay",
         "combat damage and weapon kill limits use captured strength rather than rank",
         "room danger and score bounds include explicit strength and summoned enemies",
-        "Necromancer pack contains one of each Fool and Classic keeps its original deck",
+        "Osteomancer pack contains one of each Fool and Classic keeps its original deck",
     ];
 };
 
 export const runSummonTests = () => {
     for (const source of ["dungeon", "discard", "crypt"] as const) {
-        const summoner = necromancer();
+        const summoner = osteomancer();
         const existing = {...thing(), strength: 23};
         const game = waiting([]);
         game.zones.dungeon.cards = [summoner];
@@ -167,7 +167,7 @@ export const runSummonTests = () => {
     }
 
     const game = waiting([]);
-    const summoner = necromancer();
+    const summoner = osteomancer();
     const dungeonThing = thing();
     const discardThing = thing();
     const cryptThing = thing();
@@ -185,13 +185,13 @@ export const runSummonTests = () => {
     result = apply(withoutDungeon, addCardsToZone({zone: "room", cards: [summoner]}));
     assert.equal(result.zones.room.cards[0].id, discardThing.id);
 
-    const fallback = apply(waiting([necromancer()]), startGame());
+    const fallback = apply(waiting([osteomancer()]), startGame());
     assert.equal(fallback.zones.room.cards[0].identifier, thing().identifier);
-    assert.equal(fallback.zones.room.cards[0].strength, 1 + necromancer().strength!);
+    assert.equal(fallback.zones.room.cards[0].strength, 1 + osteomancer().strength!);
     assert.equal(fallback.animationEvents[0].animation, "day0ff:animation-summon");
     assert.ok(doesReplayMatchGame(fallback.log!, fallback));
     return [
-        "Necromancer retrieves an existing Thing from dungeon, discard, or crypt with identity and strength preserved",
+        "Osteomancer retrieves an existing Thing from dungeon, discard, or crypt with identity and strength preserved",
         "summoning searches dungeon then discard then crypt and creates a deterministic Thing when none exists",
         "summon feedback precedes consumption, blocks input, and survives save restoration and exact replay",
     ];
@@ -237,16 +237,16 @@ export const runThingWeaponTests = () => {
 export const runConsumeAnimationTests = () => {
     const consumer = thing();
     const potion = initPasteboard("day0ff:pasteboard-heal.2");
-    let game = apply(waiting([consumer, skeleton("3"), necromancer(), potion]), startGame());
+    let game = apply(waiting([consumer, skeleton("3"), osteomancer(), potion]), startGame());
     const summon = game.animationEvents[0];
     assert.equal(summon.animation, "day0ff:animation-summon");
     game = apply(game, completeEffectAnimation(summon.id));
     const events = game.animationEvents;
     assert.equal(events.length, 3);
     assert.ok(events.every(event => event.animation === "day0ff:animation-consume"));
-    assert.equal(game.zones.room.cards[0].strength, 5 + necromancer().strength!);
+    assert.equal(game.zones.room.cards[0].strength, 5 + osteomancer().strength!);
     assert.equal(game.zones.crypt.cards.length, 3);
-    const expectedStrengths = [1, 4, 4 + necromancer().strength!];
+    const expectedStrengths = [1, 4, 4 + osteomancer().strength!];
     for (let index = 0; index < events.length; index++) {
         const event = game.animationEvents[0];
         assert.equal(event.animation, "day0ff:animation-consume");
@@ -265,7 +265,7 @@ export const runConsumeAnimationTests = () => {
         assert.ok(cryptWithEffectFeedbackSelector.resultFunc(game)!.cards.some(card => card.id === event.enemyId));
     }
     assert.equal(isConsumingGameSelector({game} as RootState), false);
-    assert.equal(roomWithAttackFeedbackSelector.resultFunc(game)!.cards[0].strength, 5 + necromancer().strength!);
+    assert.equal(roomWithAttackFeedbackSelector.resultFunc(game)!.cards[0].strength, 5 + osteomancer().strength!);
     assert.equal(cryptWithEffectFeedbackSelector.resultFunc(game)!.cards.length, 3);
     assert.equal(game.roomProgress?.cardsPlayed, 0);
     assert.equal(game.hero.health.current, game.hero.health.max);

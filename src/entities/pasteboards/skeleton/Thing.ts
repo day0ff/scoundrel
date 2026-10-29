@@ -1,17 +1,24 @@
-import {thingPasteboardCard} from "entities/cards/pasteboard/skeleton/Thing.ts";
-import type {SkeletonPasteboardDataType} from "./types.ts";
+import { roomEntryPhase } from "entities/phases/roomEntry.ts";
+import { thingPasteboardCard } from "entities/cards/pasteboard/skeleton/Thing.ts";
+import type { SkeletonPasteboardDataType } from "./types.ts";
 
 export const thingPasteboard = {
-    identifier: "day0ff:pasteboard-skeleton.F.thing",
-    name: "pasteboard.skeleton.F.thing.name",
-    description: "pasteboard.skeleton.F.thing.description",
-    card: thingPasteboardCard,
-    suit: "skeleton",
-    variant: "thing",
-    rank: "F",
-    role: "enemy",
-    strength: 1,
-    roomEntryEffect: {type: "consumeEnemies"},
-    isLocked: false,
-    isNotFound: false,
+  identifier: "day0ff:pasteboard-skeleton.F.thing",
+  name: "pasteboard.skeleton.F.thing.name",
+  description: "pasteboard.skeleton.F.thing.description",
+  card: thingPasteboardCard,
+  suit: "skeleton",
+  variant: "thing",
+  rank: "F",
+  role: "enemy",
+  strength: 1,
+  actions: [
+    {
+      id: "consume",
+      phase: roomEntryPhase.identifier,
+      type: "consumeEnemies",
+    },
+  ],
+  isLocked: false,
+  isNotFound: false,
 } as const satisfies SkeletonPasteboardDataType<"F", "thing">;

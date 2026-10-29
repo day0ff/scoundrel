@@ -1,3 +1,4 @@
+import type {PasteboardActionType} from "./actions/types.ts";
 import {TranslationKeysType} from "localization/types.ts";
 import type {EffectBindingType} from "entities/effects/types.ts";
 
@@ -20,9 +21,7 @@ type PasteboardType<Identifier extends string, SuitType extends string, RankType
     variant?: VariantType;
     role: PasteboardRoleType;
     strength?: number;
-    roomEntryEffect?:
-        | {type: "consumeEnemies"}
-        | {type: "summon"; identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>};
+    actions?: PasteboardActionType[];
     durability?: number;
     effects?: EffectBindingType[];
 }
@@ -35,8 +34,7 @@ export type InitPasteboardDataType<SuitType extends string, RankTypeType extends
     PasteboardDataType<SuitType, RankTypeType, VariantType>
     & {
         id: string;
-        roomEntries?: number;
-        skeletonsSummoned?: number;
+        actionProgress?: Record<string, number>;
         killedEnemies?: Array<{
             id: string;
             identifier: PasteboardDataType<string, RankType>["identifier"];

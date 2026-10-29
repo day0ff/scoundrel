@@ -7,13 +7,14 @@ import {createGame, restoreGame} from "./helpers.ts";
 import reducer, {endTurn, startGame, clearEffectAnimations, completeEffectAnimation, advancePhase, setGame} from "./index.ts";
 import {createGameLog} from "./log.ts";
 import {doesReplayMatchGame} from "./replay.ts";
-import {summonOsteomancerSkeletons} from "./osteomancer.ts";
+import {resolvePasteboardActions} from "./card-actions.ts";
+import {beforeTurnEndPhase} from "entities/phases/beforeTurnEnd.ts";
 
-export const runOsteomancerTests = () => {
-    const card = initPasteboard("day0ff:pasteboard-skeleton.F.osteomancer");
-    assert.equal(card.strength, 14);
+export const runNecromancerTests = () => {
+    const card = initPasteboard("day0ff:pasteboard-skeleton.F.necromancer");
+    assert.equal(card.strength, 1);
     assert.equal(card.rank, "F");
-    const initial = createGame([], getSeededRandom("OSTEOMANCER"));
+    const initial = createGame([], getSeededRandom("NECROMANCER"));
     initial.zones.dungeon.cards = [card];
     initial.zones.room.minimumCardsToPlay = 0;
     initial.log = createGameLog(initial, "newGame");
@@ -41,7 +42,7 @@ export const runOsteomancerTests = () => {
     store.dispatch(setGame(structuredClone(pending)));
     assert.equal(store.getState().game!.currentPhase, finished.phaseLifecycle.waitingPhase);
     assert.equal(store.getState().game!.turnNumber, finished.turnNumber);
-    assert.equal(store.getState().game!.zones.room.cards.find(item => item.id === card.id)!.skeletonsSummoned, 3);
+    assert.equal(store.getState().game!.zones.room.cards.find(item => item.id === card.id)!.actionProgress?.skeleton, 3);
 
     const turnBefore = game.turnNumber;
     const roomsBefore = game.completedRooms?.length ?? 0;
@@ -68,7 +69,7 @@ export const runOsteomancerTests = () => {
     assert.ok(doesReplayMatchGame(game.log!, game));
     game = restoreGame(JSON.parse(JSON.stringify(game)));
     game = structuredClone(reducer(game, clearEffectAnimations())!);
-    // Keep just the returning Osteomancer so the next End has three empty slots.
+    // Keep just the returning Necromancer so the next End has three empty slots.
     game.zones.room.cards = game.zones.room.cards.filter(item => item.id === card.id);
     game = reducer(game, endTurn())!;
     assert.deepEqual(game.animationEvents.filter(event => event.animation === "day0ff:animation-summon")
@@ -76,15 +77,15 @@ export const runOsteomancerTests = () => {
 
     game = structuredClone(game);
     const other = initPasteboard(card.identifier);
-    game.zones.room.cards = [{...card, skeletonsSummoned: 6}];
+    game.zones.room.cards = [{...card, actionProgress: {skeleton: 6}}];
     game.animationEvents = [];
-    summonOsteomancerSkeletons(game);
-    assert.deepEqual(game.zones.room.cards.slice(1).map(item => item.rank), ["8", "9", "9"]);
+    resolvePasteboardActions(game, beforeTurnEndPhase.identifier);
+    assert.deepEqual(game.zones.room.cards.slice(1).map(item => item.rank), ["8", "9", "T"]);
     game.zones.room.cards = [other];
-    summonOsteomancerSkeletons(game);
+    resolvePasteboardActions(game, beforeTurnEndPhase.identifier);
     assert.equal(game.zones.room.cards[1].rank, "2");
-    const count = other.skeletonsSummoned;
-    summonOsteomancerSkeletons(game);
-    assert.equal(other.skeletonsSummoned, count);
-    return ["Osteomancer summons on End with individual animations and deterministic replay", "Osteomancer remembers independent progress across restoration and caps summons at rank 9", "before-end phase keeps the room and turn active until summon animations finish"];
+    const count = other.actionProgress?.skeleton;
+    resolvePasteboardActions(game, beforeTurnEndPhase.identifier);
+    assert.equal(other.actionProgress?.skeleton, count);
+    return ["Necromancer summons on End with individual animations and deterministic replay", "Necromancer remembers independent progress across restoration and caps summons at rank T", "before-end phase keeps the room and turn active until summon animations finish"];
 };

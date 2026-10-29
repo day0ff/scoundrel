@@ -1,10 +1,13 @@
 {
+  "phase.roomEntry.name": "Room entry",
+  "phase.roomEntry.description": "Trigger actions for cards entering the room.",
+
   "phase.beforeTurnEnd.name": "Before turn end",
   "phase.beforeTurnEnd.description": "Resolve summons before ending the turn.",
 
   "card.pasteboard.skeleton.F.osteomancer.name": "$t(pasteboard.skeleton.F.osteomancer.name)",
   "pasteboard.skeleton.F.osteomancer.name": "Osteomancer",
-  "pasteboard.skeleton.F.osteomancer.description": "Strength: {{strength}}. At the end of the room, fills empty slots with skeletons starting at rank 2. Each summon increases the next rank, up to 9. Remembers his progress between appearances.",
+  "pasteboard.skeleton.F.osteomancer.description": "Strength: {{strength}}. On entering the room, summons a Thing. The Thing consumes all other enemies, including Osteomancer.",
 
   "animation.summon.name": "Summon",
   "animation.summon.description": "An existing Thing rises from the ground before consuming enemies.",
@@ -15,7 +18,7 @@
   "pasteboard.skeleton.F.thing.name": "Thing",
   "pasteboard.skeleton.F.thing.description": "Strength: {{strength}}. Enters with 1 strength, consumes every other enemy in the room, and adds their strength to its own.",
   "pasteboard.skeleton.F.necromancer.name": "Necromancer",
-  "pasteboard.skeleton.F.necromancer.description": "Strength: {{strength}}. On entering the room, summons a Thing. The Thing consumes all other enemies, including Necromancer.",
+  "pasteboard.skeleton.F.necromancer.description": "Strength: {{strength}}. At the end of the room, fills empty slots with skeletons starting at rank 2. Each summon increases the next rank, up to 10. Remembers his progress between appearances.",
   "ui.cardStrength": "Strength: {{strength}}",
   "toast.collection.unlocked": "Unlocked!",
   "toast.collection.discovered": "Discovered!",

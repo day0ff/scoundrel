@@ -5,8 +5,8 @@ import {getInitialGame} from "./constants.ts";
 import {advanceGamePhase, canPlaceCardInZone, canMoveCard, canPlayPotion, restoreGame, shuffleDungeonCards, applyPotion, recordRoomPlay, canEndRoom, canSkipRoom, dealNextRoom, completeRoom, completeTurn} from "./helpers.ts";
 import {applyAttack} from "./attack.ts";
 import {checkGameVictory} from "./helpers.ts";
-import {summonOsteomancerSkeletons} from "./osteomancer.ts";
-import {resolveRoomEntryEffects} from "./room-entry.ts";
+import {resolvePasteboardActions} from "./card-actions.ts";
+import {roomEntryPhase} from "entities/phases/roomEntry.ts";
 import type {AttackCardPayloadType} from "entities/game/types.ts";
 import type {GameStateType, PreAnimationGameStateType, PreLifecycleGameStateType, HeroLessGameStateType, HandGameStateType, LegacyGameStateType, OldZoneGameStateType, MoveCardPayloadType, PlayCardPayloadType, PlayingCardType, ZoneKindType} from "entities/game/types.ts";
 
@@ -63,10 +63,9 @@ export const gameSlice = createSlice({
                 const waitingIndex = state.phaseLifecycle.phases.indexOf(state.phaseLifecycle.waitingPhase);
                 state.phaseLifecycle.phases.splice(waitingIndex + 1, 0, beforeTurnEndPhase.identifier);
             }
+            const sequenceBeforeActions = state.animationSequence;
             advanceGamePhase(state);
-            const sequenceBeforeSummons = state.animationSequence;
-            summonOsteomancerSkeletons(state);
-            if (state.animationSequence === sequenceBeforeSummons) completeTurn(state);
+            if (state.animationSequence === sequenceBeforeActions) completeTurn(state);
         },
         selectCard: (state, {payload}: PayloadAction<string | null>) => {
             if (!state) return;
@@ -152,7 +151,7 @@ export const gameSlice = createSlice({
                 entered.push(added);
                 ids.add(card.id);
             }
-            if (payload.zone === "room") resolveRoomEntryEffects(state, entered);
+            if (payload.zone === "room") resolvePasteboardActions(state, roomEntryPhase.identifier, entered);
         },
         removeCardsFromZone: (state, {payload}: PayloadAction<{zone: ZoneKindType; cardIds: string[]}>) => {
             if (!state) return;

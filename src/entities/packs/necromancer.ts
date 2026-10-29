@@ -6,8 +6,8 @@ import { RankType } from "entities/types.ts";
 
 const darkLordCardsIdentifiers = [
   // "day0ff:pasteboard-dark.A",
-  "day0ff:pasteboard-dark.2",
-  "day0ff:pasteboard-dark.3",
+  // "day0ff:pasteboard-dark.2",
+  // "day0ff:pasteboard-dark.3",
   // "day0ff:pasteboard-dark.4",
   // "day0ff:pasteboard-dark.5",
   // "day0ff:pasteboard-dark.6",
@@ -47,9 +47,9 @@ const skeletonCardsIdentifiers = [
   // "day0ff:pasteboard-skeleton.J",
   // "day0ff:pasteboard-skeleton.Q",
   // "day0ff:pasteboard-skeleton.K",
-  // "day0ff:pasteboard-skeleton.F.thing",
-  // "day0ff:pasteboard-skeleton.F.necromancer",
-  "day0ff:pasteboard-skeleton.F.osteomancer",
+  "day0ff:pasteboard-skeleton.F.thing",
+  "day0ff:pasteboard-skeleton.F.necromancer",
+  // "day0ff:pasteboard-skeleton.F.osteomancer",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 const weaponCardsIdentifiers = [
@@ -62,7 +62,7 @@ const weaponCardsIdentifiers = [
   // "day0ff:pasteboard-weapon.7",
   // "day0ff:pasteboard-weapon.8",
   // "day0ff:pasteboard-weapon.9",
-  // "day0ff:pasteboard-weapon.T",
+  "day0ff:pasteboard-weapon.T",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 export const necromancerPack = {

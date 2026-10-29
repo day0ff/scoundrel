@@ -1,3 +1,4 @@
+import type {PasteboardActionType} from "./actions/types.ts";
 import {v4 as getUuid} from "uuid";
 import {RankType} from "../types.ts";
 import {DEFAULT_WEAPON_DURABILITY} from "./weapon/defaults.ts";
@@ -44,6 +45,11 @@ export const getPasteboardEffects = (pasteboard: PasteboardDataType<string, Rank
     return pasteboard.effects ?? definition?.effects ?? [];
 };
 
+export const getPasteboardActions = (pasteboard: PasteboardDataType<string, RankType>): readonly PasteboardActionType[] => {
+    const definition = getPasteboard(pasteboard.identifier);
+    return pasteboard.actions ?? definition?.actions ?? [];
+};
+
 // Restore gameplay metadata for card instances saved before roles and durability.
 export const restorePasteboard = <T extends PasteboardDataType<string, RankType>>(pasteboard: T): T => {
     const definition: PasteboardDataType<string, RankType> | undefined = PASTEBOARD_MAP[pasteboard.identifier as keyof typeof PASTEBOARD_MAP];
@@ -51,7 +57,7 @@ export const restorePasteboard = <T extends PasteboardDataType<string, RankType>
     return {
         ...pasteboard,
         strength: getCardStrength({...pasteboard, strength: pasteboard.strength ?? definition?.strength}),
-        roomEntryEffect: pasteboard.roomEntryEffect ?? definition?.roomEntryEffect,
+        actions: pasteboard.actions ?? definition?.actions,
         ...(role ? {role} : {}),
         ...(role === "weapon" ? {durability: pasteboard.durability ?? definition?.durability ?? DEFAULT_WEAPON_DURABILITY} : {}),
     };

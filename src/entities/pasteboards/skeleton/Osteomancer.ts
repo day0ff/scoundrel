@@ -1,3 +1,4 @@
+import {roomEntryPhase} from "entities/phases/roomEntry.ts";
 import {osteomancerPasteboardCard} from "entities/cards/pasteboard/skeleton/Osteomancer.ts";
 import type {SkeletonPasteboardDataType} from "./types.ts";
 
@@ -10,7 +11,14 @@ export const osteomancerPasteboard = {
     variant: "osteomancer",
     rank: "F",
     role: "enemy",
-    strength: 14,
+    strength: 1,
+    actions: [{
+        id: "summon",
+        phase: roomEntryPhase.identifier,
+        type: "summon",
+        identifier: "day0ff:pasteboard-skeleton.F.thing",
+        source: "existingOrCreate",
+    }],
     isLocked: false,
     isNotFound: false,
 } as const satisfies SkeletonPasteboardDataType<"F", "osteomancer">;

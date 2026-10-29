@@ -1,3 +1,4 @@
+import {roomEntryPhase} from "entities/phases/roomEntry.ts";
 import type {GameModeType} from "entities/game-modes/types.ts";
 import type {PackIdentifierType} from "entities/packs/types.ts";
 import {getPack} from "entities/packs/constants.ts";
@@ -17,7 +18,7 @@ import type {EffectBindingType} from "entities/effects/types.ts";
 import type {PhaseDataType} from "entities/phases/types.ts";
 import type {CardMoveRejectionType, GameStateType, PreAnimationGameStateType, PreLifecycleGameStateType, HeroLessGameStateType, HandGameStateType, LegacyGameStateType, OldZoneGameStateType, MoveCardPayloadType, PlayingCardType, ZoneKindType} from "entities/game/types.ts";
 import type {SeedType} from "../types.ts";
-import {resolveRoomEntryEffects} from "./room-entry.ts";
+import {resolvePasteboardActions} from "./card-actions.ts";
 
 export const canPlaceCardInZone = (card: PlayingCardType, zone: ZoneKindType): boolean => {
     if (card.identifier === "day0ff:pasteboard-fist.0") return zone === "weapons";
@@ -71,7 +72,7 @@ export const createGame = (
         scoreRange: calculateScoreRange(Object.values(configuredZones).flatMap(zone => zone.cards), hero.health.max),
     };
     shuffleDungeonCards(state);
-    resolveCurrentPhaseEffects(state);
+    resolveCurrentPhase(state);
     for (let index = 0; state.currentPhase !== state.phaseLifecycle.waitingPhase && index < state.phaseLifecycle.phases.length; index++) {
         advanceGamePhase(state);
     }
@@ -97,7 +98,7 @@ const restoreGameState = (state: GameStateType | PreAnimationGameStateType | Pre
     const savedLifecycle = "phaseLifecycle" in state ? state.phaseLifecycle : undefined;
     const validLifecycle = savedLifecycle && savedLifecycle.phases.length > 0
         && new Set(savedLifecycle.phases).size === savedLifecycle.phases.length
-        && savedLifecycle.phases.every(identifier => PHASES_MAP[identifier] && identifier !== afterCardPlayedPhase.identifier)
+        && savedLifecycle.phases.every(identifier => PHASES_MAP[identifier] && identifier !== afterCardPlayedPhase.identifier && identifier !== roomEntryPhase.identifier)
         && savedLifecycle.phases.includes(savedLifecycle.waitingPhase);
     const phaseLifecycle = validLifecycle ? savedLifecycle : {...classicPhaseLifecycle, phases: [...classicPhaseLifecycle.phases]};
     const currentPhase = validLifecycle && "currentPhase" in state && phaseLifecycle.phases.includes(state.currentPhase)
@@ -266,7 +267,7 @@ export const applyPotion = (state: GameStateType, card: PlayingCardType, from: Z
     checkGameVictory(state);
 };
 
-export const resolveCurrentPhaseEffects = (state: GameStateType) => {
+export const resolveCurrentPhase = (state: GameStateType) => {
     const phase = PHASES_MAP[state.currentPhase];
     if (!phase) return;
     const bindings = [
@@ -275,6 +276,7 @@ export const resolveCurrentPhaseEffects = (state: GameStateType) => {
             .flatMap(zone => zone.cards.filter(card => !card.isLocked && !card.isNotFound).flatMap(getPasteboardEffects)),
     ];
     applyHealthEffects(state, bindings, phase.trigger);
+    resolvePasteboardActions(state, phase.identifier);
 };
 
 export const applyHealthEffects = (state: GameStateType, bindings: readonly EffectBindingType[], trigger: PhaseDataType<string>["trigger"], potion?: PlayingCardType) => {
@@ -298,7 +300,7 @@ export const advanceGamePhase = (state: GameStateType) => {
     state.currentPhase = next.identifier;
     if (next.startsTurn) state.turnNumber += 1;
     state.selectedCardId = undefined;
-    resolveCurrentPhaseEffects(state);
+    resolveCurrentPhase(state);
 };
 
 export const recordRoomPlay = (state: GameStateType, cardsPlayed: number) => {
@@ -326,7 +328,7 @@ export const dealNextRoom = (state: GameStateType, skipAllowed: boolean) => {
         shuffleDungeonCards(state);
     }
     room.cards = dungeon.cards.splice(0, room.capacity);
-    resolveRoomEntryEffects(state, [...room.cards]);
+    resolvePasteboardActions(state, roomEntryPhase.identifier, [...room.cards]);
     state.activeRoomCards = room.cards.map(card => ({...card}));
     state.roomProgress = {fightStarted: false, cardsPlayed: 0, skipAllowed};
     state.selectedCardId = undefined;
