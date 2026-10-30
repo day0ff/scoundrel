@@ -1,4 +1,7 @@
 {
+  "card.pasteboard.dark.F.commander.name": "Командир",
+  "pasteboard.dark.F.commander.name": "Командир",
+  "pasteboard.dark.F.commander.description": "При входе в комнату призывает первого врага из подземелья на свободное или дополнительное место. Если подземелье пусто, призывает последнего сброшенного врага.",
   "card.pasteboard.dark.F.assassin.name": "Ассасин",
   "pasteboard.dark.F.assassin.name": "Ассасин",
   "pasteboard.dark.F.assassin.description": "При входе в комнату ослепляет белой вспышкой и мгновенно атакует оружие или кулак.",

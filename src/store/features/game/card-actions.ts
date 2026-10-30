@@ -45,20 +45,34 @@ const summon = (state: GameStateType, card: PlayingCardType, action: Extract<Pas
 
 const call = (state: GameStateType, card: PlayingCardType, action: Extract<PasteboardActionType, {type: "call"}>) => {
     const count = nextSummonNumber(card, action);
-    const summoned = {...initPasteboard(action.identifier), id: `${card.id}:${action.id}:${count}`};
-    state.zones.room.cards.push(summoned);
+    const sourceZone = action.source === "dungeonOrDiscard"
+        ? (state.zones.dungeon.cards.length ? "dungeon" : "discard")
+        : action.source === "discard" ? "discard" : undefined;
+    const source = sourceZone && state.zones[sourceZone];
+    const index = source
+        ? (action.source === "dungeonOrDiscard" && sourceZone === "discard"
+            ? source.cards.map(item => item.role).lastIndexOf("enemy")
+            : source.cards.findIndex(item => item.role === "enemy"))
+        : -1;
+    const summoned = source
+        ? (index === -1 ? undefined : source.cards.splice(index, 1)[0])
+        : "identifier" in action ? {...initPasteboard(action.identifier), id: `${card.id}:${action.id}:${count}`} : undefined;
+    if (summoned) state.zones.room.cards.push(summoned);
     state.animationEvents.push({
         id: ++state.animationSequence,
         animation: "day0ff:animation-call",
         summonerId: card.id,
-        summonedId: summoned.id,
+        summonedId: summoned?.id,
+        sourceZone,
+        soundUrl: action.soundUrl,
+        soundWaves: action.soundWaves,
         animationCardId: card.id,
         actionAnimation: action.animation,
         roomBefore: state.zones.room.cards.map(item => ({...item})),
         healthBefore: {...state.hero.health},
         healthAfter: {...state.hero.health},
     });
-    return [summoned];
+    return summoned ? [summoned] : [];
 };
 
 const summonStrongestEnemyFromCrypt = (state: GameStateType, card: PlayingCardType, action: PasteboardActionType) => {

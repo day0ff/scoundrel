@@ -18,7 +18,10 @@ import {billetDarkLordPasteboardCard} from "./B.ts";
 
 import {assassinPasteboardCard} from "./Assassin.ts";
 
+import {commanderPasteboardCard} from "./Commander.ts";
+
 export const DARK_PASTEBOARD_CARDS_MAP = {
+    [commanderPasteboardCard.identifier]: commanderPasteboardCard,
     "day0ff:card-pasteboard.dark.1": oneDarkLordPasteboardCard,
     "day0ff:card-pasteboard.dark.2": twoDarkLordPasteboardCard,
     "day0ff:card-pasteboard.dark.3": threeDarkLordPasteboardCard,

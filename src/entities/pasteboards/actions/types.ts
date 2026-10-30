@@ -24,7 +24,10 @@ export type PasteboardActionType = PasteboardActionBaseType & (
     | {type: "breakAllWeapons"; soundUrl: string}
     | {type: "hatchOnAttack"; identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>}
     | {type: "summonStrongestEnemyFromCrypt"}
-    | {type: "call"; identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>}
+    | ({type: "call"; soundUrl?: string; soundWaves?: boolean} & (
+        | {source?: "create"; identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>}
+        | {source: "discard" | "dungeonOrDiscard"}
+    ))
     | {
         type: "summon";
         identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>;

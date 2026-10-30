@@ -1,4 +1,7 @@
 {
+  "card.pasteboard.dark.F.commander.name": "Commander",
+  "pasteboard.dark.F.commander.name": "Commander",
+  "pasteboard.dark.F.commander.description": "On entering the room, calls the first enemy from the dungeon into a free or extra room slot. If the dungeon is empty, calls the most recently discarded enemy.",
   "card.pasteboard.dark.F.assassin.name": "Assassin",
   "pasteboard.dark.F.assassin.name": "Assassin",
   "pasteboard.dark.F.assassin.description": "On entering the room, blinds you with a white flash and instantly attacks your weapon or fist.",

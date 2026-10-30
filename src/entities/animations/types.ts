@@ -74,7 +74,10 @@ export type SummonAnimationEventType = HealthAnimationEventType & {
 
 export type CallAnimationEventType = Omit<SummonAnimationEventType, "animation" | "summonedId"> & {
     animation: AnimationDataType<"call">["identifier"];
-    summonedId: string;
+    summonedId?: string;
+    soundUrl?: string;
+    soundWaves?: boolean;
+    sourceZone?: "dungeon" | "discard";
 };
 
 export type DrainAnimationEventType = HealthAnimationEventType & {

@@ -19,7 +19,10 @@ import {queenDarkLordPasteboard} from "./Q.ts";
 import {kingDarkLordPasteboard} from "./K.ts";
 import {DarkLordPasteboardDataType} from "./types.ts";
 
+import {commanderPasteboard} from "./Commander.ts";
+
 export const PASTEBOARD_DARK_MAP = {
+    [commanderPasteboard.identifier]: commanderPasteboard,
     [assassinPasteboard.identifier]: assassinPasteboard,
     [darkQueenPasteboard.identifier]: darkQueenPasteboard,
     [darkLordPasteboard.identifier]: darkLordPasteboard,
