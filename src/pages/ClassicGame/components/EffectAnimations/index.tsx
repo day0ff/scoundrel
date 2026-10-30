@@ -1,3 +1,4 @@
+import HatchFeedback from "./components/HatchFeedback";
 import DrainFeedback from "./components/DrainFeedback";
 import {useEffect, useRef, type FC} from "react";
 import {createPortal} from "react-dom";
@@ -57,6 +58,10 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
     }, [dispatch]);
 
     if (!event || !animation || paused) return null;
+
+    if (event.animation === "day0ff:animation-hatch") {
+        return createPortal(<HatchFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+    }
 
     if (event.animation === "day0ff:animation-drain") {
         return createPortal(<DrainFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);

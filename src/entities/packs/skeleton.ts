@@ -6,20 +6,24 @@ import { BASE_URL } from "constants.ts";
 
 const healPotionsCardsIdentifiers = [
   "day0ff:pasteboard-heal.A",
-  "day0ff:pasteboard-heal.2",
-  "day0ff:pasteboard-heal.3",
-  "day0ff:pasteboard-heal.4",
-  "day0ff:pasteboard-heal.5",
-  "day0ff:pasteboard-heal.6",
-  "day0ff:pasteboard-heal.7",
-  "day0ff:pasteboard-heal.8",
-  "day0ff:pasteboard-heal.9",
-  "day0ff:pasteboard-heal.T",
+  "day0ff:pasteboard-heal.A",
+  // "day0ff:pasteboard-heal.2",
+  // "day0ff:pasteboard-heal.3",
+  // "day0ff:pasteboard-heal.4",
+  // "day0ff:pasteboard-heal.5",
+  // "day0ff:pasteboard-heal.6",
+  // "day0ff:pasteboard-heal.7",
+  // "day0ff:pasteboard-heal.8",
+  // "day0ff:pasteboard-heal.9",
+  // "day0ff:pasteboard-heal.T",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 const skeletonCardsIdentifiers = [
   // "day0ff:pasteboard-skeleton.A",
-  "day0ff:pasteboard-skeleton.2",
+  "day0ff:pasteboard-skeleton.1",
+  "day0ff:pasteboard-skeleton.1",
+  "day0ff:pasteboard-skeleton.1",
+  // "day0ff:pasteboard-skeleton.2",
   // "day0ff:pasteboard-skeleton.3",
   // "day0ff:pasteboard-skeleton.4",
   // "day0ff:pasteboard-skeleton.5",
@@ -30,13 +34,14 @@ const skeletonCardsIdentifiers = [
   // "day0ff:pasteboard-skeleton.T",
   // "day0ff:pasteboard-skeleton.J",
   // "day0ff:pasteboard-skeleton.Q",
-  // "day0ff:pasteboard-skeleton.K.skeletonKing",
+  "day0ff:pasteboard-skeleton.K.skeletonKing",
   // "day0ff:pasteboard-skeleton.F.necromancer",
   // "day0ff:pasteboard-skeleton.Q.skeletonQueen",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 const weaponCardsIdentifiers = [
-  // "day0ff:pasteboard-weapon.A",
+  "day0ff:pasteboard-weapon.A",
+  "day0ff:pasteboard-weapon.A",
   // "day0ff:pasteboard-weapon.2",
   // "day0ff:pasteboard-weapon.3",
   // "day0ff:pasteboard-weapon.4",

@@ -36,7 +36,7 @@ const HeroCard: FC<HeroCardCardPropsType> = (
 
     return (
         <HeroCardStyled {...hoverSounds} className={className}>
-            <Tooltip maxWidth={"330px"} placement={"right"} appendTo={appendTo}
+            <Tooltip minWidth="500px" maxWidth={"768px"} placement={"right"} appendTo={appendTo}
                      content={(<HeroCardTooltipContent name={name} description={description} color={card.color}/>)}>
                 <HeroCardWrapperStyled>
                     <HeroDraggableCardStyled isLocked={isLocked} isNotFound={isNotFound} {...restProps} card={card}/>

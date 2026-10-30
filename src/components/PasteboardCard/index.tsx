@@ -65,8 +65,8 @@ const PasteboardCard: FC<PasteboardCardPropsType> = ({
       <Tooltip
         disabled={tooltipDisabled}
         onCreate={instance => { tooltipRef.current = instance; }}
-        minWidth={"300px"}
-        maxWidth={"500px"}
+        minWidth={"500px"}
+        maxWidth={"768px"}
         placement={"auto"}
         popperOptions={VIEWPORT_TOOLTIP_POPPER_OPTIONS}
         appendTo={appendTo}

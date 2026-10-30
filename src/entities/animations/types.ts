@@ -53,7 +53,13 @@ export type DrainAnimationEventType = HealthAnimationEventType & {
     potionsBefore: InitPasteboardDataType<string, RankType>[];
 };
 
+export type HatchAnimationEventType = HealthAnimationEventType & {
+    animation: AnimationDataType<"hatch">["identifier"];
+    egg: InitPasteboardDataType<string, RankType>;
+    hatchlingId: string;
+};
+
 export type EffectAnimationEventType = (HealthAnimationEventType & {
     animation: AnimationDataType<"heal">["identifier"];
     potion?: InitPasteboardDataType<string, RankType>;
-}) | AttackAnimationEventType | ConsumeAnimationEventType | SummonAnimationEventType | DrainAnimationEventType;
+}) | AttackAnimationEventType | ConsumeAnimationEventType | SummonAnimationEventType | DrainAnimationEventType | HatchAnimationEventType;

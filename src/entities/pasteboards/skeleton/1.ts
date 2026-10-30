@@ -11,6 +11,12 @@ export const oneSkeletonPasteboard = {
   suit: "skeleton",
   role: "enemy",
   rank: "1",
+  actions: [{
+    id: "hatchDragon",
+    phase: "day0ff:phase-playerAction",
+    type: "hatchOnAttack",
+    identifier: "day0ff:pasteboard-skeleton.A",
+  }],
   isLocked: false,
   isNotFound: false,
 } as const satisfies OneSkeletonPasteboardDataType;

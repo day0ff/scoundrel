@@ -41,7 +41,8 @@ const Deck: FC<DeckPropsType> = ({
     <Tooltip
       trigger="mouseenter focus"
       content={<DeckTooltipContent name={name} description={description} />}
-      maxWidth="600px"
+      minWidth="500px"
+      maxWidth="768px"
     >
       <DeckStyled
         aria-label={`${label}: ${count}`}
@@ -49,12 +50,16 @@ const Deck: FC<DeckPropsType> = ({
         role={onClick ? "button" : undefined}
         aria-haspopup={onClick ? "dialog" : undefined}
         onClick={onClick}
-        onKeyDown={onClick ? (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            onClick();
-          }
-        } : undefined}
+        onKeyDown={
+          onClick
+            ? (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onClick();
+                }
+              }
+            : undefined
+        }
       >
         <DeckStackStyled data-deck-stack>
           {Array.from({ length: layerCount }, (_, index) => {
@@ -74,7 +79,12 @@ const Deck: FC<DeckPropsType> = ({
                   transform: `translate(${index * LAYER_OFFSET * directionMultiplier}px, ${(-index * LAYER_OFFSET * 2) / 3}px) rotate(${rotation * directionMultiplier}deg)`,
                 }}
               >
-                <DeckImageStyled src={image} $empty={empty} alt="" draggable={false}/>
+                <DeckImageStyled
+                  src={image}
+                  $empty={empty}
+                  alt=""
+                  draggable={false}
+                />
                 {empty && (
                   <DeckOverlayStyled
                     $color={overlayColor}
@@ -82,7 +92,9 @@ const Deck: FC<DeckPropsType> = ({
                     aria-hidden="true"
                   />
                 )}
-                {index === layerCount - 1 && <DeckCountStyled>{count}</DeckCountStyled>}
+                {index === layerCount - 1 && (
+                  <DeckCountStyled>{count}</DeckCountStyled>
+                )}
               </DeckLayerStyled>
             );
           })}

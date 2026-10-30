@@ -1,3 +1,4 @@
+import {applyAttack} from "./attack.ts";
 import assert from "node:assert/strict";
 import {getSeededRandom} from "helpers/getSeededRandom.ts";
 import {initPasteboard} from "entities/pasteboards/constants.ts";
@@ -48,6 +49,7 @@ export const runDrainPotionTests = () => {
 
 export const runCardActionTests = () => {
     runDrainPotionTests();
+    runEggHatchTests();
     const king = initPasteboard("day0ff:pasteboard-skeleton.K.skeletonKing");
     const weak = initPasteboard("day0ff:pasteboard-skeleton.2");
     const strong = {...initPasteboard("day0ff:pasteboard-skeleton.3"), strength: 20};
@@ -164,4 +166,73 @@ export const runCardActionTests = () => {
         "card actions are driven by configuration and phase, including multiple actions and empty action lists",
         "summoned arrivals resolve entry actions before consumption, and summoners keep independent progress",
         "end-phase effects wait for summons and replay remains deterministic"];
+};
+
+export const runEggHatchTests = () => {
+    const egg = initPasteboard("day0ff:pasteboard-skeleton.1");
+    const neighbor = initPasteboard("day0ff:pasteboard-skeleton.3");
+    const game = makeGame([neighbor, egg]);
+    game.currentPhase = game.phaseLifecycle.waitingPhase;
+    const fist = initPasteboard("day0ff:pasteboard-fist.0");
+    game.zones.weapons.cards = [fist];
+    applyAttack(game, fist.id, egg.id);
+    assert.equal(game.zones.room.cards.length, 2);
+    assert.equal(game.zones.room.cards[0].id, neighbor.id);
+    assert.equal(game.zones.room.cards[1].identifier, "day0ff:pasteboard-skeleton.A");
+    assert.equal(game.zones.crypt.cards[0].id, egg.id);
+    assert.deepEqual(game.animationEvents.map(event => event.animation), ["day0ff:animation-attack", "day0ff:animation-hatch"]);
+    assert.deepEqual(roomWithAttackFeedbackSelector.resultFunc(game)!.cards.map(card => card.id), [neighbor.id, egg.id]);
+    const event = game.animationEvents[1];
+    assert.ok(event.animation === "day0ff:animation-hatch");
+    assert.equal(event.egg.id, egg.id);
+    assert.equal(event.hatchlingId, game.zones.room.cards[1].id);
+    assert.equal(game.outcome, undefined);
+    applyAttack(game, fist.id, game.zones.room.cards[1].id);
+    assert.equal(game.zones.room.cards.length, 2);
+    game.animationEvents.shift();
+    assert.deepEqual(roomWithAttackFeedbackSelector.resultFunc(game)!.cards.map(card => card.id), [neighbor.id, event.hatchlingId]);
+    // The King can restore the same egg while its first dragon is still in the room.
+    game.animationEvents = [];
+    const firstDragonId = game.zones.room.cards[1].id;
+    const king = initPasteboard("day0ff:pasteboard-skeleton.K.skeletonKing");
+    game.zones.room.cards.push(king);
+    resolvePasteboardActions(game, roomEntryPhase.identifier, [king]);
+    assert.ok(game.zones.room.cards.some(card => card.id === egg.id));
+    game.animationEvents = [];
+    applyAttack(game, fist.id, egg.id);
+    const dragons = game.zones.room.cards.filter(card => card.identifier === "day0ff:pasteboard-skeleton.A");
+    assert.equal(dragons.length, 2);
+    assert.equal(dragons[0].id, firstDragonId);
+    assert.notEqual(dragons[0].id, dragons[1].id);
+    const secondHatch = game.animationEvents.find(event => event.animation === "day0ff:animation-hatch");
+    assert.ok(secondHatch?.animation === "day0ff:animation-hatch");
+    assert.equal(secondHatch.hatchlingId, dragons[1].id);
+    assert.equal(new Set(game.zones.room.cards.map(card => card.id)).size, game.zones.room.cards.length);
+    // Repeating the same saved action produces the same ID for game replays.
+    const saved = structuredClone(game);
+    saved.animationEvents = [];
+    saved.zones.room.cards.push(saved.zones.crypt.cards.shift()!);
+    const replay = structuredClone(saved);
+    applyAttack(saved, fist.id, egg.id);
+    applyAttack(replay, fist.id, egg.id);
+    assert.deepEqual(saved.zones.room.cards.map(card => card.id), replay.zones.room.cards.map(card => card.id));
+    // Weapon attacks use the same attack-then-hatch sequence, including breaks.
+    const weaponGame = makeGame([initPasteboard("day0ff:pasteboard-skeleton.1")]);
+    weaponGame.currentPhase = weaponGame.phaseLifecycle.waitingPhase;
+    const weapon = {...initPasteboard("day0ff:pasteboard-weapon.2"), durability: 1};
+    weaponGame.zones.weapons.cards = [weapon];
+    applyAttack(weaponGame, weapon.id);
+    assert.deepEqual(weaponGame.animationEvents.map(event => event.animation), ["day0ff:animation-attack", "day0ff:animation-hatch"]);
+    const weaponAttack = weaponGame.animationEvents[0];
+    assert.ok(weaponAttack.animation === "day0ff:animation-attack");
+    assert.equal(weaponAttack.attackerId, weapon.id);
+    assert.equal(weaponAttack.weaponBroken, true);
+    // The action follows configuration, even when attached to another card.
+    const configured = {...neighbor, actions: egg.actions};
+    const other = makeGame([configured]);
+    other.currentPhase = other.phaseLifecycle.waitingPhase;
+    other.zones.weapons.cards = [fist];
+    applyAttack(other, fist.id, configured.id);
+    assert.equal(other.zones.room.cards[0].identifier, "day0ff:pasteboard-skeleton.A");
+    return ["egg hatches once when attacked, preserving its room slot and preventing premature victory"];
 };

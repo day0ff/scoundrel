@@ -145,3 +145,22 @@ export const resolvePasteboardActions = (
         if (state.zones.room.cards.some(item => item.id === card.id)) consumeEnemies(state, card);
     }
 };
+
+// Attack-triggered actions are independent of turn and room-entry actions.
+export const resolveAttackedCardActions = (state: GameStateType, egg: PlayingCardType, roomIndex: number) => {
+    for (const action of getPasteboardActions(egg)) {
+        if (action.type !== "hatchOnAttack") continue;
+        const count = nextSummonNumber(egg, action);
+        const hatchling = {...initPasteboard(action.identifier), id: `${egg.id}:${action.id}:${count}`};
+        state.zones.room.cards.splice(roomIndex, 0, hatchling);
+        state.animationEvents.push({
+            id: ++state.animationSequence,
+            animation: "day0ff:animation-hatch",
+            egg: {...egg},
+            hatchlingId: hatchling.id,
+            healthBefore: {...state.hero.health},
+            healthAfter: {...state.hero.health},
+        });
+        resolvePasteboardActions(state, roomEntryPhase.identifier, [hatchling]);
+    }
+};

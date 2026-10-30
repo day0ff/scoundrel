@@ -1,3 +1,4 @@
+import {resolveAttackedCardActions} from "./card-actions.ts";
 import {recordRoomPlay, checkGameVictory} from "./helpers.ts";
 import {attackAnimation} from "entities/animations/attack.ts";
 import {getCardStrength} from "entities/pasteboards/helpers.ts";
@@ -50,6 +51,7 @@ export const resolveAttack = (state: GameStateType, attackerId: string, enemyId?
 };
 
 export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: string) => {
+    if (state.animationEvents.some(event => event.animation === "day0ff:animation-hatch")) return;
     const attack = resolveAttack(state, attackerId, enemyId);
     if (!attack) return;
     const {source, attacker, enemy, healthDamage, durability} = attack;
@@ -57,6 +59,7 @@ export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: 
     recordRoomPlay(state, 1);
     const healthBefore = {...state.hero.health};
     state.hero.health.current = Math.max(state.hero.health.min, state.hero.health.current - healthDamage);
+    const roomIndex = state.zones.room.cards.findIndex(card => card.id === enemy.id);
     state.animationEvents.push({
         id: ++state.animationSequence,
         animation: attackAnimation.identifier,
@@ -83,6 +86,7 @@ export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: 
             state.zones.crypt.cards.push(attacker);
         }
     }
+    resolveAttackedCardActions(state, enemy, roomIndex);
     checkGameVictory(state);
     if (state.selectedCardId === enemy.id || (durability === 0 && state.selectedCardId === attacker.id)) state.selectedCardId = undefined;
 };
