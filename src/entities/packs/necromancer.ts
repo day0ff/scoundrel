@@ -74,8 +74,16 @@ export const necromancerPack = {
   isNotFound: true,
   condition: {
     description: "pack.necromancer.unlock.description",
-    unlock: { type: "enemiesDefeated", suit: "skeleton", count: 200 },
-    discover: { type: "enemiesDefeated", suit: "skeleton", count: 200 },
+    unlock: [
+      { type: "packUnlocked", packIdentifier: "day0ff:pack-skeleton" },
+      { type: "enemiesDefeated", suit: "skeleton", count: 200 },
+      { type: "gamesWon", count: 1 },
+    ],
+    discover: [
+      { type: "packUnlocked", packIdentifier: "day0ff:pack-skeleton" },
+      { type: "enemiesDefeated", suit: "skeleton", count: 200 },
+      { type: "gamesWon", count: 1 },
+    ],
   },
   decks: [
     { identifier: "day0ff:deck-skeleton", cards: skeletonCardsIdentifiers },

@@ -1,7 +1,7 @@
 import type { RankType } from "entities/types.ts";
 import type { PasteboardDataType } from "entities/pasteboards/types.ts";
 import type { PackDataType } from "./types.ts";
-import {getPackCard} from "entities/cards/packs/helpers.ts";
+import { getPackCard } from "entities/cards/packs/helpers.ts";
 import { BASE_URL } from "constants.ts";
 
 const healPotionsCardsIdentifiers = [
@@ -70,8 +70,14 @@ export const skeletonPack = {
   isNotFound: true,
   condition: {
     description: "pack.sceleton.unlock.description",
-    unlock: { type: "enemiesDefeated", count: 100 },
-    discover: { type: "enemiesDefeated", count: 100 },
+    unlock: [
+      { type: "enemiesDefeated", count: 100 },
+      { type: "gamesWon", count: 1 },
+    ],
+    discover: [
+      { type: "enemiesDefeated", count: 100 },
+      { type: "gamesWon", count: 1 },
+    ],
   },
   decks: [
     { identifier: "day0ff:deck-skeleton", cards: skeletonCardsIdentifiers },

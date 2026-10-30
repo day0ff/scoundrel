@@ -10,6 +10,6 @@ export const darkLordPackCard = {
     base: `${BASE_URL}/images/packs/dark-lord/face.png`,
   },
   back: {
-    base: `${BASE_URL}/images/packs/dark-lord/back.png`,
+    base: `${BASE_URL}/images/packs/dark-lord/face.png`,
   },
 } satisfies PackCardType<"dark-lord">;

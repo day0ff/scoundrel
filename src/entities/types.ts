@@ -27,15 +27,16 @@ export type StatItemsType<T> = StatType & {
 
 export type CollectionConditionType =
     | {type: "gamesCompleted" | "gamesWon"; mode?: GameModeType; packIdentifier?: PackIdentifierType; count: number}
-    | {type: "enemiesDefeated"; suit?: string; count: number};
+    | {type: "enemiesDefeated"; suit?: string; count: number}
+    | {type: "packUnlocked"; packIdentifier: PackIdentifierType};
 
 export type CollectionType = {
     isLocked: boolean;
     isNotFound: boolean;
     condition?: {
         description: TranslationKeysType;
-        unlock?: CollectionConditionType;
-        discover?: CollectionConditionType;
+        unlock?: CollectionConditionType | readonly CollectionConditionType[];
+        discover?: CollectionConditionType | readonly CollectionConditionType[];
     };
 }
 

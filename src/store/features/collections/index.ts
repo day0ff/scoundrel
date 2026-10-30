@@ -25,8 +25,14 @@ export const collectionsSlice = createSlice({
                     state.progress.enemiesDefeated[event.suit] = (state.progress.enemiesDefeated[event.suit] ?? 0) + 1;
                 }
             }
+            // Resolve prerequisite packs regardless of their collection order.
+            for (let pass = 0; pass < state.packs.length; pass++) {
+                const lockedCount = state.packs.filter(pack => pack.isLocked).length;
+                for (const pack of state.packs) evaluateCollection(pack, state.progress, state.packs);
+                if (state.packs.filter(pack => pack.isLocked).length === lockedCount) break;
+            }
             for (const item of [...state.heroes, ...state.decks, ...state.packs, ...state.decks.flatMap(deck => deck.pasteboards)]) {
-                evaluateCollection(item, state.progress);
+                evaluateCollection(item, state.progress, state.packs);
             }
         },
     },
