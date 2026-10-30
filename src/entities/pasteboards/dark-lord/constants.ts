@@ -1,3 +1,4 @@
+import {assassinPasteboard} from "./Assassin.ts";
 import {darkQueenPasteboard} from "./DarkQueen.ts";
 import {darkLordPasteboard} from "./DarkLord.ts";
 import {darkDragonPasteboard} from "./DarkDragon.ts";
@@ -19,6 +20,7 @@ import {kingDarkLordPasteboard} from "./K.ts";
 import {DarkLordPasteboardDataType} from "./types.ts";
 
 export const PASTEBOARD_DARK_MAP = {
+    [assassinPasteboard.identifier]: assassinPasteboard,
     [darkQueenPasteboard.identifier]: darkQueenPasteboard,
     [darkLordPasteboard.identifier]: darkLordPasteboard,
     [darkDragonPasteboard.identifier]: darkDragonPasteboard,

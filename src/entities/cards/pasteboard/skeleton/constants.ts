@@ -23,12 +23,6 @@ import {thingPasteboardCard} from "./Thing.ts";
 import {necromancerPasteboardCard} from "./Necromancer.ts";
 
 export const SKELETON_PASTEBOARD_CARDS_MAP = {
-    [skeletonDragonPasteboardCard.identifier]: skeletonDragonPasteboardCard,
-    [skeletonQueenPasteboardCard.identifier]: skeletonQueenPasteboardCard,
-    [skeletonKingPasteboardCard.identifier]: skeletonKingPasteboardCard,
-    [osteomancerPasteboardCard.identifier]: osteomancerPasteboardCard,
-    [thingPasteboardCard.identifier]: thingPasteboardCard,
-    [necromancerPasteboardCard.identifier]: necromancerPasteboardCard,
     "day0ff:card-pasteboard.skeleton.1": oneSkeletonPasteboardCard,
     "day0ff:card-pasteboard.skeleton.2": twoSkeletonPasteboardCard,
     "day0ff:card-pasteboard.skeleton.3": threeSkeletonPasteboardCard,
@@ -44,6 +38,13 @@ export const SKELETON_PASTEBOARD_CARDS_MAP = {
     "day0ff:card-pasteboard.skeleton.K": kingSkeletonPasteboardCard,
     "day0ff:card-pasteboard.skeleton.A": aceSkeletonPasteboardCard,
     "day0ff:card-pasteboard.skeleton.B": billetSkeletonPasteboardCard,
+    [skeletonDragonPasteboardCard.identifier]: skeletonDragonPasteboardCard,
+    [skeletonQueenPasteboardCard.identifier]: skeletonQueenPasteboardCard,
+    [skeletonKingPasteboardCard.identifier]: skeletonKingPasteboardCard,
+    [osteomancerPasteboardCard.identifier]: osteomancerPasteboardCard,
+    [thingPasteboardCard.identifier]: thingPasteboardCard,
+    [necromancerPasteboardCard.identifier]: necromancerPasteboardCard,
+
 } as const satisfies Partial<
     Record<
         SkeletonCardType<RankType>["identifier"],

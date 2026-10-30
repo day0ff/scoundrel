@@ -16,6 +16,8 @@ import {kingDarkLordPasteboardCard} from "./K.ts";
 import {aceDarkLordPasteboardCard} from "./A.ts";
 import {billetDarkLordPasteboardCard} from "./B.ts";
 
+import {assassinPasteboardCard} from "./Assassin.ts";
+
 export const DARK_PASTEBOARD_CARDS_MAP = {
     "day0ff:card-pasteboard.dark.1": oneDarkLordPasteboardCard,
     "day0ff:card-pasteboard.dark.2": twoDarkLordPasteboardCard,
@@ -32,6 +34,7 @@ export const DARK_PASTEBOARD_CARDS_MAP = {
     "day0ff:card-pasteboard.dark.K": kingDarkLordPasteboardCard,
     "day0ff:card-pasteboard.dark.A": aceDarkLordPasteboardCard,
     "day0ff:card-pasteboard.dark.B": billetDarkLordPasteboardCard,
+    [assassinPasteboardCard.identifier]: assassinPasteboardCard,
 } as const satisfies Partial<
     Record<
         DarkLordCardType<RankType>["identifier"],

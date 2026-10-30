@@ -31,6 +31,7 @@ type HealthAnimationEventType = {
 
 export type AttackAnimationEventType = HealthAnimationEventType & {
     animation: AnimationDataType<"attack">["identifier"];
+    instantAttack?: {soundUrl: string};
     attackerId: string;
     attacker?: InitPasteboardDataType<string, RankType>;
     attackerZoneIndex?: number;

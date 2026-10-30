@@ -1,3 +1,4 @@
+import {applyAttack, resolveAttack} from "./attack.ts";
 import {breakWeapon} from "./weapon-break.ts";
 import {getPasteboardActions, initPasteboard} from "entities/pasteboards/constants.ts";
 import {getCardStrength} from "entities/pasteboards/helpers.ts";
@@ -191,6 +192,12 @@ export const resolvePasteboardActions = (
     // Resolve summons (including arrivals they cause) before any consumer acts.
     for (const {card, action} of pending) {
         if (!state.zones.room.cards.some(item => item.id === card.id)) continue;
+        if (action.type === "instantAttack") {
+            const feedback = {soundUrl: action.soundUrl};
+            const attacker = [...state.zones.weapons.cards].sort((a, b) => Number(a.role === "fist") - Number(b.role === "fist"))
+                .find(weapon => resolveAttack(state, weapon.id, card.id, feedback));
+            if (attacker) applyAttack(state, attacker.id, card.id, feedback);
+        }
         if (action.type === "breakAllWeapons") breakAllWeapons(state, card, action);
         if (action.type === "drainPotions") drainPotions(state, card, action);
         const summoned = action.type === "call" ? call(state, card, action)

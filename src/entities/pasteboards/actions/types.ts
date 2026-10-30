@@ -17,6 +17,7 @@ type PasteboardActionBaseType = {
 };
 
 export type PasteboardActionType = PasteboardActionBaseType & (
+    | {type: "instantAttack"; soundUrl: string}
     | {type: "playSound"; url: string}
     | {type: "consumeEnemies"}
     | {type: "drainPotions"}

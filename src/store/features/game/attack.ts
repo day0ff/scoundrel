@@ -30,8 +30,8 @@ export const getAttackRejection = (state: GameStateType, attackerId: string, ene
     if (previousStrength !== undefined && enemyStrength !== undefined && enemyStrength > previousStrength) return "enemyRankTooHigh";
 };
 
-export const resolveAttack = (state: GameStateType, attackerId: string, enemyId?: string) => {
-    if (state.outcome || state.currentPhase !== state.phaseLifecycle.waitingPhase || state.hero.health.current <= state.hero.health.min) return;
+export const resolveAttack = (state: GameStateType, attackerId: string, enemyId?: string, instantAttack?: {soundUrl: string}) => {
+    if (state.outcome || (!instantAttack && state.currentPhase !== state.phaseLifecycle.waitingPhase) || state.hero.health.current <= state.hero.health.min) return;
     const source = [state.zones.room, state.zones.weapons].find(zone => zone.cards.some(card => card.id === attackerId));
     const attacker = source?.cards.find(card => card.id === attackerId);
     const enemy = enemyId === undefined ? getAttackTarget(state) : state.zones.room.cards.find(card => card.id === enemyId && card.role === "enemy");
@@ -41,9 +41,9 @@ export const resolveAttack = (state: GameStateType, attackerId: string, enemyId?
     const attackerStrength = attacker.role === "fist" ? 0 : getCardStrength(attacker);
     if (enemyStrength === undefined || attackerStrength === undefined) return;
     const previousKill = attacker.role === "weapon" ? attacker.killedEnemies?.at(-1) : undefined;
-    if (previousKill) {
+    if (previousKill && !instantAttack) {
         const previousStrength = getCardStrength(previousKill);
-        if (previousStrength === undefined || getAttackRejection(state, attackerId, enemy.id)) return;
+        if (previousStrength === undefined || (enemy.identifier !== thingPasteboard.identifier && enemyStrength > previousStrength)) return;
     }
     return {
         source, attacker, enemy,
@@ -51,19 +51,22 @@ export const resolveAttack = (state: GameStateType, attackerId: string, enemyId?
     };
 };
 
-export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: string) => {
+export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: string, instantAttack?: {soundUrl: string}) => {
     if (state.animationEvents.some(event => event.animation === "day0ff:animation-hatch")) return;
-    const attack = resolveAttack(state, attackerId, enemyId);
+    const attack = resolveAttack(state, attackerId, enemyId, instantAttack);
     if (!attack) return;
     const {source, attacker, enemy, healthDamage, durability} = attack;
-    state.lastPlayedCard = {role: enemy.role, rank: enemy.rank, strength: enemy.strength};
-    recordRoomPlay(state, 1);
+    if (!instantAttack) {
+        state.lastPlayedCard = {role: enemy.role, rank: enemy.rank, strength: enemy.strength};
+        recordRoomPlay(state, 1);
+    }
     const healthBefore = {...state.hero.health};
     state.hero.health.current = Math.max(state.hero.health.min, state.hero.health.current - healthDamage);
     const roomIndex = state.zones.room.cards.findIndex(card => card.id === enemy.id);
     state.animationEvents.push({
         id: ++state.animationSequence,
         animation: attackAnimation.identifier,
+        ...(instantAttack ? {instantAttack} : {}),
         attackerId: attacker.id,
         attacker: {...attacker},
         attackerZoneIndex: source.cards.findIndex(card => card.id === attacker.id),
@@ -75,16 +78,18 @@ export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: 
         healthDamage: healthBefore.current - state.hero.health.current,
         weaponBroken: durability === 0,
     });
-    state.zones.room.cards.splice(state.zones.room.cards.findIndex(card => card.id === enemy.id), 1);
-    state.zones.crypt.cards.push(enemy);
-    if (attacker.role === "weapon") {
-        (attacker.killedEnemies ??= []).push({id: enemy.id, identifier: enemy.identifier, rank: enemy.rank, strength: getCardStrength(enemy)});
+    if (!instantAttack) {
+        state.zones.room.cards.splice(roomIndex, 1);
+        state.zones.crypt.cards.push(enemy);
+        if (attacker.role === "weapon") {
+            (attacker.killedEnemies ??= []).push({id: enemy.id, identifier: enemy.identifier, rank: enemy.rank, strength: getCardStrength(enemy)});
+        }
     }
     if (durability !== undefined) {
         attacker.durability = durability;
         if (durability === 0) breakWeapon(state, attacker.id);
     }
-    resolveAttackedCardActions(state, enemy, roomIndex);
+    if (!instantAttack) resolveAttackedCardActions(state, enemy, roomIndex);
     checkGameVictory(state);
-    if (state.selectedCardId === enemy.id || (durability === 0 && state.selectedCardId === attacker.id)) state.selectedCardId = undefined;
+    if ((!instantAttack && state.selectedCardId === enemy.id) || (durability === 0 && state.selectedCardId === attacker.id)) state.selectedCardId = undefined;
 };

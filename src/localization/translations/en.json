@@ -1,4 +1,7 @@
 {
+  "card.pasteboard.dark.F.assassin.name": "Assassin",
+  "pasteboard.dark.F.assassin.name": "Assassin",
+  "pasteboard.dark.F.assassin.description": "On entering the room, blinds you with a white flash and instantly attacks your weapon or fist.",
   "pasteboard.dark.Q.darkQueen.name": "Dark Queen",
   "pasteboard.dark.Q.darkQueen.description": "On entering the room, cries and breaks all weapons in the room and equipped weapons zone.",
   "animation.sound.name": "Action sound",

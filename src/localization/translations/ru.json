@@ -1,4 +1,7 @@
 {
+  "card.pasteboard.dark.F.assassin.name": "Ассасин",
+  "pasteboard.dark.F.assassin.name": "Ассасин",
+  "pasteboard.dark.F.assassin.description": "При входе в комнату ослепляет белой вспышкой и мгновенно атакует оружие или кулак.",
   "pasteboard.dark.Q.darkQueen.name": "Тёмная королева",
   "pasteboard.dark.Q.darkQueen.description": "При входе в комнату кричит и ломает всё оружие в комнате и зоне оружия.",
   "animation.sound.name": "Звук действия",

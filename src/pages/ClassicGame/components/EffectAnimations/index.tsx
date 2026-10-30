@@ -34,7 +34,7 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
     const arrivingCard = useAppSelector(arrivingCardSelector);
     const animation = event && ANIMATIONS_MAP[event.animation];
     const mounted = useRef(false);
-    const roomEntry = event?.animation === "day0ff:animation-drain" || event?.animation === "day0ff:animation-consume" || event?.animation === "day0ff:animation-summon" || event?.animation === "day0ff:animation-call" || event?.animation === "day0ff:animation-sound";
+    const roomEntry = (event?.animation === "day0ff:animation-attack" && !!event.instantAttack) || event?.animation === "day0ff:animation-drain" || event?.animation === "day0ff:animation-consume" || event?.animation === "day0ff:animation-summon" || event?.animation === "day0ff:animation-call" || event?.animation === "day0ff:animation-sound";
     const paused = roomEntry && roomTransition;
     usePasteboardActionAnimation(paused || event?.animation === "day0ff:animation-sound" ? undefined : event?.animationCardId, event?.actionAnimation, animation?.durationMs ?? 0);
 
@@ -59,7 +59,7 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
                 });
             }
 
-        }, duration);
+        }, event.animation === "day0ff:animation-attack" && event.instantAttack ? 1600 : duration);
         return () => clearTimeout(timeout);
     }, [audio, dispatch, event, animation, paused, roomEntry, arrivingCard, playCardSound]);
 

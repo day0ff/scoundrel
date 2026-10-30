@@ -10,7 +10,7 @@ export const gameOutcomeSelector = (state: RootState) => state.game?.outcome;
 export const heroGameSelector = (state: RootState) => state.game?.hero;
 export const heroHealthGameSelector = (state: RootState) => state.game?.hero.health;
 export const activeEffectAnimationGameSelector = (state: RootState) => state.game?.animationEvents?.[0];
-export const isConsumingGameSelector = (state: RootState) => state.game?.animationEvents.some(event => event.animation === "day0ff:animation-sound" || event.animation === "day0ff:animation-weaponBreak" || event.animation === "day0ff:animation-hatch" || event.animation === "day0ff:animation-drain" || event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon" || event.animation === "day0ff:animation-call") ?? false;
+export const isConsumingGameSelector = (state: RootState) => state.game?.animationEvents.some(event => (event.animation === "day0ff:animation-attack" && !!event.instantAttack) || event.animation === "day0ff:animation-sound" || event.animation === "day0ff:animation-weaponBreak" || event.animation === "day0ff:animation-hatch" || event.animation === "day0ff:animation-drain" || event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon" || event.animation === "day0ff:animation-call") ?? false;
 
 export const pendingSummonsGameSelector = createSelector(gameSelector,
     game => game?.animationEvents.filter(event => event.animation === "day0ff:animation-summon" || event.animation === "day0ff:animation-call") ?? [],

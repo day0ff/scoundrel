@@ -34,3 +34,18 @@ export const AttackFeedbackStyled = styled.div<{$duration: number; $damaged: boo
     animation: ${feedback} ${({$duration}) => $duration}ms ease-out both;
     @media (prefers-reduced-motion: reduce) { animation: none; }
 `;
+
+const assassinFlash = keyframes`
+    0%, 15% { opacity: 1; }
+    100% { opacity: 0; }
+`;
+
+export const AssassinFlashStyled = styled.div`
+    position: fixed;
+    inset: 0;
+    z-index: 1300;
+    background: white;
+    pointer-events: none;
+    animation: ${assassinFlash} 1600ms ease-out both;
+    @media (prefers-reduced-motion: reduce) { animation-duration: 300ms; }
+`;
