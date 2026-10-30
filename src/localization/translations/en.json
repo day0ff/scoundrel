@@ -1,7 +1,13 @@
 {
+  "card.pasteboard.skeleton.Q.skeletonQueen.name": "$t(pasteboard.skeleton.Q.skeletonQueen.name)",
+  "pasteboard.skeleton.Q.skeletonQueen.name": "Skeleton Queen",
+  "pasteboard.skeleton.Q.skeletonQueen.description": "Drains all potions in the room.",
+  "animation.drain.name": "Drain",
+  "animation.drain.description": "All potions drain simultaneously and move to the crypt.",
+
   "card.pasteboard.skeleton.K.skeletonKing.name": "$t(pasteboard.skeleton.K.skeletonKing.name)",
   "pasteboard.skeleton.K.skeletonKing.name": "Skeleton King",
-  "pasteboard.skeleton.K.skeletonKing.description": "Strength: {{strength}}. On entering the room, summons the strongest enemy from the crypt, adding a temporary room slot if needed.",
+  "pasteboard.skeleton.K.skeletonKing.description": "On entering the room, summons the strongest enemy from the crypt, adding a temporary room slot if needed.",
   "card.pack.skeleton.name": "$t(pack.skeleton.name)",
   "pack.skeleton.name": "Skeleton",
   "pack.skeleton.description": "Classic decks with Skeleton King replacing the normal skeleton king.",
@@ -25,7 +31,7 @@
   "pasteboard.skeleton.F.thing.name": "Thing",
   "pasteboard.skeleton.F.thing.description": "Strength: {{strength}}. Enters with 1 strength, consumes every other enemy in the room, and adds their strength to its own.",
   "pasteboard.skeleton.F.necromancer.name": "Necromancer",
-  "pasteboard.skeleton.F.necromancer.description": "Strength: {{strength}}. At the end of the room, fills empty slots with skeletons starting at rank 2. Each summon increases the next rank, up to 10. Remembers his progress between appearances.",
+  "pasteboard.skeleton.F.necromancer.description": "Strength: {{strength}}.\nSummons a stronger skeleton to an empty spot at the beginning and end of the turn.",
   "ui.cardStrength": "Strength: {{strength}}",
   "toast.collection.unlocked": "Unlocked!",
   "toast.collection.discovered": "Discovered!",

@@ -94,6 +94,25 @@ const consumeEnemies = (state: GameStateType, card: PlayingCardType) => {
     }
 };
 
+const drainPotions = (state: GameStateType) => {
+    const potions = [...state.zones.room.cards, ...state.zones.potions.cards].filter(card => card.role === "potion");
+    if (!potions.length) return;
+    const ids = new Set(potions.map(card => card.id));
+    state.animationEvents.push({
+        id: ++state.animationSequence,
+        animation: "day0ff:animation-drain",
+        potionIds: [...ids],
+        roomBefore: state.zones.room.cards.map(card => ({...card})),
+        potionsBefore: state.zones.potions.cards.map(card => ({...card})),
+        healthBefore: {...state.hero.health},
+        healthAfter: {...state.hero.health},
+    });
+    state.zones.room.cards = state.zones.room.cards.filter(card => !ids.has(card.id));
+    state.zones.potions.cards = state.zones.potions.cards.filter(card => !ids.has(card.id));
+    state.zones.crypt.cards.push(...potions);
+    if (state.selectedCardId && ids.has(state.selectedCardId)) state.selectedCardId = undefined;
+};
+
 export const resolvePasteboardActions = (
     state: GameStateType,
     phase: PhaseDataType<string>["identifier"],
@@ -116,6 +135,7 @@ export const resolvePasteboardActions = (
     // Resolve summons (including arrivals they cause) before any consumer acts.
     for (const {card, action} of pending) {
         if (!state.zones.room.cards.some(item => item.id === card.id)) continue;
+        if (action.type === "drainPotions") drainPotions(state);
         const summoned = action.type === "summon" ? summon(state, card, action)
             : action.type === "summonSequence" ? summonSequence(state, card, action)
             : action.type === "summonStrongestEnemyFromCrypt" ? summonStrongestEnemyFromCrypt(state, card) : [];

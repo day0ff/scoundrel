@@ -9,6 +9,7 @@ type PasteboardActionBaseType = {
 
 export type PasteboardActionType = PasteboardActionBaseType & (
     | {type: "consumeEnemies"}
+    | {type: "drainPotions"}
     | {type: "summonStrongestEnemyFromCrypt"}
     | {
         type: "summon";

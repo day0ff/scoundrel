@@ -1,7 +1,13 @@
 {
+  "card.pasteboard.skeleton.Q.skeletonQueen.name": "$t(pasteboard.skeleton.Q.skeletonQueen.name)",
+  "pasteboard.skeleton.Q.skeletonQueen.name": "Королева скелетов",
+  "pasteboard.skeleton.Q.skeletonQueen.description": "Осушает все зелья в комнате.",
+  "animation.drain.name": "Опустошение",
+  "animation.drain.description": "Все зелья одновременно опустошаются и отправляются в склеп.",
+
   "card.pasteboard.skeleton.K.skeletonKing.name": "$t(pasteboard.skeleton.K.skeletonKing.name)",
   "pasteboard.skeleton.K.skeletonKing.name": "Король скелетов",
-  "pasteboard.skeleton.K.skeletonKing.description": "Сила: {{strength}}. При входе в комнату призывает сильнейшего врага из склепа, при необходимости добавляя временное место в комнате.",
+  "pasteboard.skeleton.K.skeletonKing.description": "При входе в комнату призывает сильнейшего врага из склепа, при необходимости добавляя временное место в комнате.",
   "card.pack.skeleton.name": "$t(pack.skeleton.name)",
   "pack.skeleton.name": "Скелет",
   "pack.skeleton.description": "Классические колоды с Королём скелетов вместо обычного скелета ранга K.",
@@ -25,7 +31,7 @@
   "pasteboard.skeleton.F.thing.name": "Нечто",
   "pasteboard.skeleton.F.thing.description": "Сила: {{strength}}. Начальная сила — 1. При появлении в комнате поглощает всех остальных врагов и прибавляет их силу к своей.",
   "pasteboard.skeleton.F.necromancer.name": "Некромант",
-  "pasteboard.skeleton.F.necromancer.description": "Сила: {{strength}}. В конце комнаты заполняет пустые места скелетами начиная с ранга 2. Каждый призыв повышает следующий ранг до максимума 10. Сохраняет прогресс между появлениями.",
+  "pasteboard.skeleton.F.necromancer.description": "Сила: {{strength}}.\nПризывает более сильного скелета на свободное место в начале и в конце хода.",
   "ui.cardStrength": "Сила: {{strength}}",
   "toast.collection.unlocked": "Разблокировано!",
   "toast.collection.discovered": "Найдено!",

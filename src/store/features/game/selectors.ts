@@ -9,7 +9,7 @@ export const gameOutcomeSelector = (state: RootState) => state.game?.outcome;
 export const heroGameSelector = (state: RootState) => state.game?.hero;
 export const heroHealthGameSelector = (state: RootState) => state.game?.hero.health;
 export const activeEffectAnimationGameSelector = (state: RootState) => state.game?.animationEvents?.[0];
-export const isConsumingGameSelector = (state: RootState) => state.game?.animationEvents.some(event => event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon") ?? false;
+export const isConsumingGameSelector = (state: RootState) => state.game?.animationEvents.some(event => event.animation === "day0ff:animation-drain" || event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon") ?? false;
 
 export const pendingSummonsGameSelector = createSelector(gameSelector,
     game => game?.animationEvents.filter(event => event.animation === "day0ff:animation-summon") ?? [],
@@ -18,6 +18,9 @@ export const pendingSummonsGameSelector = createSelector(gameSelector,
 export const cryptWithEffectFeedbackSelector = createSelector(gameSelector, game => {
     if (!game) return undefined;
     const consuming = new Set(game.animationEvents.filter(event => event.animation === "day0ff:animation-consume").map(event => event.enemyId));
+    for (const event of game.animationEvents) {
+        if (event.animation === "day0ff:animation-drain") event.potionIds.forEach(id => consuming.add(id));
+    }
     return {...game.zones.crypt, cards: game.zones.crypt.cards.filter(card => !consuming.has(card.id))};
 });
 export const selectedCardIdGameSelector = (state: RootState) => state.game?.selectedCardId;
@@ -36,3 +39,9 @@ export const activePackSelector = createSelector(
     packsCollectionsSelector,
     (game, selected, packs) => packs.find(pack => pack.identifier === (game?.packIdentifier ?? selected)) ?? classicPack,
 );
+
+export const potionsWithEffectFeedbackSelector = createSelector(gameSelector, game => {
+    if (!game) return undefined;
+    const drain = game.animationEvents.find(event => event.animation === "day0ff:animation-drain");
+    return {...game.zones.potions, cards: drain?.potionsBefore ?? game.zones.potions.cards};
+});

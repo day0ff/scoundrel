@@ -23,7 +23,7 @@ import {
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useAppDispatch, useAppSelector } from "store/hooks.ts";
-import { gameSelector, isConsumingGameSelector, cryptWithEffectFeedbackSelector } from "store/features/game/selectors.ts";
+import { potionsWithEffectFeedbackSelector, gameSelector, isConsumingGameSelector, cryptWithEffectFeedbackSelector } from "store/features/game/selectors.ts";
 import {
   moveCard,
   playCard,
@@ -83,6 +83,7 @@ const ClassicGame: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const game = useAppSelector(gameSelector);
+  const potions = useAppSelector(potionsWithEffectFeedbackSelector);
   const consuming = useAppSelector(isConsumingGameSelector);
   const cryptFeedback = useAppSelector(cryptWithEffectFeedbackSelector);
   const pack = useAppSelector(activePackSelector);
@@ -350,7 +351,7 @@ const ClassicGame: FC = () => {
                 <CardZone
                   appendTo={appendTooltipTo}
                   framed={false}
-                  zone={game.zones.potions}
+                  zone={potions ?? game.zones.potions}
                   onAttack={handleAttack}
                   label={t("ui.zone.potions")}
                   emptyLabel={t("ui.zone.empty")}

@@ -20,7 +20,34 @@ const makeGame = (cards: PlayingCardType[]) => {
     return game;
 };
 
+export const runDrainPotionTests = () => {
+    const queen = initPasteboard("day0ff:pasteboard-skeleton.Q.skeletonQueen");
+    const roomPotion = initPasteboard("day0ff:pasteboard-heal.2");
+    const equippedPotion = initPasteboard("day0ff:pasteboard-heal.3");
+    const untouched = initPasteboard("day0ff:pasteboard-weapon.2");
+    const drainGame = makeGame([queen, roomPotion, untouched]);
+    drainGame.zones.potions.cards = [equippedPotion];
+    drainGame.selectedCardId = equippedPotion.id;
+    const health = {...drainGame.hero.health};
+    resolvePasteboardActions(drainGame, roomEntryPhase.identifier, [queen]);
+    assert.deepEqual(drainGame.zones.room.cards, [queen, untouched]);
+    assert.deepEqual(drainGame.zones.potions.cards, []);
+    assert.deepEqual(drainGame.zones.crypt.cards, [roomPotion, equippedPotion]);
+    assert.deepEqual(drainGame.hero.health, health);
+    assert.equal(drainGame.selectedCardId, undefined);
+    assert.equal(drainGame.animationEvents.length, 1);
+    const drain = drainGame.animationEvents[0];
+    assert.ok(drain.animation === "day0ff:animation-drain");
+    assert.deepEqual(drain.potionIds, [roomPotion.id, equippedPotion.id]);
+    assert.deepEqual(roomWithAttackFeedbackSelector.resultFunc(drainGame)!.cards, [queen, roomPotion, untouched]);
+    resolvePasteboardActions(drainGame, roomEntryPhase.identifier, [queen]);
+    assert.equal(drainGame.animationEvents.length, 1);
+
+    return ["Skeleton Queen drains room and equipped potions together without healing and preserves animation snapshots"];
+};
+
 export const runCardActionTests = () => {
+    runDrainPotionTests();
     const king = initPasteboard("day0ff:pasteboard-skeleton.K.skeletonKing");
     const weak = initPasteboard("day0ff:pasteboard-skeleton.2");
     const strong = {...initPasteboard("day0ff:pasteboard-skeleton.3"), strength: 20};

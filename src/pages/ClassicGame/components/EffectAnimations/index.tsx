@@ -1,3 +1,4 @@
+import DrainFeedback from "./components/DrainFeedback";
 import {useEffect, useRef, type FC} from "react";
 import {createPortal} from "react-dom";
 import {useAppDispatch, useAppSelector} from "store/hooks.ts";
@@ -20,7 +21,7 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
     const event = useAppSelector(activeEffectAnimationGameSelector);
     const animation = event && ANIMATIONS_MAP[event.animation];
     const mounted = useRef(false);
-    const roomEntry = event?.animation === "day0ff:animation-consume" || event?.animation === "day0ff:animation-summon";
+    const roomEntry = event?.animation === "day0ff:animation-drain" || event?.animation === "day0ff:animation-consume" || event?.animation === "day0ff:animation-summon";
     const paused = roomEntry && roomTransition;
 
     useEffect(() => {
@@ -56,6 +57,10 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
     }, [dispatch]);
 
     if (!event || !animation || paused) return null;
+
+    if (event.animation === "day0ff:animation-drain") {
+        return createPortal(<DrainFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+    }
 
     if (event.animation === "day0ff:animation-summon") {
         return createPortal(<SummonFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
