@@ -42,7 +42,7 @@ export type ConsumeAnimationEventType = HealthAnimationEventType & {
 export type SummonAnimationEventType = HealthAnimationEventType & {
     animation: AnimationDataType<"summon">["identifier"];
     summonerId: string;
-    summonedId: string;
+    summonedId?: string;
     roomBefore: InitPasteboardDataType<string, RankType>[];
 };
 

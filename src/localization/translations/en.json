@@ -1,4 +1,11 @@
 {
+  "card.pasteboard.skeleton.K.skeletonKing.name": "$t(pasteboard.skeleton.K.skeletonKing.name)",
+  "pasteboard.skeleton.K.skeletonKing.name": "Skeleton King",
+  "pasteboard.skeleton.K.skeletonKing.description": "Strength: {{strength}}. On entering the room, summons the strongest enemy from the crypt, adding a temporary room slot if needed.",
+  "card.pack.skeleton.name": "$t(pack.skeleton.name)",
+  "pack.skeleton.name": "Skeleton",
+  "pack.skeleton.description": "Classic decks with Skeleton King replacing the normal skeleton king.",
+
   "phase.roomEntry.name": "Room entry",
   "phase.roomEntry.description": "Trigger actions for cards entering the room.",
 

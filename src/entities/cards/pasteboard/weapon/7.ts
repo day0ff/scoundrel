@@ -2,7 +2,7 @@ import { BASE_URL } from "constants.ts";
 import { WeaponCardType } from "./types.ts";
 
 const faceBasePath = `${BASE_URL}/images/cards/base/white-paper.png`;
-const faceImagePath = `${BASE_URL}/images/decks/weapon/X.png`;
+const faceImagePath = `${BASE_URL}/images/decks/weapon/67.png`;
 const backBasePath = `${BASE_URL}/images/cards/base/white-paper.png`;
 const backImagePath = `${BASE_URL}/images/decks/weapon/back.png`;
 

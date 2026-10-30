@@ -9,6 +9,8 @@ const server = await createServer({
     appType: "custom",
 });
 try {
+    const {runPackTests: runSkeletonPackTests} = await server.ssrLoadModule("/src/entities/packs/packs.test.ts");
+    for (const name of runSkeletonPackTests()) process.stdout.write(`PASS ${name}\n`);
     const {runCardActionTests} = await server.ssrLoadModule("/src/store/features/game/card-actions.test.ts");
     for (const name of runCardActionTests()) process.stdout.write(`PASS ${name}\n`);
     const {runNecromancerTests} = await server.ssrLoadModule("/src/store/features/game/necromancer.test.ts");

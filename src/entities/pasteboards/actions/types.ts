@@ -9,6 +9,7 @@ type PasteboardActionBaseType = {
 
 export type PasteboardActionType = PasteboardActionBaseType & (
     | {type: "consumeEnemies"}
+    | {type: "summonStrongestEnemyFromCrypt"}
     | {
         type: "summon";
         identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>;

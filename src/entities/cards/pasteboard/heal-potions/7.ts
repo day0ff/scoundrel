@@ -2,7 +2,7 @@ import { BASE_URL } from "constants.ts";
 import { HealPotionCardType } from "./types.ts";
 
 const faceBasePath = `${BASE_URL}/images/cards/base/white-paper.png`;
-const faceImagePath = `${BASE_URL}/images/decks/heal-potions/X.png`;
+const faceImagePath = `${BASE_URL}/images/decks/heal-potions/67.png`;
 const backBasePath = `${BASE_URL}/images/cards/base/white-paper.png`;
 const backImagePath = `${BASE_URL}/images/decks/heal-potions/back.png`;
 

@@ -1,3 +1,4 @@
+import {skeletonPack} from "./skeleton.ts";
 import assert from "node:assert/strict";
 import {initPack} from "./constants.ts";
 import {classicPack} from "./classic.ts";
@@ -13,6 +14,11 @@ export const runPackTests = () => {
     first.decks[0].pasteboards.splice(0);
     assert.equal(second.decks[0].pasteboards.length, 13);
     assert.equal(classicPack.decks[0].cards.length, 13);
+
+    const skeleton = initPack(skeletonPack.identifier);
+    assert.deepEqual(skeleton.decks.flatMap(deck => deck.pasteboards).map(card => card.identifier),
+        second.decks.flatMap(deck => deck.pasteboards).map(card => card.identifier === "day0ff:pasteboard-skeleton.K"
+            ? "day0ff:pasteboard-skeleton.K.skeletonKing" : card.identifier));
 
     const custom = initPack(classicPack.identifier, [
         {identifier: "day0ff:deck-weapon", cards: ["day0ff:pasteboard-weapon.2", "day0ff:pasteboard-weapon.2"]},

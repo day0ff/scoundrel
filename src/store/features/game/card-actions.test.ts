@@ -7,7 +7,8 @@ import {roomEntryPhase} from "entities/phases/roomEntry.ts";
 import {beforeTurnEndPhase} from "entities/phases/beforeTurnEnd.ts";
 import {turnEndPhase} from "entities/phases/turnEnd.ts";
 import type {PlayingCardType} from "entities/game/types.ts";
-import {createGame} from "./helpers.ts";
+import {createGame, dealNextRoom} from "./helpers.ts";
+import {roomWithAttackFeedbackSelector} from "pages/ClassicGame/components/RoomZone/selectors.ts";
 import {resolvePasteboardActions} from "./card-actions.ts";
 import reducer, {startGame, endTurn, advancePhase, completeEffectAnimation} from "./index.ts";
 import {createGameLog} from "./log.ts";
@@ -20,6 +21,55 @@ const makeGame = (cards: PlayingCardType[]) => {
 };
 
 export const runCardActionTests = () => {
+    const king = initPasteboard("day0ff:pasteboard-skeleton.K.skeletonKing");
+    const weak = initPasteboard("day0ff:pasteboard-skeleton.2");
+    const strong = {...initPasteboard("day0ff:pasteboard-skeleton.3"), strength: 20};
+    const tied = {...initPasteboard("day0ff:pasteboard-skeleton.A"), strength: 20};
+    const weapon = {...initPasteboard("day0ff:pasteboard-weapon.T"), strength: 100};
+    const kingGame = makeGame([king]);
+    kingGame.zones.crypt.cards = [weapon, weak, strong, tied];
+    resolvePasteboardActions(kingGame, roomEntryPhase.identifier);
+    assert.equal(kingGame.zones.room.cards[1], strong);
+    assert.deepEqual(kingGame.zones.crypt.cards, [weapon, weak, tied]);
+    assert.equal(kingGame.animationEvents[0].animation, "day0ff:animation-summon");
+    kingGame.zones.room.capacity = 2;
+    resolvePasteboardActions(kingGame, roomEntryPhase.identifier, [king]);
+    assert.equal(kingGame.zones.room.cards.length, 3);
+    assert.equal(kingGame.zones.room.cards[2], tied);
+    assert.equal(kingGame.zones.room.capacity, 2);
+    assert.equal(roomWithAttackFeedbackSelector.resultFunc(kingGame)!.capacity, 2);
+    // Once the first animation ends, the next summon shows its extra slot.
+    kingGame.animationEvents.shift();
+    assert.equal(roomWithAttackFeedbackSelector.resultFunc(kingGame)!.capacity, 3);
+    kingGame.animationEvents = [];
+    assert.equal(roomWithAttackFeedbackSelector.resultFunc(kingGame)!.capacity, 3);
+    kingGame.zones.room.cards.pop();
+    assert.equal(roomWithAttackFeedbackSelector.resultFunc(kingGame)!.capacity, 2);
+    kingGame.zones.dungeon.cards = [weak, strong, tied];
+    dealNextRoom(kingGame, true);
+    assert.equal(kingGame.zones.room.cards.length, 2);
+    assert.equal(kingGame.zones.dungeon.cards.length, 1);
+    kingGame.zones.room.cards = [king];
+    kingGame.zones.crypt.cards = [weapon];
+    resolvePasteboardActions(kingGame, roomEntryPhase.identifier);
+    assert.equal(kingGame.zones.room.cards.length, 1);
+    const emptySummon = kingGame.animationEvents.at(-1)!;
+    assert.equal(emptySummon.animation, "day0ff:animation-summon");
+    assert.ok("summonerId" in emptySummon && emptySummon.summonerId === king.id);
+    assert.ok("summonedId" in emptySummon && emptySummon.summonedId === undefined);
+    assert.deepEqual(kingGame.zones.crypt.cards, [weapon]);
+    kingGame.zones.crypt.cards = [];
+    const eventCount = kingGame.animationEvents.length;
+    resolvePasteboardActions(kingGame, roomEntryPhase.identifier);
+    assert.equal(kingGame.animationEvents.length, eventCount + 1);
+    assert.deepEqual(kingGame.zones.room.cards, [king]);
+    assert.equal(kingGame.zones.room.capacity, 2);
+    const normalKing = initPasteboard("day0ff:pasteboard-skeleton.K");
+    kingGame.zones.room.cards = [normalKing];
+    kingGame.zones.crypt.cards = [strong];
+    resolvePasteboardActions(kingGame, roomEntryPhase.identifier);
+    assert.equal(kingGame.zones.room.cards.length, 1);
+
     // Moving the configuration onto an ordinary card must carry the behavior with it.
     const ordinary = {...initPasteboard("day0ff:pasteboard-skeleton.8"), actions: structuredClone(necromancerPasteboard.actions)};
     let game = makeGame([ordinary]);
@@ -83,7 +133,8 @@ export const runCardActionTests = () => {
     assert.equal(game.hero.health.current, 12);
     assert.ok(doesReplayMatchGame(game.log!, game));
 
-    return ["card actions are driven by configuration and phase, including multiple actions and empty action lists",
+    return ["Skeleton King summons into full rooms with temporary slots that do not change future deals",
+        "card actions are driven by configuration and phase, including multiple actions and empty action lists",
         "summoned arrivals resolve entry actions before consumption, and summoners keep independent progress",
         "end-phase effects wait for summons and replay remains deterministic"];
 };

@@ -9,12 +9,12 @@ import {summonAnimation} from "entities/animations/summon.ts";
 
 type PendingActionType = {card: PlayingCardType; action: PasteboardActionType};
 
-const queueSummonAnimation = (state: GameStateType, card: PlayingCardType, summoned: PlayingCardType) => {
+const queueSummonAnimation = (state: GameStateType, card: PlayingCardType, summoned?: PlayingCardType) => {
     state.animationEvents.push({
         id: ++state.animationSequence,
         animation: summonAnimation.identifier,
         summonerId: card.id,
-        summonedId: summoned.id,
+        summonedId: summoned?.id,
         roomBefore: state.zones.room.cards.map(item => ({...item})),
         healthBefore: {...state.hero.health},
         healthAfter: {...state.hero.health},
@@ -34,6 +34,26 @@ const summon = (state: GameStateType, card: PlayingCardType, action: Extract<Pas
     const summoned = source
         ? source.cards.splice(source.cards.findIndex(item => item.identifier === action.identifier), 1)[0]
         : {...initPasteboard(action.identifier), id: `${card.id}:${action.id}:${count}`};
+    state.zones.room.cards.push(summoned);
+    queueSummonAnimation(state, card, summoned);
+    return [summoned];
+};
+
+const summonStrongestEnemyFromCrypt = (state: GameStateType, card: PlayingCardType) => {
+    const enemies = state.zones.crypt.cards;
+    let strongestIndex = -1;
+    for (let index = 0; index < enemies.length; index++) {
+        if (enemies[index].role !== "enemy") continue;
+        if (strongestIndex === -1 || (getCardStrength(enemies[index]) ?? 0) > (getCardStrength(enemies[strongestIndex]) ?? 0)) {
+            strongestIndex = index;
+        }
+    }
+    if (strongestIndex === -1) {
+        queueSummonAnimation(state, card);
+        return [];
+    }
+    // The room selector provides temporary overflow slots without increasing future deals.
+    const [summoned] = enemies.splice(strongestIndex, 1);
     state.zones.room.cards.push(summoned);
     queueSummonAnimation(state, card, summoned);
     return [summoned];
@@ -97,7 +117,8 @@ export const resolvePasteboardActions = (
     for (const {card, action} of pending) {
         if (!state.zones.room.cards.some(item => item.id === card.id)) continue;
         const summoned = action.type === "summon" ? summon(state, card, action)
-            : action.type === "summonSequence" ? summonSequence(state, card, action) : [];
+            : action.type === "summonSequence" ? summonSequence(state, card, action)
+            : action.type === "summonStrongestEnemyFromCrypt" ? summonStrongestEnemyFromCrypt(state, card) : [];
         for (const arriving of summoned) enqueue(arriving, roomEntryPhase.identifier);
     }
     for (const {card} of consumers) {

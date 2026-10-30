@@ -1,4 +1,11 @@
 {
+  "card.pasteboard.skeleton.K.skeletonKing.name": "$t(pasteboard.skeleton.K.skeletonKing.name)",
+  "pasteboard.skeleton.K.skeletonKing.name": "Король скелетов",
+  "pasteboard.skeleton.K.skeletonKing.description": "Сила: {{strength}}. При входе в комнату призывает сильнейшего врага из склепа, при необходимости добавляя временное место в комнате.",
+  "card.pack.skeleton.name": "$t(pack.skeleton.name)",
+  "pack.skeleton.name": "Скелет",
+  "pack.skeleton.description": "Классические колоды с Королём скелетов вместо обычного скелета ранга K.",
+
   "phase.roomEntry.name": "Появление в комнате",
   "phase.roomEntry.description": "Активировать действия карт, появляющихся в комнате.",
 

@@ -1,3 +1,4 @@
+import {skeletonKingPasteboardCard} from "./SkeletonKing.ts";
 import {osteomancerPasteboardCard} from "./Osteomancer.ts";
 import {RankType} from "../../../types.ts";
 import {SkeletonCardType} from "./types.ts";
@@ -20,6 +21,7 @@ import {thingPasteboardCard} from "./Thing.ts";
 import {necromancerPasteboardCard} from "./Necromancer.ts";
 
 export const SKELETON_PASTEBOARD_CARDS_MAP = {
+    [skeletonKingPasteboardCard.identifier]: skeletonKingPasteboardCard,
     [osteomancerPasteboardCard.identifier]: osteomancerPasteboardCard,
     [thingPasteboardCard.identifier]: thingPasteboardCard,
     [necromancerPasteboardCard.identifier]: necromancerPasteboardCard,

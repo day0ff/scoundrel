@@ -10,9 +10,19 @@ const SummonFeedback: FC<SummonFeedbackPropsType> = ({event, duration}) => {
 
     useLayoutEffect(() => {
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        const card = document.querySelector<HTMLElement>(`[data-card-zone="room"] [data-card-id="${CSS.escape(event.summonedId)}"]`);
+        const card = event.summonedId
+            ? document.querySelector<HTMLElement>(`[data-card-zone="room"] [data-card-id="${CSS.escape(event.summonedId)}"]`)
+            : null;
         const summoner = document.querySelector<HTMLElement>(`[data-card-zone="room"] [data-card-id="${CSS.escape(event.summonerId)}"]`);
-        if (!card || !layer.current) return;
+        const pulse = summoner?.animate([
+            {offset: 0, transform: "translateX(0) rotate(0deg)", filter: "brightness(1)"},
+            {offset: 0.2, transform: "translateX(-3px) rotate(-2deg)", filter: "brightness(1.5) drop-shadow(0 0 18px #87ceeb)"},
+            {offset: 0.4, transform: "translateX(3px) rotate(2deg)", filter: "brightness(1.8) drop-shadow(0 0 24px #87ceeb)"},
+            {offset: 0.6, transform: "translateX(-3px) rotate(-2deg)", filter: "brightness(1.8) drop-shadow(0 0 24px #87ceeb)"},
+            {offset: 0.8, transform: "translateX(2px) rotate(1deg)", filter: "brightness(1.5) drop-shadow(0 0 18px #87ceeb)"},
+            {offset: 1, transform: "translateX(0) rotate(0deg)", filter: "brightness(1)"},
+        ], {duration, easing: "ease-in-out"});
+        if (!card || !layer.current) return () => pulse?.cancel();
         const rect = card.getBoundingClientRect();
         const ground = document.createElement("div");
         Object.assign(ground.style, {
@@ -56,14 +66,6 @@ const SummonFeedback: FC<SummonFeedbackPropsType> = ({event, duration}) => {
             {offset: 0.65, borderColor: "#87ceeb", filter: "drop-shadow(0 0 10px #87ceeb) drop-shadow(0 5px 22px #4cb5e5)"},
             {offset: 1, borderColor: "transparent", filter: "drop-shadow(0 0 0 transparent)"},
         ], {duration, easing: "ease-in-out", fill: "both"});
-        const pulse = summoner?.animate([
-            {offset: 0, transform: "translateX(0) rotate(0deg)", filter: "brightness(1)"},
-            {offset: 0.2, transform: "translateX(-3px) rotate(-2deg)", filter: "brightness(1.5) drop-shadow(0 0 18px #87ceeb)"},
-            {offset: 0.4, transform: "translateX(3px) rotate(2deg)", filter: "brightness(1.8) drop-shadow(0 0 24px #87ceeb)"},
-            {offset: 0.6, transform: "translateX(-3px) rotate(-2deg)", filter: "brightness(1.8) drop-shadow(0 0 24px #87ceeb)"},
-            {offset: 0.8, transform: "translateX(2px) rotate(1deg)", filter: "brightness(1.5) drop-shadow(0 0 18px #87ceeb)"},
-            {offset: 1, transform: "translateX(0) rotate(0deg)", filter: "brightness(1)"},
-        ], {duration, easing: "ease-in-out"});
         return () => {
             rise.cancel();
             glow.cancel();
