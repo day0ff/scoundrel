@@ -42,8 +42,6 @@ const skeletonCardsIdentifiers = [
   "day0ff:pasteboard-skeleton.F.necromancer",
   "day0ff:pasteboard-skeleton.F.necromancer",
   "day0ff:pasteboard-skeleton.F.necromancer",
-  "day0ff:pasteboard-skeleton.F.necromancer",
-  "day0ff:pasteboard-skeleton.F.necromancer",
 
   // "day0ff:pasteboard-skeleton.F.thing",
   // "day0ff:pasteboard-skeleton.F.osteomancer",
@@ -72,8 +70,8 @@ export const necromancerPack = {
   dungeon: `${BASE_URL}/images/packs/necromancer/dungen.png`,
   discard: `${BASE_URL}/images/packs/necromancer/discard.png`,
   crypt: `${BASE_URL}/images/packs/necromancer/crypt.png`,
-  isLocked: true,
-  isNotFound: true,
+  isLocked: false,
+  isNotFound: false,
   condition: {
     description: "pack.necromancer.unlock.description",
     unlock: { type: "enemiesDefeated", suit: "skeleton", count: 100 },

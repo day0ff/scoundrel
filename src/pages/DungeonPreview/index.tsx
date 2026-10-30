@@ -5,7 +5,6 @@ import {useAppDispatch, useAppSelector} from "store/hooks.ts";
 import {activePackSelector, gameSelector} from "store/features/game/selectors.ts";
 import {startGame} from "store/features/game";
 import {resetSelectedDungeon} from "store/features/game/actions.ts";
-import {hasBeatenClassicPackSelector} from "store/features/collections/selectors.ts";
 import MenuButton from "pages/MainMenu/components/MenuButton";
 import DungeonRooms from "components/DungeonRooms";
 import PackBackground from "componentsShared/PackBackground";
@@ -16,7 +15,6 @@ const DungeonPreview: FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const game = useAppSelector(gameSelector);
-    const hasBeatenClassicPack = useAppSelector(hasBeatenClassicPackSelector);
     const pack = useAppSelector(activePackSelector);
     const previewRef = useRef<HTMLElement>(null);
     const initialized = useRef(false);
@@ -39,8 +37,8 @@ const DungeonPreview: FC = () => {
                 <MenuButton value="ui.dungeonRooms.enter" autoFocus data-page-autofocus onClick={enterDungeon}/>
                 <MenuButton value="ui.dungeonRooms.reroll" onClick={() => dispatch(resetSelectedDungeon(game?.hero.identifier))}/>
                 <MenuButton
-                    value={hasBeatenClassicPack ? "ui.dungeonRooms.back" : "page.not-found.back-home"}
-                    to={hasBeatenClassicPack ? "/pack-selection" : "/main-menu"}
+                    value={"ui.dungeonRooms.back"}
+                    to={"/pack-selection"}
                 />
             </ActionsStyled>
         </DungeonPreviewStyled>
