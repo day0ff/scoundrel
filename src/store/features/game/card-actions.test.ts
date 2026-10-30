@@ -1,3 +1,4 @@
+import {pendingSummonsGameSelector} from "./selectors.ts";
 import {BASE_URL} from "constants.ts";
 import {arrivingCardSelector} from "pages/ClassicGame/components/EffectAnimations/selectors.ts";
 import {getPasteboardActions} from "entities/pasteboards/constants.ts";
@@ -274,4 +275,51 @@ export const runDarkDragonHatchTests = () => {
     assert.equal(roar.phase, roomEntryPhase.identifier);
     assert.equal(roar.url, `${BASE_URL}/sounds/roar-dark-dragon.mp3`);
     return ["Dark Lord egg hatches a Dark Dragon with its room-entry roar"];
+};
+
+export const runDarkLordCallTests = () => {
+    for (const full of [false, true]) {
+        const lord = initPasteboard("day0ff:pasteboard-dark.K.darkLord");
+        const game = makeGame([lord]);
+        const capacity = game.zones.room.capacity;
+        if (full) {
+            while (game.zones.room.cards.length < capacity) {
+                game.zones.room.cards.push(initPasteboard("day0ff:pasteboard-dark.2"));
+            }
+        }
+        const before = game.zones.room.cards.length;
+        const existingDragon = initPasteboard("day0ff:pasteboard-dark.A.darkDragon");
+        game.zones.crypt.cards = [existingDragon];
+        resolvePasteboardActions(game, roomEntryPhase.identifier, [lord]);
+        const dragon = game.zones.room.cards.at(-1)!;
+        assert.equal(game.zones.room.cards.length, before + 1);
+        assert.equal(game.zones.room.capacity, capacity);
+        assert.equal(dragon.identifier, existingDragon.identifier);
+        assert.notEqual(dragon.id, existingDragon.id);
+        assert.deepEqual(game.zones.crypt.cards, [existingDragon]);
+        const event = game.animationEvents[0];
+        assert.ok(event.animation === "day0ff:animation-call");
+        assert.equal(event.summonerId, lord.id);
+        assert.equal(event.summonedId, dragon.id);
+        assert.equal(event.animationCardId, lord.id);
+        assert.deepEqual(event.actionAnimation, lord.actions?.[0].animation);
+        const displayed = roomWithAttackFeedbackSelector.resultFunc(game)!;
+        assert.equal(displayed.capacity, Math.max(capacity, before + 1));
+        assert.equal(displayed.cards.at(-1)!.id, dragon.id);
+        assert.equal(pendingSummonsGameSelector.resultFunc(game)[0].summonedId, dragon.id);
+        assert.equal(arrivingCardSelector.resultFunc(event, game.zones)?.id, dragon.id);
+        const roar = getPasteboardActions(dragon).find(action => action.type === "playSound");
+        assert.ok(roar?.type === "playSound");
+        assert.equal(roar.url, `${BASE_URL}/sounds/roar-dark-dragon.mp3`);
+        assert.equal(roar.phase, roomEntryPhase.identifier);
+        const replay = structuredClone(game);
+        game.animationEvents = [];
+        replay.animationEvents = [];
+        resolvePasteboardActions(game, roomEntryPhase.identifier, [lord]);
+        resolvePasteboardActions(replay, roomEntryPhase.identifier, [replay.zones.room.cards[0]]);
+        assert.deepEqual(game.animationEvents, replay.animationEvents);
+        const ids = game.zones.room.cards.map(card => card.id);
+        assert.equal(new Set(ids).size, ids.length);
+    }
+    return ["Dark Lord calls new roaring dragons into empty or temporary overflow slots with deterministic IDs"];
 };

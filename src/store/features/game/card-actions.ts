@@ -41,6 +41,24 @@ const summon = (state: GameStateType, card: PlayingCardType, action: Extract<Pas
     return [summoned];
 };
 
+const call = (state: GameStateType, card: PlayingCardType, action: Extract<PasteboardActionType, {type: "call"}>) => {
+    const count = nextSummonNumber(card, action);
+    const summoned = {...initPasteboard(action.identifier), id: `${card.id}:${action.id}:${count}`};
+    state.zones.room.cards.push(summoned);
+    state.animationEvents.push({
+        id: ++state.animationSequence,
+        animation: "day0ff:animation-call",
+        summonerId: card.id,
+        summonedId: summoned.id,
+        animationCardId: card.id,
+        actionAnimation: action.animation,
+        roomBefore: state.zones.room.cards.map(item => ({...item})),
+        healthBefore: {...state.hero.health},
+        healthAfter: {...state.hero.health},
+    });
+    return [summoned];
+};
+
 const summonStrongestEnemyFromCrypt = (state: GameStateType, card: PlayingCardType, action: PasteboardActionType) => {
     const enemies = state.zones.crypt.cards;
     let strongestIndex = -1;
@@ -143,7 +161,8 @@ export const resolvePasteboardActions = (
     for (const {card, action} of pending) {
         if (!state.zones.room.cards.some(item => item.id === card.id)) continue;
         if (action.type === "drainPotions") drainPotions(state, card, action);
-        const summoned = action.type === "summon" ? summon(state, card, action)
+        const summoned = action.type === "call" ? call(state, card, action)
+            : action.type === "summon" ? summon(state, card, action)
             : action.type === "summonSequence" ? summonSequence(state, card, action)
             : action.type === "summonStrongestEnemyFromCrypt" ? summonStrongestEnemyFromCrypt(state, card, action) : [];
         for (const arriving of summoned) enqueue(arriving, roomEntryPhase.identifier);

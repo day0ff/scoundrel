@@ -6,7 +6,7 @@ export const arrivingCardSelector = createSelector(
     zonesGameSelector,
     (event, zones) => {
         const id = event?.animation === "day0ff:animation-hatch" ? event.hatchlingId
-            : event?.animation === "day0ff:animation-summon" ? event.summonedId : undefined;
+            : (event?.animation === "day0ff:animation-summon" || event?.animation === "day0ff:animation-call") ? event.summonedId : undefined;
         return id ? zones?.room.cards.find(card => card.id === id) : undefined;
     },
 );

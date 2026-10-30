@@ -1,4 +1,8 @@
 {
+  "animation.call.name": "Зов",
+  "animation.call.description": "Светящееся существо влетает в комнату из-за края экрана.",
+  "pasteboard.dark.K.darkLord.name": "Тёмный лорд",
+  "pasteboard.dark.K.darkLord.description": "При входе в комнату зовёт Тёмного дракона, при необходимости добавляя временное место в комнате.",
   "pasteboard.dark.A.darkDragon.name": "Тёмный дракон",
   "pasteboard.dark.A.darkDragon.description": "<rank>A</rank><suit>dark</suit> Тёмный дракон",
   "card.pasteboard.skeleton.A.skeletonDragon.name": "$t(pasteboard.skeleton.A.skeletonDragon.name)",

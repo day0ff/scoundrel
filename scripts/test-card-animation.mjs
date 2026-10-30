@@ -65,10 +65,20 @@ try {
     assert.deepEqual(game.animationEvents[0].actionAnimation, settings);
     console.log("PASS Dark Lord action settings reach the animation event");
 
-    const {runDrainPotionTests, runEggHatchTests, runDarkDragonHatchTests} = await server.ssrLoadModule("/src/store/features/game/card-actions.test.ts");
+    const {runDrainPotionTests, runEggHatchTests, runDarkDragonHatchTests, runDarkLordCallTests} = await server.ssrLoadModule("/src/store/features/game/card-actions.test.ts");
     for (const name of runDrainPotionTests()) console.log("PASS", name);
     for (const name of runEggHatchTests()) console.log("PASS", name);
     for (const name of runDarkDragonHatchTests()) console.log("PASS", name);
+    for (const name of runDarkLordCallTests()) console.log("PASS", name);
+    const {CALL_SOUND} = await server.ssrLoadModule("/src/pages/ClassicGame/components/EffectAnimations/components/CallFeedback/constants.ts");
+    const {BASE_URL} = await server.ssrLoadModule("/src/constants.ts");
+    assert.equal(CALL_SOUND, `${BASE_URL}/sounds/call-1.mp3`);
+    const {getCallFlightFrames} = await server.ssrLoadModule("/src/pages/ClassicGame/components/EffectAnimations/components/CallFeedback/helpers.ts");
+    const flight = getCallFlightFrames({left: 300, top: 200, width: 100, height: 150}, 1280);
+    assert.match(flight[0].transform, /translate\(1180px, -500px\)/);
+    assert.match(flight[1].filter, /whitesmoke/);
+    assert.equal(flight.at(-1).transform, "translate(0, 0) scale(1) rotate(0deg)");
+    console.log("PASS call flight begins outside the viewport and lands in the room slot");
 } finally {
     Object.assign(globalThis, original);
     await server.close();

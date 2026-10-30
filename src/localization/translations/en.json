@@ -1,4 +1,8 @@
 {
+  "animation.call.name": "Call",
+  "animation.call.description": "A glowing creature flies in from beyond the screen into the room.",
+  "pasteboard.dark.K.darkLord.name": "Dark Lord",
+  "pasteboard.dark.K.darkLord.description": "On entering the room, calls a Dark Dragon, adding a temporary room slot if needed.",
   "pasteboard.dark.A.darkDragon.name": "Dark Dragon",
   "pasteboard.dark.A.darkDragon.description": "<rank>A</rank><suit>dark</suit> Dark Dragon",
   "card.pasteboard.skeleton.A.skeletonDragon.name": "$t(pasteboard.skeleton.A.skeletonDragon.name)",

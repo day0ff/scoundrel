@@ -21,6 +21,7 @@ export type PasteboardActionType = PasteboardActionBaseType & (
     | {type: "drainPotions"}
     | {type: "hatchOnAttack"; identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>}
     | {type: "summonStrongestEnemyFromCrypt"}
+    | {type: "call"; identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>}
     | {
         type: "summon";
         identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>;

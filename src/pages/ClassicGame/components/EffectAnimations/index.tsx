@@ -1,3 +1,4 @@
+import CallFeedback from "./components/CallFeedback";
 import {usePasteboardActionAnimation} from "hooks/usePasteboardActionAnimation.ts";
 import {usePasteboardSoundAction} from "hooks/usePasteboardSoundAction.ts";
 import {getPasteboardActions} from "entities/pasteboards/constants.ts";
@@ -29,13 +30,13 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
     const arrivingCard = useAppSelector(arrivingCardSelector);
     const animation = event && ANIMATIONS_MAP[event.animation];
     const mounted = useRef(false);
-    const roomEntry = event?.animation === "day0ff:animation-drain" || event?.animation === "day0ff:animation-consume" || event?.animation === "day0ff:animation-summon";
+    const roomEntry = event?.animation === "day0ff:animation-drain" || event?.animation === "day0ff:animation-consume" || event?.animation === "day0ff:animation-summon" || event?.animation === "day0ff:animation-call";
     const paused = roomEntry && roomTransition;
     usePasteboardActionAnimation(paused ? undefined : event?.animationCardId, event?.actionAnimation, animation?.durationMs ?? 0);
 
     useEffect(() => {
         if (!event || !animation || paused) return;
-        const duration = roomEntry && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : animation.durationMs;
+        const duration = roomEntry && event.animation !== "day0ff:animation-call" && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : animation.durationMs;
         const timeout = setTimeout(() => {
             dispatch(completeEffectAnimation(event.id));
             if (arrivingCard) {
@@ -82,6 +83,10 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
 
     if (event.animation === "day0ff:animation-drain") {
         return createPortal(<DrainFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+    }
+
+    if (event.animation === "day0ff:animation-call") {
+        return createPortal(<CallFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
     }
 
     if (event.animation === "day0ff:animation-summon") {

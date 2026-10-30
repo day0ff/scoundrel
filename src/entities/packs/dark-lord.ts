@@ -28,6 +28,7 @@ const darkLordCardsIdentifiers = [
   // "day0ff:pasteboard-dark.J",
   // "day0ff:pasteboard-dark.Q",
   // "day0ff:pasteboard-dark.K",
+  "day0ff:pasteboard-dark.K.darkLord",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 const healPotionsCardsIdentifiers = [

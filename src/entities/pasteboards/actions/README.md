@@ -27,3 +27,20 @@ its UI unmounts, restoring the normal border and appearance.
 
 These settings control the acting card's visuals. Scene effects such as summoned
 cards rising, egg shells cracking, and potion particles keep their own styling.
+
+
+Use a `call` action to create a new card and fly it into the room from outside
+the screen. It uses `call-1.mp3`, then runs the arriving card's room-entry sound
+actions (such as a dragon's roar). The room displays a temporary extra slot if
+full; its configured capacity stays unchanged. Unlike `summon`, `call` always
+creates a new card rather than retrieving an existing one.
+
+```ts
+{
+    id: "callDragon",
+    phase: roomEntryPhase.identifier,
+    type: "call",
+    identifier: "day0ff:pasteboard-dark.A.darkDragon",
+    animation: {borderColor: "whitesmoke", glowColor: "whitesmoke", swing: true},
+}
+```

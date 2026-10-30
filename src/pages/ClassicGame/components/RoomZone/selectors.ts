@@ -10,8 +10,8 @@ export const roomWithAttackFeedbackSelector = createSelector(
     gameSelector,
     (game) => {
         if (!game) return undefined;
-        const entry = game.animationEvents.find(event => event.animation === "day0ff:animation-drain" || event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon");
-        if (entry?.animation === "day0ff:animation-drain" || entry?.animation === "day0ff:animation-consume" || entry?.animation === "day0ff:animation-summon") {
+        const entry = game.animationEvents.find(event => event.animation === "day0ff:animation-drain" || event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon" || event.animation === "day0ff:animation-call");
+        if (entry?.animation === "day0ff:animation-drain" || entry?.animation === "day0ff:animation-consume" || entry?.animation === "day0ff:animation-summon" || entry?.animation === "day0ff:animation-call") {
             return {...game.zones.room, cards: entry.roomBefore, capacity: Math.max(game.zones.room.capacity, entry.roomBefore.length)};
         }
         // Until the attack finishes, show the egg in place of its queued hatchling.
