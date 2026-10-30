@@ -70,8 +70,8 @@ export const skeletonPack = {
   isNotFound: true,
   condition: {
     description: "pack.sceleton.unlock.description",
-    unlock: { type: "gamesWon", count: 1 },
-    discover: { type: "gamesWon", count: 1 },
+    unlock: { type: "enemiesDefeated", count: 100 },
+    discover: { type: "enemiesDefeated", count: 100 },
   },
   decks: [
     { identifier: "day0ff:deck-skeleton", cards: skeletonCardsIdentifiers },

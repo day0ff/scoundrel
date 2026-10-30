@@ -60,9 +60,6 @@ const weaponCardsIdentifiers = [
   "day0ff:pasteboard-weapon.8",
   "day0ff:pasteboard-weapon.9",
   "day0ff:pasteboard-weapon.T",
-  // "day0ff:pasteboard-weapon.J",
-  // "day0ff:pasteboard-weapon.Q",
-  // "day0ff:pasteboard-weapon.K",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 export const classicPack = {

@@ -70,12 +70,12 @@ export const necromancerPack = {
   dungeon: `${BASE_URL}/images/packs/necromancer/dungen.png`,
   discard: `${BASE_URL}/images/packs/necromancer/discard.png`,
   crypt: `${BASE_URL}/images/packs/necromancer/crypt.png`,
-  isLocked: false,
-  isNotFound: false,
+  isLocked: true,
+  isNotFound: true,
   condition: {
     description: "pack.necromancer.unlock.description",
-    unlock: { type: "enemiesDefeated", suit: "skeleton", count: 100 },
-    discover: { type: "enemiesDefeated", suit: "skeleton", count: 100 },
+    unlock: { type: "enemiesDefeated", suit: "skeleton", count: 200 },
+    discover: { type: "enemiesDefeated", suit: "skeleton", count: 200 },
   },
   decks: [
     { identifier: "day0ff:deck-skeleton", cards: skeletonCardsIdentifiers },

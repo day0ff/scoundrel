@@ -2,8 +2,10 @@ import {skeletonPackCard} from "./skeleton.ts";
 import type {PackCardType} from "./types.ts";
 import {classicPackCard} from "./classic.ts";
 import {necromancerPackCard} from "./necromancer.ts";
+import {darkLordPackCard} from "./dark-lord.ts";
 
 export const PACKS_CARDS_MAP = {
+    [darkLordPackCard.identifier]: darkLordPackCard,
     [skeletonPackCard.identifier]: skeletonPackCard,
     [classicPackCard.identifier]: classicPackCard,
     [necromancerPackCard.identifier]: necromancerPackCard,

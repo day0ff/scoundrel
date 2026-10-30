@@ -18,7 +18,9 @@ export const isConditionSatisfied = (condition: CollectionConditionType, progres
             return completed >= condition.count;
         }
         case "enemiesDefeated":
-            return (progress.enemiesDefeated[condition.suit] ?? 0) >= condition.count;
+            return (condition.suit
+                ? progress.enemiesDefeated[condition.suit] ?? 0
+                : Object.values(progress.enemiesDefeated).reduce((total, count) => total + count, 0)) >= condition.count;
     }
 };
 
