@@ -65,9 +65,10 @@ try {
     assert.deepEqual(game.animationEvents[0].actionAnimation, settings);
     console.log("PASS Dark Lord action settings reach the animation event");
 
-    const {runDrainPotionTests, runEggHatchTests} = await server.ssrLoadModule("/src/store/features/game/card-actions.test.ts");
+    const {runDrainPotionTests, runEggHatchTests, runDarkDragonHatchTests} = await server.ssrLoadModule("/src/store/features/game/card-actions.test.ts");
     for (const name of runDrainPotionTests()) console.log("PASS", name);
     for (const name of runEggHatchTests()) console.log("PASS", name);
+    for (const name of runDarkDragonHatchTests()) console.log("PASS", name);
 } finally {
     Object.assign(globalThis, original);
     await server.close();

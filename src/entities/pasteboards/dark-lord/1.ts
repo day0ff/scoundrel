@@ -16,7 +16,7 @@ export const oneDarkLordPasteboard = {
       id: "hatchDragon",
       phase: "day0ff:phase-playerAction",
       type: "hatchOnAttack",
-      identifier: "day0ff:pasteboard-dark.A",
+      identifier: "day0ff:pasteboard-dark.A.darkDragon",
     },
   ],
   isLocked: false,

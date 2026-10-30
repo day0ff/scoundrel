@@ -1,4 +1,6 @@
 {
+  "pasteboard.dark.A.darkDragon.name": "Dark Dragon",
+  "pasteboard.dark.A.darkDragon.description": "<rank>A</rank><suit>dark</suit> Dark Dragon",
   "card.pasteboard.skeleton.A.skeletonDragon.name": "$t(pasteboard.skeleton.A.skeletonDragon.name)",
   "pasteboard.skeleton.A.skeletonDragon.name": "Skeleton Dragon",
   "pasteboard.skeleton.A.skeletonDragon.description": "<rank>A</rank><suit>skeleton</suit> Skeleton Dragon",

@@ -77,12 +77,10 @@ export const necromancerPack = {
     unlock: [
       { type: "packUnlocked", packIdentifier: "day0ff:pack-skeleton" },
       { type: "enemiesDefeated", suit: "skeleton", count: 200 },
-      { type: "gamesWon", count: 1 },
     ],
     discover: [
       { type: "packUnlocked", packIdentifier: "day0ff:pack-skeleton" },
       { type: "enemiesDefeated", suit: "skeleton", count: 200 },
-      { type: "gamesWon", count: 1 },
     ],
   },
   decks: [

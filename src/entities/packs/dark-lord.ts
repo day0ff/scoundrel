@@ -26,8 +26,8 @@ const darkLordCardsIdentifiers = [
   // "day0ff:pasteboard-dark.9",
   // "day0ff:pasteboard-dark.T",
   // "day0ff:pasteboard-dark.J",
-  "day0ff:pasteboard-dark.Q",
-  "day0ff:pasteboard-dark.K",
+  // "day0ff:pasteboard-dark.Q",
+  // "day0ff:pasteboard-dark.K",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 const healPotionsCardsIdentifiers = [
@@ -40,7 +40,7 @@ const healPotionsCardsIdentifiers = [
   // "day0ff:pasteboard-heal.7",
   // "day0ff:pasteboard-heal.8",
   // "day0ff:pasteboard-heal.9",
-  "day0ff:pasteboard-heal.T",
+  // "day0ff:pasteboard-heal.T",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 const weaponCardsIdentifiers = [
@@ -53,7 +53,7 @@ const weaponCardsIdentifiers = [
   // "day0ff:pasteboard-weapon.7",
   // "day0ff:pasteboard-weapon.8",
   // "day0ff:pasteboard-weapon.9",
-  "day0ff:pasteboard-weapon.T",
+  // "day0ff:pasteboard-weapon.T",
 ] as const satisfies Array<PasteboardDataType<string, RankType>["identifier"]>;
 
 export const darkLordPack = {

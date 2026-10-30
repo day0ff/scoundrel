@@ -250,3 +250,28 @@ export const runEggHatchTests = () => {
     assert.equal(other.zones.room.cards[0].identifier, "day0ff:pasteboard-skeleton.A.skeletonDragon");
     return ["egg hatches once when attacked, preserving its room slot and preventing premature victory"];
 };
+
+
+export const runDarkDragonHatchTests = () => {
+    const egg = initPasteboard("day0ff:pasteboard-dark.1");
+    const game = makeGame([egg]);
+    game.currentPhase = game.phaseLifecycle.waitingPhase;
+    const fist = initPasteboard("day0ff:pasteboard-fist.0");
+    game.zones.weapons.cards = [fist];
+    applyAttack(game, fist.id, egg.id);
+    const dragon = game.zones.room.cards[0];
+    assert.equal(dragon.identifier, "day0ff:pasteboard-dark.A.darkDragon");
+    assert.equal(dragon.rank, "A");
+    assert.equal(dragon.suit, "dark");
+    assert.equal(dragon.strength, initPasteboard("day0ff:pasteboard-dark.A").strength);
+    const hatch = game.animationEvents.find(event => event.animation === "day0ff:animation-hatch");
+    assert.ok(hatch);
+    assert.equal(hatch.hatchlingId, dragon.id);
+    const arriving = arrivingCardSelector.resultFunc(hatch, game.zones);
+    assert.ok(arriving);
+    const roar = getPasteboardActions(arriving).find(action => action.id === "roar");
+    assert.ok(roar?.type === "playSound");
+    assert.equal(roar.phase, roomEntryPhase.identifier);
+    assert.equal(roar.url, `${BASE_URL}/sounds/roar-dark-dragon.mp3`);
+    return ["Dark Lord egg hatches a Dark Dragon with its room-entry roar"];
+};
