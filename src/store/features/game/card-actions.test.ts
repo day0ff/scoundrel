@@ -1,3 +1,6 @@
+import {BASE_URL} from "constants.ts";
+import {arrivingCardSelector} from "pages/ClassicGame/components/EffectAnimations/selectors.ts";
+import {getPasteboardActions} from "entities/pasteboards/constants.ts";
 import {applyAttack} from "./attack.ts";
 import assert from "node:assert/strict";
 import {getSeededRandom} from "helpers/getSeededRandom.ts";
@@ -39,6 +42,9 @@ export const runDrainPotionTests = () => {
     assert.equal(drainGame.animationEvents.length, 1);
     const drain = drainGame.animationEvents[0];
     assert.ok(drain.animation === "day0ff:animation-drain");
+    assert.equal(drain.drainerId, queen.id);
+    assert.equal(drain.animationCardId, queen.id);
+    assert.deepEqual(drain.actionAnimation, queen.actions?.[0].animation);
     assert.deepEqual(drain.potionIds, [roomPotion.id, equippedPotion.id]);
     assert.deepEqual(roomWithAttackFeedbackSelector.resultFunc(drainGame)!.cards, [queen, roomPotion, untouched]);
     resolvePasteboardActions(drainGame, roomEntryPhase.identifier, [queen]);
@@ -178,7 +184,8 @@ export const runEggHatchTests = () => {
     applyAttack(game, fist.id, egg.id);
     assert.equal(game.zones.room.cards.length, 2);
     assert.equal(game.zones.room.cards[0].id, neighbor.id);
-    assert.equal(game.zones.room.cards[1].identifier, "day0ff:pasteboard-skeleton.A");
+    assert.equal(game.zones.room.cards[1].identifier, "day0ff:pasteboard-skeleton.A.skeletonDragon");
+    assert.equal(game.zones.room.cards[1].strength, initPasteboard("day0ff:pasteboard-skeleton.A").strength);
     assert.equal(game.zones.crypt.cards[0].id, egg.id);
     assert.deepEqual(game.animationEvents.map(event => event.animation), ["day0ff:animation-attack", "day0ff:animation-hatch"]);
     assert.deepEqual(roomWithAttackFeedbackSelector.resultFunc(game)!.cards.map(card => card.id), [neighbor.id, egg.id]);
@@ -186,6 +193,13 @@ export const runEggHatchTests = () => {
     assert.ok(event.animation === "day0ff:animation-hatch");
     assert.equal(event.egg.id, egg.id);
     assert.equal(event.hatchlingId, game.zones.room.cards[1].id);
+    const arriving = arrivingCardSelector.resultFunc(event, game.zones);
+    assert.ok(arriving);
+    const roar = getPasteboardActions(arriving).find(action => action.id === "roar");
+    assert.ok(roar?.type === "playSound");
+    assert.equal(roar.phase, roomEntryPhase.identifier);
+    assert.equal(roar.url, `${BASE_URL}/sounds/roar-skelton-dragon.mp3`);
+    assert.deepEqual(roar.animation, {borderColor: "skyblue", glowColor: "skyblue", shake: true});
     assert.equal(game.outcome, undefined);
     applyAttack(game, fist.id, game.zones.room.cards[1].id);
     assert.equal(game.zones.room.cards.length, 2);
@@ -200,7 +214,7 @@ export const runEggHatchTests = () => {
     assert.ok(game.zones.room.cards.some(card => card.id === egg.id));
     game.animationEvents = [];
     applyAttack(game, fist.id, egg.id);
-    const dragons = game.zones.room.cards.filter(card => card.identifier === "day0ff:pasteboard-skeleton.A");
+    const dragons = game.zones.room.cards.filter(card => card.identifier === "day0ff:pasteboard-skeleton.A.skeletonDragon");
     assert.equal(dragons.length, 2);
     assert.equal(dragons[0].id, firstDragonId);
     assert.notEqual(dragons[0].id, dragons[1].id);
@@ -233,6 +247,6 @@ export const runEggHatchTests = () => {
     other.currentPhase = other.phaseLifecycle.waitingPhase;
     other.zones.weapons.cards = [fist];
     applyAttack(other, fist.id, configured.id);
-    assert.equal(other.zones.room.cards[0].identifier, "day0ff:pasteboard-skeleton.A");
+    assert.equal(other.zones.room.cards[0].identifier, "day0ff:pasteboard-skeleton.A.skeletonDragon");
     return ["egg hatches once when attacked, preserving its room slot and preventing premature victory"];
 };

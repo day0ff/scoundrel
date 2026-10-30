@@ -1,3 +1,8 @@
+import {usePasteboardActionAnimation} from "hooks/usePasteboardActionAnimation.ts";
+import {usePasteboardSoundAction} from "hooks/usePasteboardSoundAction.ts";
+import {getPasteboardActions} from "entities/pasteboards/constants.ts";
+import {roomEntryPhase} from "entities/phases/roomEntry.ts";
+import {arrivingCardSelector} from "./selectors.ts";
 import HatchFeedback from "./components/HatchFeedback";
 import DrainFeedback from "./components/DrainFeedback";
 import {useEffect, useRef, type FC} from "react";
@@ -19,17 +24,29 @@ import type {EffectAnimationsPropsType} from "./types.ts";
 const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
     const dispatch = useAppDispatch();
     const audio = useAudioManager();
+    const playCardSound = usePasteboardSoundAction();
     const event = useAppSelector(activeEffectAnimationGameSelector);
+    const arrivingCard = useAppSelector(arrivingCardSelector);
     const animation = event && ANIMATIONS_MAP[event.animation];
     const mounted = useRef(false);
     const roomEntry = event?.animation === "day0ff:animation-drain" || event?.animation === "day0ff:animation-consume" || event?.animation === "day0ff:animation-summon";
     const paused = roomEntry && roomTransition;
+    usePasteboardActionAnimation(paused ? undefined : event?.animationCardId, event?.actionAnimation, animation?.durationMs ?? 0);
 
     useEffect(() => {
         if (!event || !animation || paused) return;
         const duration = roomEntry && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : animation.durationMs;
         const timeout = setTimeout(() => {
             dispatch(completeEffectAnimation(event.id));
+            if (arrivingCard) {
+                for (const action of getPasteboardActions(arrivingCard)) {
+                    if (action.type === "playSound" && action.phase === roomEntryPhase.identifier) {
+                        void playCardSound(arrivingCard.id, action).catch((error: unknown) => {
+                            console.warn("Unable to play card arrival sound", error);
+                        });
+                    }
+                }
+            }
             if (event.animation === "day0ff:animation-summon"
                 && event.roomBefore.some(card => card.id === event.summonedId && card.identifier === thingPasteboard.identifier)) {
                 void audio.playSound({url: THING_DEAL_SOUND}).catch((error: unknown) => {
@@ -44,7 +61,7 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
             }
         }, duration);
         return () => clearTimeout(timeout);
-    }, [audio, dispatch, event, animation, paused, roomEntry]);
+    }, [audio, dispatch, event, animation, paused, roomEntry, arrivingCard, playCardSound]);
 
     useEffect(() => {
         mounted.current = true;

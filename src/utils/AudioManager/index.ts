@@ -84,6 +84,8 @@ export class AudioManager {
         source.connect(gain);
         gain.connect(this.masterGain!);
         let finished = false;
+        let resolveFinished!: () => void;
+        const completion = new Promise<void>(resolve => { resolveFinished = resolve; });
         const cleanup = () => {
             if (finished) return;
             finished = true;
@@ -91,8 +93,11 @@ export class AudioManager {
             source.disconnect();
             gain.disconnect();
             this.playbacks.delete(playback);
+            resolveFinished();
         };
         const playback: SoundPlaybackType = {
+            durationMs: buffer.duration * 1000,
+            finished: completion,
             stop: () => {
                 if (finished) return;
                 try {

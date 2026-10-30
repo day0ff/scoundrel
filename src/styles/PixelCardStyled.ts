@@ -467,7 +467,7 @@ export const getPixelCardPathBySizeStyle = ({$size, $width = 4}: {
     return CornerWidthAndSizeMap[width][size] ?? CornerWidthAndSizeMap[4][8];
 }
 
-export const PixelCardStyled = styled.div<{ $color?: string; $size?: CornerSizeType; $width?: CornerWidthType; }>`
+export const PixelCardStyled = styled.div.attrs<{"data-pixel-card": string}>({"data-pixel-card": ""})<{ $color?: string; $size?: CornerSizeType; $width?: CornerWidthType; }>`
     ${getPixelCardPathBySizeStyle};
 
     &::after {

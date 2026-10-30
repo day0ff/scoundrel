@@ -1,3 +1,4 @@
+import type {PasteboardActionAnimationType} from "entities/pasteboards/actions/types.ts";
 import type {TranslationKeysType} from "localization/types.ts";
 import type {InitPasteboardDataType} from "entities/pasteboards/types.ts";
 import type {IdentifierType, RankType, StatType} from "entities/types.ts";
@@ -15,6 +16,8 @@ export type AnimationType<Identifier extends string, Type extends string> = {
 export type AnimationDataType<Type extends string> = AnimationType<"animation", Type>;
 
 type HealthAnimationEventType = {
+    animationCardId?: string;
+    actionAnimation?: PasteboardActionAnimationType;
     id: number;
     healthBefore: StatType;
     healthAfter: StatType;
@@ -48,6 +51,7 @@ export type SummonAnimationEventType = HealthAnimationEventType & {
 
 export type DrainAnimationEventType = HealthAnimationEventType & {
     animation: AnimationDataType<"drain">["identifier"];
+    drainerId?: string;
     potionIds: string[];
     roomBefore: InitPasteboardDataType<string, RankType>[];
     potionsBefore: InitPasteboardDataType<string, RankType>[];

@@ -5,5 +5,7 @@ export type PlaySoundOptionsType = {
 };
 
 export type SoundPlaybackType = {
+    durationMs: number;
+    finished: Promise<void>;
     stop: () => void;
 };

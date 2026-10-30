@@ -1,4 +1,7 @@
 {
+  "card.pasteboard.skeleton.A.skeletonDragon.name": "$t(pasteboard.skeleton.A.skeletonDragon.name)",
+  "pasteboard.skeleton.A.skeletonDragon.name": "Skeleton Dragon",
+  "pasteboard.skeleton.A.skeletonDragon.description": "<rank>A</rank><suit>skeleton</suit> Skeleton Dragon",
   "animation.hatch.name": "Hatch",
   "animation.hatch.description": "An egg splits in half to reveal its hatchling.",
   "card.pasteboard.skeleton.Q.skeletonQueen.name": "$t(pasteboard.skeleton.Q.skeletonQueen.name)",

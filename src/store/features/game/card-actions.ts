@@ -9,11 +9,13 @@ import {summonAnimation} from "entities/animations/summon.ts";
 
 type PendingActionType = {card: PlayingCardType; action: PasteboardActionType};
 
-const queueSummonAnimation = (state: GameStateType, card: PlayingCardType, summoned?: PlayingCardType) => {
+const queueSummonAnimation = (state: GameStateType, card: PlayingCardType, action: PasteboardActionType, summoned?: PlayingCardType) => {
     state.animationEvents.push({
         id: ++state.animationSequence,
         animation: summonAnimation.identifier,
         summonerId: card.id,
+        animationCardId: card.id,
+        actionAnimation: action.animation,
         summonedId: summoned?.id,
         roomBefore: state.zones.room.cards.map(item => ({...item})),
         healthBefore: {...state.hero.health},
@@ -35,11 +37,11 @@ const summon = (state: GameStateType, card: PlayingCardType, action: Extract<Pas
         ? source.cards.splice(source.cards.findIndex(item => item.identifier === action.identifier), 1)[0]
         : {...initPasteboard(action.identifier), id: `${card.id}:${action.id}:${count}`};
     state.zones.room.cards.push(summoned);
-    queueSummonAnimation(state, card, summoned);
+    queueSummonAnimation(state, card, action, summoned);
     return [summoned];
 };
 
-const summonStrongestEnemyFromCrypt = (state: GameStateType, card: PlayingCardType) => {
+const summonStrongestEnemyFromCrypt = (state: GameStateType, card: PlayingCardType, action: PasteboardActionType) => {
     const enemies = state.zones.crypt.cards;
     let strongestIndex = -1;
     for (let index = 0; index < enemies.length; index++) {
@@ -49,13 +51,13 @@ const summonStrongestEnemyFromCrypt = (state: GameStateType, card: PlayingCardTy
         }
     }
     if (strongestIndex === -1) {
-        queueSummonAnimation(state, card);
+        queueSummonAnimation(state, card, action);
         return [];
     }
     // The room selector provides temporary overflow slots without increasing future deals.
     const [summoned] = enemies.splice(strongestIndex, 1);
     state.zones.room.cards.push(summoned);
-    queueSummonAnimation(state, card, summoned);
+    queueSummonAnimation(state, card, action, summoned);
     return [summoned];
 };
 
@@ -70,18 +72,20 @@ const summonSequence = (state: GameStateType, card: PlayingCardType, action: Ext
         };
         state.zones.room.cards.push(summoned);
         summonedCards.push(summoned);
-        queueSummonAnimation(state, card, summoned);
+        queueSummonAnimation(state, card, action, summoned);
     }
     return summonedCards;
 };
 
-const consumeEnemies = (state: GameStateType, card: PlayingCardType) => {
+const consumeEnemies = (state: GameStateType, card: PlayingCardType, action: PasteboardActionType) => {
     const consumed = state.zones.room.cards.filter(item => item.role === "enemy" && item.id !== card.id);
     for (const enemy of consumed) {
         state.animationEvents.push({
             id: ++state.animationSequence,
             animation: consumeAnimation.identifier,
             consumerId: card.id,
+            animationCardId: card.id,
+            actionAnimation: action.animation,
             enemyId: enemy.id,
             roomBefore: state.zones.room.cards.map(item => ({...item})),
             healthBefore: {...state.hero.health},
@@ -94,13 +98,16 @@ const consumeEnemies = (state: GameStateType, card: PlayingCardType) => {
     }
 };
 
-const drainPotions = (state: GameStateType) => {
+const drainPotions = (state: GameStateType, card: PlayingCardType, action: PasteboardActionType) => {
     const potions = [...state.zones.room.cards, ...state.zones.potions.cards].filter(card => card.role === "potion");
     if (!potions.length) return;
     const ids = new Set(potions.map(card => card.id));
     state.animationEvents.push({
         id: ++state.animationSequence,
         animation: "day0ff:animation-drain",
+        drainerId: card.id,
+        animationCardId: card.id,
+        actionAnimation: action.animation,
         potionIds: [...ids],
         roomBefore: state.zones.room.cards.map(card => ({...card})),
         potionsBefore: state.zones.potions.cards.map(card => ({...card})),
@@ -135,14 +142,14 @@ export const resolvePasteboardActions = (
     // Resolve summons (including arrivals they cause) before any consumer acts.
     for (const {card, action} of pending) {
         if (!state.zones.room.cards.some(item => item.id === card.id)) continue;
-        if (action.type === "drainPotions") drainPotions(state);
+        if (action.type === "drainPotions") drainPotions(state, card, action);
         const summoned = action.type === "summon" ? summon(state, card, action)
             : action.type === "summonSequence" ? summonSequence(state, card, action)
-            : action.type === "summonStrongestEnemyFromCrypt" ? summonStrongestEnemyFromCrypt(state, card) : [];
+            : action.type === "summonStrongestEnemyFromCrypt" ? summonStrongestEnemyFromCrypt(state, card, action) : [];
         for (const arriving of summoned) enqueue(arriving, roomEntryPhase.identifier);
     }
-    for (const {card} of consumers) {
-        if (state.zones.room.cards.some(item => item.id === card.id)) consumeEnemies(state, card);
+    for (const {card, action} of consumers) {
+        if (state.zones.room.cards.some(item => item.id === card.id)) consumeEnemies(state, card, action);
     }
 };
 
@@ -158,6 +165,8 @@ export const resolveAttackedCardActions = (state: GameStateType, egg: PlayingCar
             animation: "day0ff:animation-hatch",
             egg: {...egg},
             hatchlingId: hatchling.id,
+            animationCardId: hatchling.id,
+            actionAnimation: action.animation,
             healthBefore: {...state.hero.health},
             healthAfter: {...state.hero.health},
         });

@@ -17,6 +17,12 @@ export const thingPasteboard = {
       id: "consume",
       phase: roomEntryPhase.identifier,
       type: "consumeEnemies",
+      animation: {
+        borderColor: "skyblue",
+        glowColor: "skyblue",
+        shake: true,
+        swing: true,
+      },
     },
   ],
   isLocked: false,

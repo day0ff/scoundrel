@@ -3,9 +3,12 @@ import {useTranslation} from "react-i18next";
 import {PageTransitionContext} from "context/PageTransition/context.ts";
 import CardZone from "../CardZone";
 import {useAppSelector} from "store/hooks.ts";
+import {usePasteboardSoundAction} from "hooks/usePasteboardSoundAction.ts";
 import {useAudioManager} from "hooks/useAudioManager.ts";
 import type {SoundPlaybackType} from "utils/AudioManager/types.ts";
 import {thingPasteboard} from "entities/pasteboards/skeleton/Thing.ts";
+import {getPasteboardActions} from "entities/pasteboards/constants.ts";
+import {roomEntryPhase} from "entities/phases/roomEntry.ts";
 import {pendingSummonsGameSelector} from "store/features/game/selectors.ts";
 import {currentRoomNumberSelector, roomWithAttackFeedbackSelector} from "./selectors.ts";
 import {DEAL_SOUNDS, REMOVE_SOUNDS, THING_DEAL_SOUND} from "./constants.ts";
@@ -16,6 +19,7 @@ import type {RoomZonePropsType} from "./types.ts";
 const RoomZone: FC<RoomZonePropsType> = ({zone, appendTo, onAttack, previewEnemyId, onTransitionChange}) => {
     const {t} = useTranslation();
     const audio = useAudioManager();
+    const playCardSound = usePasteboardSoundAction();
     const pageTransitionBusy = useContext(PageTransitionContext);
     const roomNumber = useAppSelector(currentRoomNumberSelector);
     const feedbackZone = useAppSelector(roomWithAttackFeedbackSelector);
@@ -53,6 +57,17 @@ const RoomZone: FC<RoomZonePropsType> = ({zone, appendTo, onAttack, previewEnemy
         } else {
             for (let index = 0; index < cardCount; index++) {
                 timers.push(setTimeout(() => play(DEAL_SOUNDS), index * CARD_STAGGER_MS));
+                if (!pendingSummons.some(event => event.summonedId === dealtCards[index].id)) {
+                    for (const action of getPasteboardActions(dealtCards[index])) {
+                        if (action.type === "playSound" && action.phase === roomEntryPhase.identifier) {
+                            timers.push(setTimeout(() => {
+                                void playCardSound(dealtCards[index].id, action).catch((error: unknown) => {
+                                    console.warn("Unable to play card arrival sound", error);
+                                });
+                            }, index * CARD_STAGGER_MS));
+                        }
+                    }
+                }
                 if (dealtCards[index].identifier === thingPasteboard.identifier && !pendingSummons.some(event => event.summonedId === dealtCards[index].id)) {
                     // Let the growl finish even after the room's reveal animation ends.
                     timers.push(setTimeout(() => play([THING_DEAL_SOUND], true), index * CARD_STAGGER_MS));
@@ -69,7 +84,7 @@ const RoomZone: FC<RoomZonePropsType> = ({zone, appendTo, onAttack, previewEnemy
             timers.forEach(clearTimeout);
             playbacks.forEach(playback => playback.stop());
         };
-    }, [animation, cardCount, dealtCards, roomNumber, audio, onTransitionChange, pageTransitionBusy, pendingSummons]);
+    }, [animation, cardCount, dealtCards, roomNumber, audio, onTransitionChange, pageTransitionBusy, pendingSummons, playCardSound]);
 
     useEffect(() => () => onTransitionChange(false), [onTransitionChange]);
 

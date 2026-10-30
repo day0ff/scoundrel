@@ -1,7 +1,7 @@
-import { PASTEBOARD_CARDS_MAP } from "../../cards/pasteboard/constants.ts";
+import { PASTEBOARD_CARDS_MAP } from "entities/cards/pasteboard/constants.ts";
 import { SkeletonPasteboardDataType } from "./types.ts";
 
-type AceSkeletonPasteboardDataType = SkeletonPasteboardDataType<'A'>;
+type AceSkeletonPasteboardDataType = SkeletonPasteboardDataType<"A">;
 
 export const aceSkeletonPasteboard = {
   identifier: "day0ff:pasteboard-skeleton.A",

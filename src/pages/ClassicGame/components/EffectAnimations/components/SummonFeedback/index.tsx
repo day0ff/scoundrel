@@ -13,16 +13,7 @@ const SummonFeedback: FC<SummonFeedbackPropsType> = ({event, duration}) => {
         const card = event.summonedId
             ? document.querySelector<HTMLElement>(`[data-card-zone="room"] [data-card-id="${CSS.escape(event.summonedId)}"]`)
             : null;
-        const summoner = document.querySelector<HTMLElement>(`[data-card-zone="room"] [data-card-id="${CSS.escape(event.summonerId)}"]`);
-        const pulse = summoner?.animate([
-            {offset: 0, transform: "translateX(0) rotate(0deg)", filter: "brightness(1)"},
-            {offset: 0.2, transform: "translateX(-3px) rotate(-2deg)", filter: "brightness(1.5) drop-shadow(0 0 18px #87ceeb)"},
-            {offset: 0.4, transform: "translateX(3px) rotate(2deg)", filter: "brightness(1.8) drop-shadow(0 0 24px #87ceeb)"},
-            {offset: 0.6, transform: "translateX(-3px) rotate(-2deg)", filter: "brightness(1.8) drop-shadow(0 0 24px #87ceeb)"},
-            {offset: 0.8, transform: "translateX(2px) rotate(1deg)", filter: "brightness(1.5) drop-shadow(0 0 18px #87ceeb)"},
-            {offset: 1, transform: "translateX(0) rotate(0deg)", filter: "brightness(1)"},
-        ], {duration, easing: "ease-in-out"});
-        if (!card || !layer.current) return () => pulse?.cancel();
+        if (!card || !layer.current) return;
         const rect = card.getBoundingClientRect();
         const ground = document.createElement("div");
         Object.assign(ground.style, {
@@ -70,7 +61,6 @@ const SummonFeedback: FC<SummonFeedbackPropsType> = ({event, duration}) => {
             rise.cancel();
             glow.cancel();
             groundGlow.cancel();
-            pulse?.cancel();
             aura.remove();
             ground.remove();
         };

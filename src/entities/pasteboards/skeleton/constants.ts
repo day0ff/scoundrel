@@ -1,3 +1,4 @@
+import {skeletonDragonPasteboard} from "./SkeletonDragon.ts";
 import {skeletonQueenPasteboard} from "./SkeletonQueen.ts";
 import {skeletonKingPasteboard} from "./SkeletonKing.ts";
 import {osteomancerPasteboard} from "./Osteomancer.ts";
@@ -21,6 +22,7 @@ import {thingPasteboard} from "./Thing.ts";
 import {necromancerPasteboard} from "./Necromancer.ts";
 
 export const PASTEBOARD_SKELETON_MAP = {
+    [skeletonDragonPasteboard.identifier]: skeletonDragonPasteboard,
     [skeletonQueenPasteboard.identifier]: skeletonQueenPasteboard,
     [skeletonKingPasteboard.identifier]: skeletonKingPasteboard,
     [osteomancerPasteboard.identifier]: osteomancerPasteboard,

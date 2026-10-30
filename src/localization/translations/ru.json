@@ -1,4 +1,7 @@
 {
+  "card.pasteboard.skeleton.A.skeletonDragon.name": "$t(pasteboard.skeleton.A.skeletonDragon.name)",
+  "pasteboard.skeleton.A.skeletonDragon.name": "Костяной Дракон",
+  "pasteboard.skeleton.A.skeletonDragon.description": "<rank>A</rank><suit>skeleton</suit> Костяной Дракон",
   "animation.hatch.name": "Вылупление",
   "animation.hatch.description": "Яйцо раскалывается пополам, выпуская детёныша.",
   "card.pasteboard.skeleton.Q.skeletonQueen.name": "$t(pasteboard.skeleton.Q.skeletonQueen.name)",

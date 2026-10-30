@@ -25,7 +25,7 @@ class Context {
     constructor() { Context.instances.push(this); }
     createGain() { const gain = new Gain(); this.gains.push(gain); return gain; }
     createBufferSource() { const source = new Source(); this.sources.push(source); return source; }
-    async decodeAudioData() { this.decodes++; return {}; }
+    async decodeAudioData() { this.decodes++; return {duration: 2.5}; }
     async resume() { this.state = 'running'; }
     async close() { this.state = 'closed'; }
 }
@@ -47,7 +47,7 @@ try {
     assert.equal(await audio.playSound({url: 'impact'}), null);
     await audio.unlock();
     const first = await audio.playSound({url: 'impact'});
-    await audio.playSound({url: 'impact', loop: true, volume: 0.25});
+    const second = await audio.playSound({url: 'impact', loop: true, volume: 0.25});
     assert.equal(context.sources.length, 2);
     assert.equal(context.sources[1].loop, true);
     assert.equal(context.gains[2].gain.value, 0.25);
@@ -58,10 +58,18 @@ try {
     assert.equal(await audio.playSound({url: 'impact'}), null);
     audio.setEnabled(true);
     assert.equal(context.gains[0].gain.value, 0.4);
+    assert.equal(first.durationMs, 2500);
+    let finished = false;
+    void first.finished.then(() => { finished = true; });
+    await Promise.resolve();
+    assert.equal(finished, false);
     first.stop(); first.stop();
+    await first.finished;
+    assert.equal(finished, true);
     assert.equal(context.sources[0].stops, 1);
     assert.equal(context.sources[0].disconnected, true);
     context.sources[1].onended();
+    await second.finished;
     assert.equal(context.sources[1].disconnected, true);
     assert.equal(context.gains[2].disconnected, true);
     audio.stopAll();
