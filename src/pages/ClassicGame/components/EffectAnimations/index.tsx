@@ -1,3 +1,7 @@
+import WeaponBreakGroupFeedback from "./components/WeaponBreakGroupFeedback";
+import ActionFogFeedback from "./components/ActionFogFeedback";
+import ActionSoundFeedback from "./components/ActionSoundFeedback";
+import WeaponBreakFeedback from "./components/WeaponBreakFeedback";
 import CallFeedback from "./components/CallFeedback";
 import {usePasteboardActionAnimation} from "hooks/usePasteboardActionAnimation.ts";
 import {usePasteboardSoundAction} from "hooks/usePasteboardSoundAction.ts";
@@ -10,13 +14,12 @@ import {useEffect, useRef, type FC} from "react";
 import {createPortal} from "react-dom";
 import {useAppDispatch, useAppSelector} from "store/hooks.ts";
 import {clearEffectAnimations, completeEffectAnimation} from "store/features/game";
-import {activeEffectAnimationGameSelector} from "store/features/game/selectors.ts";
+import {activeWeaponBreaksSelector, activeEffectAnimationGameSelector} from "store/features/game/selectors.ts";
 import {ANIMATIONS_MAP} from "entities/animations/constants.ts";
 import {thingPasteboard} from "entities/pasteboards/skeleton/Thing.ts";
 import AttackFeedback from "./components/AttackFeedback";
 import HealFeedback from "./components/HealFeedback";
 import {useAudioManager} from "hooks/useAudioManager.ts";
-import {ATTACK_SOUNDS} from "./components/AttackFeedback/constants.ts";
 import ConsumeFeedback from "./components/ConsumeFeedback";
 import SummonFeedback from "./components/SummonFeedback";
 import {THING_DEAL_SOUND} from "../RoomZone/constants.ts";
@@ -27,15 +30,16 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
     const audio = useAudioManager();
     const playCardSound = usePasteboardSoundAction();
     const event = useAppSelector(activeEffectAnimationGameSelector);
+    const activeBreaks = useAppSelector(activeWeaponBreaksSelector);
     const arrivingCard = useAppSelector(arrivingCardSelector);
     const animation = event && ANIMATIONS_MAP[event.animation];
     const mounted = useRef(false);
-    const roomEntry = event?.animation === "day0ff:animation-drain" || event?.animation === "day0ff:animation-consume" || event?.animation === "day0ff:animation-summon" || event?.animation === "day0ff:animation-call";
+    const roomEntry = event?.animation === "day0ff:animation-drain" || event?.animation === "day0ff:animation-consume" || event?.animation === "day0ff:animation-summon" || event?.animation === "day0ff:animation-call" || event?.animation === "day0ff:animation-sound";
     const paused = roomEntry && roomTransition;
-    usePasteboardActionAnimation(paused ? undefined : event?.animationCardId, event?.actionAnimation, animation?.durationMs ?? 0);
+    usePasteboardActionAnimation(paused || event?.animation === "day0ff:animation-sound" ? undefined : event?.animationCardId, event?.actionAnimation, animation?.durationMs ?? 0);
 
     useEffect(() => {
-        if (!event || !animation || paused) return;
+        if (!event || !animation || paused || (event.animation === "day0ff:animation-weaponBreak" || event.animation === "day0ff:animation-sound")) return;
         const duration = roomEntry && event.animation !== "day0ff:animation-call" && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : animation.durationMs;
         const timeout = setTimeout(() => {
             dispatch(completeEffectAnimation(event.id));
@@ -54,12 +58,7 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
                     console.warn("Unable to play Thing growl", error);
                 });
             }
-            if (event.animation === "day0ff:animation-attack" && event.weaponBroken) {
-                const url = ATTACK_SOUNDS.broken[Math.floor(Math.random() * ATTACK_SOUNDS.broken.length)];
-                void audio.playSound({url}).catch((error: unknown) => {
-                    console.warn("Unable to play weapon break sound", error);
-                });
-            }
+
         }, duration);
         return () => clearTimeout(timeout);
     }, [audio, dispatch, event, animation, paused, roomEntry, arrivingCard, playCardSound]);
@@ -75,37 +74,53 @@ const EffectAnimations: FC<EffectAnimationsPropsType> = ({roomTransition}) => {
         };
     }, [dispatch]);
 
-    if (!event || !animation || paused) return null;
+    const renderFeedback = () => {
+        if (!event || !animation || paused) return null;
 
-    if (event.animation === "day0ff:animation-hatch") {
-        return createPortal(<HatchFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
-    }
+        if (event.animation === "day0ff:animation-sound") {
+            if (activeBreaks.length) return <WeaponBreakGroupFeedback key={event.id} event={event} breaks={activeBreaks}/>;
+            return <ActionSoundFeedback key={event.id} event={event}/>;
+        }
 
-    if (event.animation === "day0ff:animation-drain") {
-        return createPortal(<DrainFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
-    }
+        if (event.animation === "day0ff:animation-weaponBreak") {
+            return createPortal(<WeaponBreakFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+        }
 
-    if (event.animation === "day0ff:animation-call") {
-        return createPortal(<CallFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
-    }
+        if (event.animation === "day0ff:animation-hatch") {
+            return createPortal(<HatchFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+        }
 
-    if (event.animation === "day0ff:animation-summon") {
-        return createPortal(<SummonFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
-    }
+        if (event.animation === "day0ff:animation-drain") {
+            return createPortal(<DrainFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+        }
 
-    if (event.animation === "day0ff:animation-consume") {
-        return createPortal(<ConsumeFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
-    }
+        if (event.animation === "day0ff:animation-call") {
+            return createPortal(<CallFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+        }
 
-    if (event.animation === "day0ff:animation-attack") {
-        return createPortal(<AttackFeedback key={event.id} event={event} duration={animation.durationMs} />, document.body);
-    }
+        if (event.animation === "day0ff:animation-summon") {
+            return createPortal(<SummonFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+        }
 
-    const healingLayer = document.getElementById("healing-effects");
-    return healingLayer ? createPortal(
-        <HealFeedback key={event.id} duration={animation.durationMs} potion={event.potion} />,
-        healingLayer,
-    ) : null;
+        if (event.animation === "day0ff:animation-consume") {
+            return createPortal(<ConsumeFeedback key={event.id} event={event} duration={animation.durationMs}/>, document.body);
+        }
+
+        if (event.animation === "day0ff:animation-attack") {
+            return createPortal(<AttackFeedback key={event.id} event={event} duration={animation.durationMs} />, document.body);
+        }
+
+        const healingLayer = document.getElementById("healing-effects");
+        return healingLayer ? createPortal(
+            <HealFeedback key={event.id} duration={animation.durationMs} potion={event.potion} />,
+            healingLayer,
+        ) : null;
+    };
+
+    return <>
+        <ActionFogFeedback fog={paused ? undefined : event?.fog}/>
+        {renderFeedback()}
+    </>;
 };
 
 export default EffectAnimations;

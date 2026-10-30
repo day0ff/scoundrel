@@ -1,3 +1,4 @@
+import {darkQueenPasteboard} from "./DarkQueen.ts";
 import {darkLordPasteboard} from "./DarkLord.ts";
 import {darkDragonPasteboard} from "./DarkDragon.ts";
 import {RankType} from "../../types.ts";
@@ -18,6 +19,7 @@ import {kingDarkLordPasteboard} from "./K.ts";
 import {DarkLordPasteboardDataType} from "./types.ts";
 
 export const PASTEBOARD_DARK_MAP = {
+    [darkQueenPasteboard.identifier]: darkQueenPasteboard,
     [darkLordPasteboard.identifier]: darkLordPasteboard,
     [darkDragonPasteboard.identifier]: darkDragonPasteboard,
     "day0ff:pasteboard-dark.A": aceDarkLordPasteboard,

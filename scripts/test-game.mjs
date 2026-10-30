@@ -9,6 +9,10 @@ const server = await createServer({
     appType: "custom",
 });
 try {
+    const {runDarkQueenTests} = await server.ssrLoadModule("/src/store/features/game/dark-queen.test.ts");
+    for (const name of runDarkQueenTests()) console.log("PASS", name);
+    const {runWeaponBreakTests} = await server.ssrLoadModule("/src/store/features/game/weapon-break.test.ts");
+    for (const name of runWeaponBreakTests()) process.stdout.write(`PASS ${name}\n`);
     const {runConditionTests} = await server.ssrLoadModule("/src/store/features/collections/conditions.test.ts");
     for (const name of runConditionTests()) process.stdout.write(`PASS ${name}\n`);
     const {runPackTests: runSkeletonPackTests} = await server.ssrLoadModule("/src/entities/packs/packs.test.ts");

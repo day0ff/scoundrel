@@ -1,3 +1,4 @@
+import {breakWeapon} from "./weapon-break.ts";
 import {getPasteboardActions, initPasteboard} from "entities/pasteboards/constants.ts";
 import {getCardStrength} from "entities/pasteboards/helpers.ts";
 import type {PasteboardActionType} from "entities/pasteboards/actions/types.ts";
@@ -138,6 +139,36 @@ const drainPotions = (state: GameStateType, card: PlayingCardType, action: Paste
     if (state.selectedCardId && ids.has(state.selectedCardId)) state.selectedCardId = undefined;
 };
 
+const breakAllWeapons = (
+    state: GameStateType,
+    card: PlayingCardType,
+    action: Extract<PasteboardActionType, {type: "breakAllWeapons"}>,
+) => {
+    const fog = action.animation?.fogColor ? {
+        id: `${card.id}:${action.id}:${state.animationSequence + 1}`,
+        color: action.animation.fogColor,
+    } : undefined;
+    const weaponBreakIds: number[] = [];
+    state.animationEvents.push({
+        id: ++state.animationSequence,
+        animation: "day0ff:animation-sound",
+        fog,
+        cardId: card.id,
+        weaponBreakIds,
+        url: action.soundUrl,
+        actionAnimation: action.animation,
+        roomBefore: state.zones.room.cards.map(item => ({...item})),
+        healthBefore: {...state.hero.health},
+        healthAfter: {...state.hero.health},
+    });
+    const weapons = [...state.zones.room.cards, ...state.zones.weapons.cards]
+        .filter(item => item.role === "weapon");
+    for (const weapon of weapons) {
+        breakWeapon(state, weapon.id, fog);
+        weaponBreakIds.push(state.animationSequence);
+    }
+};
+
 export const resolvePasteboardActions = (
     state: GameStateType,
     phase: PhaseDataType<string>["identifier"],
@@ -160,6 +191,7 @@ export const resolvePasteboardActions = (
     // Resolve summons (including arrivals they cause) before any consumer acts.
     for (const {card, action} of pending) {
         if (!state.zones.room.cards.some(item => item.id === card.id)) continue;
+        if (action.type === "breakAllWeapons") breakAllWeapons(state, card, action);
         if (action.type === "drainPotions") drainPotions(state, card, action);
         const summoned = action.type === "call" ? call(state, card, action)
             : action.type === "summon" ? summon(state, card, action)

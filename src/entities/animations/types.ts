@@ -15,7 +15,13 @@ export type AnimationType<Identifier extends string, Type extends string> = {
 
 export type AnimationDataType<Type extends string> = AnimationType<"animation", Type>;
 
+export type AnimationFogType = {
+    id: string;
+    color: string;
+};
+
 type HealthAnimationEventType = {
+    fog?: AnimationFogType;
     animationCardId?: string;
     actionAnimation?: PasteboardActionAnimationType;
     id: number;
@@ -33,6 +39,22 @@ export type AttackAnimationEventType = HealthAnimationEventType & {
     enemy: InitPasteboardDataType<string, RankType>;
     healthDamage: number;
     weaponBroken: boolean;
+};
+
+export type WeaponBreakAnimationEventType = HealthAnimationEventType & {
+    animation: AnimationDataType<"weaponBreak">["identifier"];
+    weapon: InitPasteboardDataType<string, RankType>;
+    weaponZoneIndex: number;
+    weaponZone?: "room" | "weapons";
+    roomBefore?: InitPasteboardDataType<string, RankType>[];
+};
+
+export type SoundAnimationEventType = HealthAnimationEventType & {
+    animation: AnimationDataType<"sound">["identifier"];
+    cardId: string;
+    weaponBreakIds?: number[];
+    url: string;
+    roomBefore: InitPasteboardDataType<string, RankType>[];
 };
 
 export type ConsumeAnimationEventType = HealthAnimationEventType & {
@@ -71,4 +93,4 @@ export type HatchAnimationEventType = HealthAnimationEventType & {
 export type EffectAnimationEventType = (HealthAnimationEventType & {
     animation: AnimationDataType<"heal">["identifier"];
     potion?: InitPasteboardDataType<string, RankType>;
-}) | AttackAnimationEventType | ConsumeAnimationEventType | SummonAnimationEventType | CallAnimationEventType | DrainAnimationEventType | HatchAnimationEventType;
+}) | AttackAnimationEventType | WeaponBreakAnimationEventType | SoundAnimationEventType | ConsumeAnimationEventType | SummonAnimationEventType | CallAnimationEventType | DrainAnimationEventType | HatchAnimationEventType;

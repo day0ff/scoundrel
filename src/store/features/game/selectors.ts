@@ -1,3 +1,4 @@
+import type {WeaponBreakAnimationEventType} from "entities/animations/types.ts";
 import {createSelector} from "@reduxjs/toolkit";
 import {packsCollectionsSelector} from "store/features/collections/selectors.ts";
 import {classicPack} from "entities/packs/classic.ts";
@@ -9,7 +10,7 @@ export const gameOutcomeSelector = (state: RootState) => state.game?.outcome;
 export const heroGameSelector = (state: RootState) => state.game?.hero;
 export const heroHealthGameSelector = (state: RootState) => state.game?.hero.health;
 export const activeEffectAnimationGameSelector = (state: RootState) => state.game?.animationEvents?.[0];
-export const isConsumingGameSelector = (state: RootState) => state.game?.animationEvents.some(event => event.animation === "day0ff:animation-hatch" || event.animation === "day0ff:animation-drain" || event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon" || event.animation === "day0ff:animation-call") ?? false;
+export const isConsumingGameSelector = (state: RootState) => state.game?.animationEvents.some(event => event.animation === "day0ff:animation-sound" || event.animation === "day0ff:animation-weaponBreak" || event.animation === "day0ff:animation-hatch" || event.animation === "day0ff:animation-drain" || event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon" || event.animation === "day0ff:animation-call") ?? false;
 
 export const pendingSummonsGameSelector = createSelector(gameSelector,
     game => game?.animationEvents.filter(event => event.animation === "day0ff:animation-summon" || event.animation === "day0ff:animation-call") ?? [],
@@ -21,6 +22,7 @@ export const cryptWithEffectFeedbackSelector = createSelector(gameSelector, game
     for (const event of game.animationEvents) {
         if (event.animation === "day0ff:animation-drain") event.potionIds.forEach(id => consuming.add(id));
         if (event.animation === "day0ff:animation-hatch") consuming.add(event.egg.id);
+        if (event.animation === "day0ff:animation-weaponBreak") consuming.add(event.weapon.id);
     }
     return {...game.zones.crypt, cards: game.zones.crypt.cards.filter(card => !consuming.has(card.id))};
 });
@@ -46,3 +48,16 @@ export const potionsWithEffectFeedbackSelector = createSelector(gameSelector, ga
     const drain = game.animationEvents.find(event => event.animation === "day0ff:animation-drain");
     return {...game.zones.potions, cards: drain?.potionsBefore ?? game.zones.potions.cards};
 });
+
+
+export const activeWeaponBreaksSelector = createSelector(
+    (state: RootState) => state.game?.animationEvents,
+    events => {
+        const event = events?.[0];
+        if (!events || !event) return [];
+        if (event.animation === "day0ff:animation-weaponBreak") return [event];
+        if (event.animation !== "day0ff:animation-sound" || !event.weaponBreakIds?.length) return [];
+        const ids = new Set(event.weaponBreakIds);
+        return events.filter((event): event is WeaponBreakAnimationEventType => event.animation === "day0ff:animation-weaponBreak" && ids.has(event.id));
+    },
+);

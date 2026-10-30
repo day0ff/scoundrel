@@ -1,14 +1,19 @@
 import { roomEntryPhase } from "entities/phases/roomEntry.ts";
-import { kingDarkLordPasteboard } from "./K.ts";
 import { darkDragonPasteboard } from "./DarkDragon.ts";
 import type { DarkLordPasteboardDataType } from "./types.ts";
+import { PASTEBOARD_CARDS_MAP } from "entities/cards/pasteboard/constants.ts";
 
 export const darkLordPasteboard = {
-  ...kingDarkLordPasteboard,
   identifier: "day0ff:pasteboard-dark.K.darkLord",
   name: "pasteboard.dark.K.darkLord.name",
   description: "pasteboard.dark.K.darkLord.description",
   variant: "darkLord",
+  card: PASTEBOARD_CARDS_MAP["day0ff:card-pasteboard.dark.K"],
+  suit: "dark",
+  role: "enemy",
+  rank: "K",
+  isLocked: false,
+  isNotFound: false,
   actions: [
     {
       id: "callDragon",

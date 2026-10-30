@@ -4,6 +4,7 @@ import type {IdentifierWithSubtypeType, RankType} from "entities/types.ts";
 export type PasteboardActionAnimationType = {
     borderColor?: string;
     glowColor?: string;
+    fogColor?: string;
     shake?: boolean;
     swing?: boolean;
 };
@@ -19,6 +20,7 @@ export type PasteboardActionType = PasteboardActionBaseType & (
     | {type: "playSound"; url: string}
     | {type: "consumeEnemies"}
     | {type: "drainPotions"}
+    | {type: "breakAllWeapons"; soundUrl: string}
     | {type: "hatchOnAttack"; identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>}
     | {type: "summonStrongestEnemyFromCrypt"}
     | {type: "call"; identifier: IdentifierWithSubtypeType<"pasteboard", string, RankType | `${RankType}.${string}`>}

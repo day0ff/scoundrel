@@ -10,6 +10,8 @@ const server = await createServer({
 });
 const original = {document: globalThis.document, window: globalThis.window, CSS: globalThis.CSS};
 try {
+    const {runDarkQueenTests} = await server.ssrLoadModule("/src/store/features/game/dark-queen.test.ts");
+    for (const name of runDarkQueenTests()) console.log("PASS", name);
     const {animatePasteboardAction} = await server.ssrLoadModule("/src/utils/animatePasteboardAction.ts");
     const calls = [];
     const record = (frames, options) => {
@@ -79,6 +81,32 @@ try {
     assert.match(flight[1].filter, /whitesmoke/);
     assert.equal(flight.at(-1).transform, "translate(0, 0) scale(1) rotate(0deg)");
     console.log("PASS call flight begins outside the viewport and lands in the room slot");
+    const {runWeaponBreakTests} = await server.ssrLoadModule("/src/store/features/game/weapon-break.test.ts");
+    for (const name of runWeaponBreakTests()) console.log("PASS", name);
+    const {WEAPON_BREAK_SOUNDS} = await server.ssrLoadModule("/src/pages/ClassicGame/components/EffectAnimations/components/WeaponBreakFeedback/constants.ts");
+    assert.deepEqual(WEAPON_BREAK_SOUNDS, [`${BASE_URL}/sounds/sword-break-1.mp3`, `${BASE_URL}/sounds/sword-break-2.mp3`]);
+    const {getWeaponBreakFrames, getWeaponCryptFlightFrames} = await server.ssrLoadModule("/src/pages/ClassicGame/components/EffectAnimations/components/WeaponBreakFeedback/helpers.ts");
+    assert.notEqual(getWeaponBreakFrames(-1, false).at(-1).transform, getWeaponBreakFrames(1, false).at(-1).transform);
+    assert.equal(getWeaponBreakFrames(-1, true).at(-1).transform, "none");
+    const cryptFlight = getWeaponCryptFlightFrames(
+        {left: 100, top: 100, width: 100, height: 150},
+        {left: 500, top: 400, width: 100, height: 150},
+        1, false,
+    );
+    assert.match(cryptFlight.at(-1).transform, /translate\(400px, 300px\)/);
+    assert.equal(cryptFlight.at(-1).opacity, 0);
+    console.log("PASS break fragments separate, respect reduced motion, and move toward the crypt");
+    const {getWeaponBreakTiming} = await server.ssrLoadModule("/src/pages/ClassicGame/components/EffectAnimations/components/WeaponBreakGroupFeedback/helpers.ts");
+    for (const count of [1, 4, 64]) {
+        for (let index = 0; index < count; index++) {
+            const timing = getWeaponBreakTiming(index, count);
+            assert.ok(timing.startDelayMs >= 300);
+            assert.ok(timing.startDelayMs + timing.crackDurationMs <= 500);
+        }
+    }
+    console.log("PASS grouped weapons wait 300ms and finish cracking by 500ms, including overflow rooms");
+
+
 } finally {
     Object.assign(globalThis, original);
     await server.close();

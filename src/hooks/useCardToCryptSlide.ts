@@ -57,7 +57,7 @@ export const useCardToCryptSlide = (
         for (const card of cards) {
             const node = zone.querySelector<HTMLElement>(`[data-card-id="${CSS.escape(card.id)}"]`)
                 ?.closest<HTMLElement>("[data-card-zone]");
-            if (node && node.dataset.consumed !== "true") snapshots.current.set(card.id, {
+            if (node && node.dataset.consumed !== "true" && node.dataset.breaking !== "true") snapshots.current.set(card.id, {
                 copy: node.cloneNode(true) as HTMLElement,
                 rect: node.getBoundingClientRect(),
             });

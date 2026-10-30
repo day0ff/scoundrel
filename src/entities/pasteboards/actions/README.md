@@ -44,3 +44,38 @@ creates a new card rather than retrieving an existing one.
     animation: {borderColor: "whitesmoke", glowColor: "whitesmoke", swing: true},
 }
 ```
+
+
+Weapon breaking is a standalone `day0ff:animation-weaponBreak` event. Future
+reducer-side card actions can call `breakWeapon(state, weaponId)` from
+`store/features/game/weapon-break.ts` to break a weapon in the room or equipped weapons zone. The helper
+sets durability to zero, captures the card and slot for feedback, and handles the
+crypt transfer. Repeated calls and attempts to break fists are ignored.
+
+The UI retains the weapon until its break animation and randomly selected
+`sword-break-1.mp3` or `sword-break-2.mp3` finish, then sends its fragments to
+the crypt. Sound selection stays in presentation code so game replays remain
+deterministic.
+
+The `breakAllWeapons` action breaks every weapon in the room and equipped
+weapons zone. Its `soundUrl` plays once alongside the grouped break animations,
+including when there are no targets. Fists, potions, enemies, and cards in other
+zones are unaffected. All affected weapons wait 300ms, then finish cracking within the following 200ms;
+each then waits for its break sound before flying to the crypt.
+
+```ts
+{
+    id: "breakAllWeapons",
+    phase: roomEntryPhase.identifier,
+    type: "breakAllWeapons",
+    soundUrl: `${BASE_URL}/sounds/banshee-1.mp3`,
+    animation: {borderColor: "whitesmoke", glowColor: "whitesmoke", shake: true},
+}
+```
+
+
+For `breakAllWeapons`, add `fogColor` to the action's `animation` settings to
+surround the cry and entire weapon-breaking sequence with fog. All queued events
+share one fog group, so it fades in once and fades out after the last weapon
+reaches the crypt. The fog includes drifting particles and fades in and out over 900ms.
+Reduced-motion mode keeps the fades and disables drifting.

@@ -375,7 +375,7 @@ const ClassicGame: FC = () => {
         )}
       </DndContext>
       <Toast ref={toastRef} />
-      {game.outcome && (
+      {game.outcome && !game.animationEvents.some(event => event.animation === "day0ff:animation-weaponBreak") && (
         <GameResult
           outcome={game.outcome}
           isOpen={!resultDismissed}

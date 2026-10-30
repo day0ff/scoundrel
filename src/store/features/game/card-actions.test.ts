@@ -237,7 +237,7 @@ export const runEggHatchTests = () => {
     const weapon = {...initPasteboard("day0ff:pasteboard-weapon.2"), durability: 1};
     weaponGame.zones.weapons.cards = [weapon];
     applyAttack(weaponGame, weapon.id);
-    assert.deepEqual(weaponGame.animationEvents.map(event => event.animation), ["day0ff:animation-attack", "day0ff:animation-hatch"]);
+    assert.deepEqual(weaponGame.animationEvents.map(event => event.animation), ["day0ff:animation-attack", "day0ff:animation-weaponBreak", "day0ff:animation-hatch"]);
     const weaponAttack = weaponGame.animationEvents[0];
     assert.ok(weaponAttack.animation === "day0ff:animation-attack");
     assert.equal(weaponAttack.attackerId, weapon.id);

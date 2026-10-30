@@ -1,3 +1,4 @@
+import {breakWeapon} from "./weapon-break.ts";
 import {resolveAttackedCardActions} from "./card-actions.ts";
 import {recordRoomPlay, checkGameVictory} from "./helpers.ts";
 import {attackAnimation} from "entities/animations/attack.ts";
@@ -81,10 +82,7 @@ export const applyAttack = (state: GameStateType, attackerId: string, enemyId?: 
     }
     if (durability !== undefined) {
         attacker.durability = durability;
-        if (durability === 0) {
-            source.cards.splice(source.cards.findIndex(card => card.id === attacker.id), 1);
-            state.zones.crypt.cards.push(attacker);
-        }
+        if (durability === 0) breakWeapon(state, attacker.id);
     }
     resolveAttackedCardActions(state, enemy, roomIndex);
     checkGameVictory(state);

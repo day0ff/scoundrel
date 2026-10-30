@@ -12,7 +12,7 @@ import WeaponLastKill from "../../../WeaponLastKill";
 import type {GameCardPropsType} from "./types.ts";
 import {GameCardStyled, StrikeStyled} from "./styles.ts";
 import {firstAttackerIdSelector, pendingAttacksSelector, pendingConsumesSelector} from "./selectors.ts";
-import {activeEffectAnimationGameSelector, pendingSummonsGameSelector} from "store/features/game/selectors.ts";
+import {activeWeaponBreaksSelector, activeEffectAnimationGameSelector, pendingSummonsGameSelector} from "store/features/game/selectors.ts";
 import {ANIMATIONS_MAP} from "entities/animations/constants.ts";
 import {useTouchDoubleTap} from "hooks/useTouchDoubleTap.ts";
 
@@ -30,9 +30,12 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
     const summoned = zone === "room" && pendingSummons.some(event => event.summonedId === card.id);
     const consumed = zone === "room" && pendingConsumes.some(event => event.enemyId === card.id);
     const activeEffect = useAppSelector(activeEffectAnimationGameSelector);
+    const activeBreaks = useAppSelector(activeWeaponBreaksSelector);
+    const breaking = activeBreaks.some(event => event.weapon.id === card.id);
     const defeated = zone === "room" && pendingAttacks.some(event => event.enemyId === card.id);
     const hit = defeated && activeEffect?.animation === "day0ff:animation-attack" && activeEffect.enemyId === card.id;
-    const broken = zone === "weapons" && pendingAttacks.some(event => event.attackerId === card.id && event.weaponBroken);
+    const broken = (zone === "weapons" && pendingAttacks.some(event => event.attackerId === card.id && event.weaponBroken))
+        || breaking;
     const handleQuickAction = () => {
         if (!isPlayerAction || dragging || defeated || broken) return;
         if (canPlayPotion(card, zone)) dispatch(playCard({cardId: card.id, from: zone}));
@@ -57,6 +60,7 @@ const GameCard: FC<GameCardPropsType> = ({card, zone, dragging, isDropTarget, is
             }}
             inert={defeated || broken || consumed}
             data-consumed={consumed}
+            data-breaking={breaking}
             data-hit={hit}
             $role={card.role}
             data-card-zone={zone}

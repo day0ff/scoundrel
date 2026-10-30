@@ -1,4 +1,10 @@
 {
+  "pasteboard.dark.Q.darkQueen.name": "Тёмная королева",
+  "pasteboard.dark.Q.darkQueen.description": "При входе в комнату кричит и ломает всё оружие в комнате и зоне оружия.",
+  "animation.sound.name": "Звук действия",
+  "animation.sound.description": "Проигрывает звук карты перед продолжением её действия.",
+  "animation.weaponBreak.name": "Поломка оружия",
+  "animation.weaponBreak.description": "Оружие раскалывается, затем его обломки отправляются в склеп.",
   "animation.call.name": "Зов",
   "animation.call.description": "Светящееся существо влетает в комнату из-за края экрана.",
   "pasteboard.dark.K.darkLord.name": "Тёмный лорд",

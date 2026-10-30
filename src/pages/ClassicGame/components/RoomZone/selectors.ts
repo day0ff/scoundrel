@@ -10,9 +10,12 @@ export const roomWithAttackFeedbackSelector = createSelector(
     gameSelector,
     (game) => {
         if (!game) return undefined;
-        const entry = game.animationEvents.find(event => event.animation === "day0ff:animation-drain" || event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon" || event.animation === "day0ff:animation-call");
-        if (entry?.animation === "day0ff:animation-drain" || entry?.animation === "day0ff:animation-consume" || entry?.animation === "day0ff:animation-summon" || entry?.animation === "day0ff:animation-call") {
-            return {...game.zones.room, cards: entry.roomBefore, capacity: Math.max(game.zones.room.capacity, entry.roomBefore.length)};
+        const entry = game.animationEvents.find(event => event.animation === "day0ff:animation-drain" || event.animation === "day0ff:animation-consume" || event.animation === "day0ff:animation-summon" || event.animation === "day0ff:animation-call" || event.animation === "day0ff:animation-sound"
+            || (event.animation === "day0ff:animation-weaponBreak" && !!event.roomBefore));
+        if (entry?.animation === "day0ff:animation-drain" || entry?.animation === "day0ff:animation-consume" || entry?.animation === "day0ff:animation-summon" || entry?.animation === "day0ff:animation-call" || entry?.animation === "day0ff:animation-sound"
+            || (entry?.animation === "day0ff:animation-weaponBreak" && !!entry.roomBefore)) {
+            const cards = entry.roomBefore ?? game.zones.room.cards;
+            return {...game.zones.room, cards, capacity: Math.max(game.zones.room.capacity, cards.length)};
         }
         // Until the attack finishes, show the egg in place of its queued hatchling.
         const attackingEggs = new Set(game.animationEvents

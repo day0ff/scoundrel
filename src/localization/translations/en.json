@@ -1,4 +1,10 @@
 {
+  "pasteboard.dark.Q.darkQueen.name": "Dark Queen",
+  "pasteboard.dark.Q.darkQueen.description": "On entering the room, cries and breaks all weapons in the room and equipped weapons zone.",
+  "animation.sound.name": "Action sound",
+  "animation.sound.description": "Plays a card's sound before continuing its action.",
+  "animation.weaponBreak.name": "Weapon break",
+  "animation.weaponBreak.description": "A weapon cracks, then its pieces move to the crypt.",
   "animation.call.name": "Call",
   "animation.call.description": "A glowing creature flies in from beyond the screen into the room.",
   "pasteboard.dark.K.darkLord.name": "Dark Lord",
