@@ -5,6 +5,7 @@ import CardTooltipContent from "components/CardTooltipContent";
 import TooltipContent from "components/TooltipContent";
 import {VIEWPORT_TOOLTIP_POPPER_OPTIONS} from "components/Tooltip/constants.ts";
 import {AppContainerStyled} from "styles/AppContainerStyled.ts";
+import {PackImageStyled} from "componentsShared/Packs/components/PackBox/styles.ts";
 import type {PackTabsPropsType} from "./types.ts";
 import {TabsStyled, TabStyled, TabPackBoxStyled, TabTooltipStyled, TabTooltipReferenceStyled} from "./styles.ts";
 
@@ -79,6 +80,10 @@ const PackTabs: FC<PackTabsPropsType> = ({packs, selectedIdentifier, onSelect, l
                                 <div inert aria-hidden="true">
                                     <TabPackBoxStyled key={`${pack.identifier}-${pack.isLocked}-${pack.isNotFound}`} $fullSize={size === "full"} {...pack} id={`${idPrefix}-card-${pack.identifier}`}
                                         card={getCollectionCard(pack.card, pack)}
+                                        showFaceWhenLocked
+                                        labels={pack.overlayImage && !pack.isLocked && !pack.isNotFound ? (
+                                            <PackImageStyled src={pack.overlayImage} alt="" aria-hidden="true" $color={pack.card.color ?? "black"}/>
+                                        ) : undefined}
                                         isSelected={selectedIdentifier === pack.identifier} isSelectable={false} isFlippable={false}
                                         $color={pack.card.color ?? "black"} $textStroke={pack.styles?.text?.stroke ?? "black"}
                                         amount={Math.trunc(pack.decks.reduce((total, deck) => total + (deck.cards?.length ?? 0), 0) / 5)}/>

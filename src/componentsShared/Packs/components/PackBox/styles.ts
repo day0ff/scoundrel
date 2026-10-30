@@ -22,6 +22,19 @@ export const PackCardWrapperStyled = styled.div`
   margin-top: -16px;
 `;
 
+export const PackImageStyled = styled.img<{ $color: string }>`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: ${({ $color }) => `drop-shadow(1px 0 0 ${$color})
+    drop-shadow(-1px 0 0 ${$color})
+    drop-shadow(0 1px 0 ${$color})
+    drop-shadow(0 -1px 0 ${$color})`};
+`;
+
 export const PackBoxDraggableDeckStyled = styled(DraggableDeck).attrs({
   size: 2,
   wobbleIntensity: 3,
@@ -37,6 +50,8 @@ export const PackBoxDraggableDeckStyled = styled(DraggableDeck).attrs({
     isSelected ? `filter: drop-shadow(0 0 8px ${$color})` : null};
 
   ${MarkTop.toString()} {
+    z-index: 1;
+    pointer-events: none;
     top: 10cqw;
     left: 10cqw;
     font-size: 10.5cqw;

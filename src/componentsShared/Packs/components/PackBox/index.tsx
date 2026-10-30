@@ -15,6 +15,7 @@ import {
   PackCardWrapperStyled,
   PackTooltipStyled,
   PackBoxDraggableDeckStyled,
+  PackImageStyled,
 } from "./styles.ts";
 
 const PackBox: FC<PackBoxPropsType> = ({
@@ -23,6 +24,7 @@ const PackBox: FC<PackBoxPropsType> = ({
   name: nameProp,
   description: descriptionProp,
   card: cardProp,
+  overlayImage,
   decks,
   styles,
   isLocked,
@@ -75,6 +77,9 @@ const PackBox: FC<PackBoxPropsType> = ({
           $color={color}
           $textStroke={styles?.text?.stroke ?? "black"}
           amount={amount}
+          labels={overlayImage && !isLocked && !isNotFound ? (
+            <PackImageStyled src={overlayImage} alt="" aria-hidden="true" $color={color} />
+          ) : undefined}
           tooltip={
             <PackTooltipStyled
               appendTo={appendTo ?? "parent"}

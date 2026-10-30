@@ -66,8 +66,8 @@ export const darkLordPack = {
   dungeon: `${BASE_URL}/images/packs/dark-lord/dungen.png`,
   discard: `${BASE_URL}/images/packs/dark-lord/discard.png`,
   crypt: `${BASE_URL}/images/packs/dark-lord/crypt.png`,
-  isLocked: true,
-  isNotFound: true,
+  isLocked: false,
+  isNotFound: false,
   condition: {
     description: "pack.dark-lord.unlock.description",
     unlock: { type: "gamesWon", count: 1 },

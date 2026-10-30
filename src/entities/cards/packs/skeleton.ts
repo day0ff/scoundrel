@@ -7,9 +7,13 @@ export const skeletonPackCard = {
   name: "card.pack.skeleton.name",
   color: "gray",
   face: {
-    base: `${BASE_URL}/images/packs/necromancer/face.png`,
+    base: `${BASE_URL}/images/cards/base/white-paper.png`,
+    image: `${BASE_URL}/images/packs/necromancer/face.png`,
+    imageMode: "normal",
   },
   back: {
-    base: `${BASE_URL}/images/packs/necromancer/face.png`,
+    base: `${BASE_URL}/images/cards/base/white-paper.png`,
+    image: `${BASE_URL}/images/packs/necromancer/back.png`,
+    imageMode: "normal",
   },
 } satisfies PackCardType<"skeleton">;

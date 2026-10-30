@@ -7,9 +7,13 @@ export const darkLordPackCard = {
   name: "card.pack.dark-lord.name",
   color: "#333",
   face: {
-    base: `${BASE_URL}/images/packs/dark-lord/face.png`,
+    base: `${BASE_URL}/images/cards/base/white-paper.png`,
+    image: `${BASE_URL}/images/packs/dark-lord/face.png`,
+    imageMode: "normal",
   },
   back: {
-    base: `${BASE_URL}/images/packs/dark-lord/face.png`,
+    base: `${BASE_URL}/images/cards/base/white-paper.png`,
+    image: `${BASE_URL}/images/packs/dark-lord/back.png`,
+    imageMode: "normal",
   },
 } satisfies PackCardType<"dark-lord">;

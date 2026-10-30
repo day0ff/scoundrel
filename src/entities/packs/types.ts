@@ -17,6 +17,7 @@ type PackType<Identifier extends string, Type extends string> = {
     name: PackTranslationKeysType<Type>;
     description: PackTranslationKeysType<Type>;
     card: PackCardType<string>;
+    overlayImage?: string;
     castle: string;
     room: string;
     dungeon: string;

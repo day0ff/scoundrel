@@ -66,8 +66,8 @@ export const skeletonPack = {
   dungeon: `${BASE_URL}/images/packs/necromancer/dungen.png`,
   discard: `${BASE_URL}/images/packs/necromancer/discard.png`,
   crypt: `${BASE_URL}/images/packs/necromancer/crypt.png`,
-  isLocked: true,
-  isNotFound: true,
+  isLocked: false,
+  isNotFound: false,
   condition: {
     description: "pack.sceleton.unlock.description",
     unlock: [

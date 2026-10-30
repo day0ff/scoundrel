@@ -65,13 +65,14 @@ export const necromancerPack = {
   name: "pack.necromancer.name",
   description: "pack.necromancer.description",
   card: getPackCard("day0ff:card-pack.necromancer"),
+  overlayImage: `${BASE_URL}/images/decks/skeleton/Necromancer.png`,
   castle: `${BASE_URL}/images/packs/necromancer/castle.png`,
   room: `${BASE_URL}/images/packs/necromancer/room.png`,
   dungeon: `${BASE_URL}/images/packs/necromancer/dungen.png`,
   discard: `${BASE_URL}/images/packs/necromancer/discard.png`,
   crypt: `${BASE_URL}/images/packs/necromancer/crypt.png`,
-  isLocked: true,
-  isNotFound: true,
+  isLocked: false,
+  isNotFound: false,
   condition: {
     description: "pack.necromancer.unlock.description",
     unlock: [
