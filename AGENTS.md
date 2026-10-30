@@ -90,6 +90,10 @@ Skills are stored in:
 
 Before performing work covered by a skill, read the relevant `SKILL.md`.
 
+Temporary development exception: skip the `store-migrations` skill and do not add
+persisted-state migrations unless explicitly requested by the user. This exception
+remains in effect until removed; all other skill requirements still apply.
+
 * [store-migrations](.agents/skills/store-migrations/SKILL.md) — Follow the versioned
   Redux Persist migration workflow when changing persisted state, migration versions,
   or saved-data compatibility. Covers sequential migrations, root and profile saves,
