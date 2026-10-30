@@ -4,14 +4,14 @@ import {TranslationKeysType} from "../../localization/types.ts";
 
 export type MixBlendMode = CSSProperties["mixBlendMode"];
 
-export type CardSideType = Partial<{
-    base: string;
-    image: string;
+export type CardSideType = {
+    base?: string;
+    image?: string;
     imageMode?: MixBlendMode;
-    overlay: string;
+    overlay?: string;
     overlayMode?: MixBlendMode;
     overlayColor?: string;
-}>;
+};
 
 type CardTranslationKeysType<Type extends string, Subtype extends string> = Extract<TranslationKeysType, `card.${Type}.${Subtype}.name`>;
 

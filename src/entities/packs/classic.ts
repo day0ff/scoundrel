@@ -1,7 +1,7 @@
 import type {RankType} from "entities/types.ts";
 import type {PasteboardDataType} from "entities/pasteboards/types.ts";
 import type {PackDataType} from "./types.ts";
-import {PACKS_CARDS_MAP} from "entities/cards/packs/constants.ts";
+import {getPackCard} from "entities/cards/packs/helpers.ts";
 import { BASE_URL } from "constants.ts";
 
 const darkLordCardsIdentifiers = [
@@ -69,7 +69,7 @@ export const classicPack = {
     identifier: "day0ff:pack-classic",
     name: "pack.classic.name",
     description: "pack.classic.description",
-    card: PACKS_CARDS_MAP["day0ff:card-pack.classic"],
+    card: getPackCard("day0ff:card-pack.classic"),
     castle: `${BASE_URL}/images/packs/classic/castle.png`,
     room: `${BASE_URL}/images/packs/classic/room.png`,
     dungeon: `${BASE_URL}/images/packs/classic/dungen.png`,

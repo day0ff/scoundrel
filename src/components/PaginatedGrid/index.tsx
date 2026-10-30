@@ -131,7 +131,7 @@ export function PaginatedGrid<T extends { id: string }>(
                         const correctedIndex = chunk.length % 2 === 0 && itemIndex >= Math.floor(chunk.length / 2) ? itemIndex + 1 : itemIndex;
                         const spread = Math.floor(chunk.length / 2) - correctedIndex;
                         return (
-                            <ItemWrapper key={item.id ?? ("identifier" in item ? String(item.identifier) : itemIndex)}
+                            <ItemWrapper key={JSON.stringify([item.id ?? ("identifier" in item ? String(item.identifier) : null), startIndex + rawIndex * columnSize + itemIndex])}
                                          $phase={animationPhase} $index={rawIndex * columnSize + itemIndex}
                                          ref={rawIndex === 0 && itemIndex === 0 ? refItem : undefined}
                                          style={{transform: `rotate(calc(${ratio}deg * ${spread})) translateY(calc(${offset}px * ${Math.abs(spread)}))`}}>

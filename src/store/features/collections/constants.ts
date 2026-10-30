@@ -15,6 +15,6 @@ export const initialCollectionsState = {
     gamesCompleted: {},
     enemiesDefeated: {},
     processedEvents: {},
-    ...(IS_DEV && { gamesWon: { "classic:day0ff:pack-classic": 1 } }),
+    // ...(IS_DEV && { gamesWon: { "classic:day0ff:pack-classic": 1 } }),
   },
 } satisfies CollectionsStateType as CollectionsStateType;
